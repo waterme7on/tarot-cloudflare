@@ -60,7 +60,7 @@ We designed the system to collect as little as possible.
 - **Your question text is not stored by default.** The question category (for example "love") is recorded so the rules engine can select interpretations. The words you typed are not saved unless you explicitly opt in to include them in a paid report.
 - **IP addresses are stored only as salted hashes.** We keep a one-way hash of your IP combined with a secret salt, used for rate limiting and abuse prevention. The raw IP is not written to our database, and the hash cannot be reversed.
 - **No accounts are required** for free readings.
-- **Payments are handled by Stripe.** We never see or store your card number.
+- **Payments are handled by Waffo.** We never see or store your card number.
 
 Full details are in our [privacy policy](/guides/privacy), and our [disclaimer](/guides/disclaimer) sets out the scope of the service.
 

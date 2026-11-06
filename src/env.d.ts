@@ -22,8 +22,11 @@ declare global {
     REPORT_PRICE_THREE_CENTS: string;
     TURNSTILE_SECRET_KEY?: string;
     PUBLIC_TURNSTILE_SITE_KEY?: string;
-    STRIPE_SECRET_KEY?: string;
-    STRIPE_WEBHOOK_SECRET?: string;
+    WAFFO_MERCHANT_ID?: string;
+    WAFFO_PRIVATE_KEY?: string;
+    WAFFO_WEBHOOK_PUBLIC_KEY?: string;
+    WAFFO_PRODUCT_SINGLE?: string;
+    WAFFO_PRODUCT_THREE?: string;
     IP_HASH_SALT?: string;
     TOKEN_SIGNING_KEY?: string;
     CF_ACCESS_TEAM_DOMAIN?: string;

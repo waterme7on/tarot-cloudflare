@@ -12,7 +12,7 @@ Last updated: 6 November 2026.
 
 ## 1. Report not generated: automatic refund
 
-If your report has not been generated within **10 minutes** of successful payment, the order is automatically refunded in full to your original payment method. You do not need to contact us. Stripe typically returns the funds within 5 to 10 business days, depending on your bank. If you believe a refund should have been triggered but has not appeared, email us with your order token.
+If your report has not been generated within **10 minutes** of successful payment, the order is automatically refunded in full to your original payment method. You do not need to contact us. Waffo typically returns the funds within 5 to 10 business days, depending on your bank. If you believe a refund should have been triggered but has not appeared, email us with your order token.
 
 ## 2. Report generated but not opened: full refund within 7 days
 
@@ -38,7 +38,7 @@ Send an email to **support@tarot-tools.example.com** with:
 - The email address used at checkout, if any.
 - A brief reason for the request.
 
-We aim to respond within a few business days. Refunds go to the original payment method through Stripe.
+We aim to respond within a few business days. Refunds go to the original payment method through Waffo.
 
 ## 6. What is not covered
 

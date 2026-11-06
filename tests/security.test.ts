@@ -1,19 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { verifyStripeSignature } from '../src/lib/stripe';
+import { verifyWaffoSignature } from '../src/lib/waffo';
 import { hmacHex, signR2Path, verifyR2Signature, timingSafeEqual } from '../src/lib/auth';
 import { checkRateLimit } from '../src/lib/rate-limit';
 import { sanitizeMeta } from '../src/lib/events';
 
-describe('stripe signature', () => {
-  it('accepts a valid signature and rejects tampering', async () => {
-    const secret = 'whsec_test';
-    const payload = '{"id":"evt_1","type":"checkout.session.completed"}';
-    const t = Math.floor(Date.now() / 1000);
-    const sig = await hmacHex(secret, `${t}.${payload}`);
-    expect(await verifyStripeSignature(payload, `t=${t},v1=${sig}`, secret)).toBe(true);
-    expect(await verifyStripeSignature(payload + ' ', `t=${t},v1=${sig}`, secret)).toBe(false);
-    expect(await verifyStripeSignature(payload, `t=${t - 1000},v1=${sig}`, secret)).toBe(false);
-    expect(await verifyStripeSignature(payload, null, secret)).toBe(false);
+describe('waffo webhook signature', () => {
+  it('accepts a valid RSA signature and rejects tampering', async () => {
+    const kp = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
+    const spki = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.exportKey('spki', kp.publicKey))));
+    const payload = '{"id":"PAY_1","eventType":"order.completed","mode":"prod","data":{}}';
+    const t = String(Date.now());
+    const sig = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', kp.privateKey, new TextEncoder().encode(`${t}.${payload}`)))));
+    expect(await verifyWaffoSignature(payload, `t=${t},v1=${sig}`, spki)).toBe(true);
+    expect(await verifyWaffoSignature(payload + ' ', `t=${t},v1=${sig}`, spki)).toBe(false);
+    expect(await verifyWaffoSignature(payload, `t=${Number(t) - 60 * 60 * 1000},v1=${sig}`, spki)).toBe(false);
+    expect(await verifyWaffoSignature(payload, null, spki)).toBe(false);
   });
 });
 

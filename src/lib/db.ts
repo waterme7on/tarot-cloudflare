@@ -19,6 +19,10 @@ export interface ReportRow {
   product: ReportProduct;
   stripe_session_id: string | null;
   stripe_payment_intent: string | null;
+  waffo_session_id: string | null;
+  waffo_order_id: string | null;
+  waffo_payment_id: string | null;
+  waffo_refund_ticket_id: string | null;
   status: 'pending_payment' | 'paid' | 'generating' | 'ready' | 'failed' | 'refunded';
   r2_key: string | null;
   workflow_id: string | null;
@@ -113,10 +117,6 @@ export async function getReportById(db: D1Database, id: string): Promise<ReportR
 
 export async function getReportByToken(db: D1Database, token: string): Promise<ReportRow | null> {
   return db.prepare('SELECT * FROM reports WHERE public_token = ?1').bind(token).first<ReportRow>();
-}
-
-export async function getReportBySession(db: D1Database, sessionId: string): Promise<ReportRow | null> {
-  return db.prepare('SELECT * FROM reports WHERE stripe_session_id = ?1').bind(sessionId).first<ReportRow>();
 }
 
 export async function updateReport(db: D1Database, id: string, patch: Partial<Omit<ReportRow, 'id'>>): Promise<void> {

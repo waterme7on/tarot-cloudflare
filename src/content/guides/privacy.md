@@ -1,6 +1,6 @@
 ---
 title: "Privacy Policy"
-description: "What Tarot Tools collects and does not collect, how long readings and orders are kept, how payments are handled by Stripe, and how to request deletion of your data."
+description: "What Tarot Tools collects and does not collect, how long readings and orders are kept, how payments are handled by Waffo, and how to request deletion of your data."
 updatedAt: "2026-11-06"
 author: "Tarot Tools Editorial"
 noindex: false
@@ -27,7 +27,7 @@ We also use **Cloudflare Web Analytics**, a privacy-focused analytics service th
 
 - **The text of your question, by default.** The free reading only needs the category. The words you type are not stored unless you explicitly choose to include them in a paid report.
 - **Birthdays, photos, contact lists, or other personal details.** We do not ask for them.
-- **Payment card numbers.** Payments are processed by Stripe. Card details go directly to Stripe and never pass through our servers.
+- **Payment card numbers.** Payments are processed by Waffo Pancake (Waffo.com Limited, merchant of record). Card details go directly to Waffo and never pass through our servers.
 - **Advertising identifiers.** We do not run third-party advertising or tracking pixels.
 
 ## How we use the data
@@ -44,7 +44,7 @@ To produce your reading and, if purchased, your deep report; to apply rate limit
 ## Third parties
 
 - **Cloudflare** hosts the site, runs the card generator on its edge network, stores our data, provides Web Analytics, and powers the optional AI deep reports through Workers AI. Cloudflare processes data on our behalf as our infrastructure provider.
-- **Stripe** processes payments under its own privacy policy.
+- **Waffo Pancake** (Waffo.com Limited) processes payments as merchant of record under its own privacy policy.
 
 We do not share data with any other third party except where required by law.
 

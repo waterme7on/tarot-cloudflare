@@ -31,7 +31,10 @@
     "AI_GATEWAY_ID": "tarot-gateway",
     "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct",
     "REPORT_PRICE_SINGLE_CENTS": "499",
-    "REPORT_PRICE_THREE_CENTS": "999"
+    "REPORT_PRICE_THREE_CENTS": "999",
+    "WAFFO_PRODUCT_SINGLE": "PROD_214CNkqnBu0hykZy0SSnaB",
+    "WAFFO_PRODUCT_THREE": "PROD_7CNWww58bA6wZHDPRozUTu",
+    "WAFFO_WEBHOOK_PUBLIC_KEY": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz+xApdTIb4ua+DgZKQ54iBsD82ybyhGCLRETONW4Jgbb3A8DUM1LqBk6r/CmTOCHqLalTQHNigvP3R5zkDNXiRJz6gA4MJ/+8K0+mnEE2RISQzN+Qu65TNd6svb+INm/kMaftY4uIXr6y6kchtTJdwnQhcKdAL2v7h7IFnkVelQsKxDdb2PqX8xX/qwd01iXvMcpCCaXovUwZsxH2QN5ZKBTseJivbhUeyJCco4fdUyxOMHe2ybCVhyvim2uxAl1nkvL5L8RCWMCAV55LLo09OhmLahz/DYNu13YLVP6dvIT09ZFBYU6Owj1NxdinTynlJCFS9VYwBgmftosSE1UdwIDAQAB"
   },
   "observability": { "enabled": true, "head_sampling_rate": 1 },
   "env": {

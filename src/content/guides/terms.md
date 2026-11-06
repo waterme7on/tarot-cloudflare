@@ -44,7 +44,7 @@ Deep reports are **digital goods**. When you purchase one:
 - The report is generated from cards that have already been drawn. Purchasing does not change the cards.
 - Delivery is by a **link** provided after payment and, where you supply an email address, sent to that address. Keep the link and order token safe.
 - Report files are available for 180 days from creation, after which they are deleted.
-- Payments are processed by Stripe. We do not store your card details.
+- Payments are processed by Waffo Pancake (Waffo.com Limited, merchant of record). We do not store your card details.
 - Refunds follow our [refund policy](/guides/refund). Because the goods are digital and delivered immediately, statutory cancellation rights may not apply once the report has been accessed, except as set out in that policy.
 - Prices are shown before purchase and may change for future purchases.
 
