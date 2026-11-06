@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { DrawResponse, DrawnCard } from '../lib/schema';
+import { hasArt } from '../lib/artwork';
+import HoloCard from './HoloCard';
 import { ShareCard } from './ShareCard';
 
 function initials(name: string): string {
@@ -11,13 +13,17 @@ function initials(name: string): string {
     .slice(0, 3);
 }
 
-export function TarotCardFace({ card }: { card: DrawnCard }) {
+export function TarotCardFace({ card, index = 0, reveal = true }: { card: DrawnCard; index?: number; reveal?: boolean }) {
   return (
     <div>
-      <div className={`tarot-card ${card.orientation}`} aria-hidden="true">
-        <div className="glyph">{initials(card.name)}</div>
-        <div className="name">{card.name}</div>
-      </div>
+      {hasArt(card.slug) ? (
+        <HoloCard slug={card.slug} name={card.name} orientation={card.orientation} reveal={reveal} revealDelayMs={350 + index * 650} width={180} />
+      ) : (
+        <div className={`tarot-card ${card.orientation}`} aria-hidden="true">
+          <div className="glyph">{initials(card.name)}</div>
+          <div className="name">{card.name}</div>
+        </div>
+      )}
       <p className="result-meta" style={{ marginTop: '.5rem' }}>
         {card.positionLabel} · {card.orientation}
       </p>
@@ -25,7 +31,7 @@ export function TarotCardFace({ card }: { card: DrawnCard }) {
   );
 }
 
-export function CardResult({ reading, question, onReset }: { reading: DrawResponse; question?: string; onReset?: () => void }) {
+export function CardResult({ reading, question, onReset, reveal = true }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean }) {
   const [checkout, setCheckout] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [consent, setConsent] = useState(false);
   const product = reading.spread === 'one-card' ? 'single' : 'three';
@@ -60,8 +66,8 @@ export function CardResult({ reading, question, onReset }: { reading: DrawRespon
         </p>
       )}
       <div className="result-cards">
-        {reading.cards.map((c) => (
-          <TarotCardFace key={c.position} card={c} />
+        {reading.cards.map((c, i) => (
+          <TarotCardFace key={c.position} card={c} index={i} reveal={reveal} />
         ))}
       </div>
       {reading.cards.map((c) => (

@@ -9,3 +9,4 @@ dist/
 .DS_Store
 migrations/seed/*.sql
 backups/
+artwork/raw/

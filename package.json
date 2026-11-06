@@ -19,7 +19,8 @@
     "backup": "tsx scripts/backup-d1-to-r2.ts",
     "deploy": "npm run build && wrangler deploy",
     "deploy:dry": "npm run build && wrangler deploy --dry-run",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "artwork": "tsx scripts/process-artwork.ts"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.0",

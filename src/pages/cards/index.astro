@@ -2,6 +2,7 @@
 import Base from '@/layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { ALL_CARDS } from '@/data/cards';
+import { hasArt, thumbUrl } from '@/lib/artwork';
 import { breadcrumbLd } from '@/lib/seo';
 
 export const prerender = true;
@@ -22,7 +23,7 @@ const suits = ['wands', 'cups', 'swords', 'pentacles'] as const;
   <h2>Major Arcana</h2>
   <ul class="card-list">
     {majors.map((c) => (
-      <li>{deep.has(c.slug) ? <a href={`/cards/${c.slug}/`}>{c.name}</a> : <span class="muted" title={c.upright.keywords.join(', ')}>{c.name}</span>}</li>
+      <li>{deep.has(c.slug) ? <a href={`/cards/${c.slug}/`}>{hasArt(c.slug) && <img src={thumbUrl(c.slug)} alt="" width="240" height="360" loading="lazy" />}{c.name}</a> : <span class="muted" title={c.upright.keywords.join(', ')}>{hasArt(c.slug) && <img src={thumbUrl(c.slug)} alt="" width="240" height="360" loading="lazy" />}{c.name}</span>}</li>
     ))}
   </ul>
   {suits.map((s) => (
@@ -30,7 +31,7 @@ const suits = ['wands', 'cups', 'swords', 'pentacles'] as const;
       <h2 style="text-transform:capitalize">Suit of {s}</h2>
       <ul class="card-list">
         {ALL_CARDS.filter((c) => c.suit === s).map((c) => (
-          <li>{deep.has(c.slug) ? <a href={`/cards/${c.slug}/`}>{c.name}</a> : <span class="muted" title={c.upright.keywords.join(', ')}>{c.name}</span>}</li>
+          <li>{deep.has(c.slug) ? <a href={`/cards/${c.slug}/`}>{hasArt(c.slug) && <img src={thumbUrl(c.slug)} alt="" width="240" height="360" loading="lazy" />}{c.name}</a> : <span class="muted" title={c.upright.keywords.join(', ')}>{hasArt(c.slug) && <img src={thumbUrl(c.slug)} alt="" width="240" height="360" loading="lazy" />}{c.name}</span>}</li>
         ))}
       </ul>
     </>

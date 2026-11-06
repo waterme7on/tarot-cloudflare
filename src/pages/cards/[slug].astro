@@ -4,6 +4,8 @@ import SeoLinks from '@/components/SeoLinks.astro';
 import Faq from '@/components/Faq.astro';
 import { getCollection, render } from 'astro:content';
 import { getCard } from '@/data/cards';
+import { hasArt, artUrl } from '@/lib/artwork';
+import HoloCard from '@/components/HoloCard';
 import { articleLd, breadcrumbLd, faqLd } from '@/lib/seo';
 
 export const prerender = true;
@@ -25,20 +27,29 @@ const d = entry.data;
   description={d.description}
   updatedAt={d.updatedAt}
   author={d.author}
+  ogImage={hasArt(entry.id) ? `${site}${artUrl(entry.id)}` : undefined}
   jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Card Meanings', path: '/cards/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
 >
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/cards/">Card Meanings</a> › {d.name}</nav>
   <h1>{d.name} Tarot Card Meaning</h1>
   {card && (
     <div class="grid grid-2" style="align-items:start">
-      <div class="card">
-        <p><strong>Upright keywords:</strong> {card.upright.keywords.join(', ')}</p>
-        <p><strong>Reversed keywords:</strong> {card.reversed.keywords.join(', ')}</p>
-        <p style="margin:0"><strong>Yes or no:</strong> <span style="text-transform:capitalize">{card.yesNo}</span></p>
+      <div>
+        {hasArt(card.slug) ? (
+          <HoloCard client:visible slug={card.slug} name={card.name} width={300} className="card-hero" />
+        ) : null}
+        <p class="muted small" style="text-align:center;margin-top:.5rem">Move your pointer or tilt your phone to see the foil.</p>
       </div>
-      <div class="card">
-        <p>{card.upright.summary}</p>
-        <a class="btn" href={`/?card=${card.slug}`}>Draw a card for your question</a>
+      <div>
+        <div class="card">
+          <p><strong>Upright keywords:</strong> {card.upright.keywords.join(', ')}</p>
+          <p><strong>Reversed keywords:</strong> {card.reversed.keywords.join(', ')}</p>
+          <p style="margin:0"><strong>Yes or no:</strong> <span style="text-transform:capitalize">{card.yesNo}</span></p>
+        </div>
+        <div class="card" style="margin-top:1rem">
+          <p>{card.upright.summary}</p>
+          <a class="btn" href={`/?card=${card.slug}`}>Draw a card for your question</a>
+        </div>
       </div>
     </div>
   )}

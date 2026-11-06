@@ -2,6 +2,7 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "jsx": "react-jsx",
+    "resolveJsonModule": true,
     "jsxImportSource": "react",
     "types": ["@cloudflare/workers-types", "vitest/globals", "node"],
     "baseUrl": ".",

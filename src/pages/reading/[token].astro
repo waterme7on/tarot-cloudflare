@@ -32,7 +32,7 @@ Astro.response.headers.set('Cache-Control', 'no-store');
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Shared reading</nav>
   <h1>Your tarot reading</h1>
   {cancelled && <p class="callout">Checkout was cancelled. Your free reading is still here, and you can buy the full report any time from this page.</p>}
-  <CardResult client:load reading={reading} />
+  <CardResult client:load reading={reading} reveal={false} />
   <p class="muted small">This page is private to anyone with the link and is not indexed by search engines. It expires 90 days after the draw.</p>
   <p><a class="btn btn-ghost" href="/">Draw your own card</a></p>
 </Base>

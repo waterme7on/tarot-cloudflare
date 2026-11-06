@@ -30,10 +30,16 @@ input[type=text],textarea,select{width:100%;background:var(--bg2);color:var(--te
 .callout{border-left:3px solid var(--gold);padding:.75rem 1rem;background:rgba(201,168,92,.08);border-radius:0 10px 10px 0;margin:1rem 0}
 .prose h2{border-bottom:1px solid var(--line);padding-bottom:.3rem}.prose ul{padding-left:1.2rem}
 .breadcrumbs{font-size:.85rem;color:var(--muted);margin-bottom:1rem}.breadcrumbs a{color:var(--muted)}
-.card-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem}.card-list a{display:block;padding:.6rem .8rem;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:var(--bg2)}
+.card-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem}.card-list a,.card-list span.muted{display:block;padding:.6rem .8rem;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:var(--bg2)}
 .faq details{border:1px solid var(--line);border-radius:10px;padding:.6rem 1rem;margin-bottom:.5rem;background:var(--bg2)}.faq summary{cursor:pointer;font-weight:600;color:#fff}
 .byline{font-size:.85rem;color:var(--muted);margin:1rem 0}
 .error{color:var(--danger)}.ok{color:var(--ok)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{border-bottom:1px solid var(--line);padding:.5rem;text-align:left}
 @media (prefers-reduced-motion:reduce){.tarot-card{transition:none}}
+.holo-card{position:relative;border-radius:12px;overflow:hidden;touch-action:none;cursor:grab;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
+.holo-card canvas{display:block;width:100%!important;height:100%!important}
+.holo-card img{display:block;width:100%;height:100%;object-fit:cover;border-radius:12px;border:2px solid var(--gold)}
+.holo-card img.reversed{transform:rotate(180deg)}
+.card-art{display:block;width:100%;max-width:320px;aspect-ratio:2/3;object-fit:cover;border-radius:12px;border:2px solid var(--gold);margin:0 auto}
+.card-list img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;margin-bottom:.4rem}
