@@ -5,6 +5,11 @@ import SeoLinks from '@/components/SeoLinks.astro';
 import Faq from '@/components/Faq.astro';
 import { webAppLd, faqLd } from '@/lib/seo';
 import { MAJOR_ARCANA } from '@/data/cards-major';
+import { ALL_CARDS } from '@/data/cards';
+import HoloCard from '@/components/HoloCard';
+
+const dayIndex = Math.floor(Date.now() / 86400_000) % ALL_CARDS.length;
+const cardOfDay = ALL_CARDS[dayIndex]!;
 
 export const prerender = false;
 
@@ -23,7 +28,16 @@ const faq = [
 >
   <h1>Tarot Card Generator</h1>
   <p class="muted">Ask a question, draw a card in under five seconds, and get a clear meaning plus one concrete next step. No account, no email, no birthday.</p>
-  <DrawTool client:load />
+  <div class="grid grid-2" style="align-items:start;margin-bottom:1rem">
+    <DrawTool client:load />
+    <aside class="card" style="text-align:center">
+      <h2 style="margin-top:0;font-size:1.1rem">Card of the day</h2>
+      <div style="display:flex;justify-content:center"><HoloCard client:idle slug={cardOfDay.slug} name={cardOfDay.name} width={200} /></div>
+      <p style="margin:.75rem 0 .25rem"><a href={`/cards/${cardOfDay.slug}/`}><strong>{cardOfDay.name}</strong></a></p>
+      <p class="muted small">{cardOfDay.upright.summary}</p>
+      <p class="muted small" style="margin:0">All 78 cards are illustrated with holographic foil. Hover or tilt to see it.</p>
+    </aside>
+  </div>
 
   <section class="prose">
     <h2>How this tarot card generator works</h2>

@@ -18,7 +18,7 @@ for (const f of files) {
     continue;
   }
   const src = sharp(join(RAW, f)).resize(1024, 1536, { fit: 'cover', position: 'centre' });
-  await src.clone().resize(768, 1152).webp({ quality: 82 }).toFile(join(OUT, `${slug}.webp`));
+  await src.clone().resize(768, 1152).webp({ quality: 78 }).toFile(join(OUT, `${slug}.webp`));
   await src.clone().resize(240, 360).webp({ quality: 74 }).toFile(join(OUT, 'thumbs', `${slug}.webp`));
   ok++;
 }

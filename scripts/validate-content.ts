@@ -45,6 +45,11 @@ for (const c of ALL_CARDS) {
   }
 }
 
+// Artwork
+import artwork from '../src/data/artwork.json';
+const artSet = new Set(artwork as string[]);
+for (const c of ALL_CARDS) if (!artSet.has(c.slug)) errors.push(`missing artwork for ${c.slug}`);
+
 // Card pages
 const cardFiles = listMd('cards');
 if (cardFiles.length < 30) errors.push(`expected ≥30 card pages, found ${cardFiles.length}`);

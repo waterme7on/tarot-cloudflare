@@ -4,6 +4,10 @@ Free, no-signup tarot card generator with paid AI-assisted deep reports. Everyth
 
 Implements `Tarot-Cloudflare-完整实施方案.md` (v1.0, 2026-11-06).
 
+## Visuals
+
+All 78 cards have original AI-generated illustrations (ukiyo-e + colored sumi-e direction borrowed from [holo-card-studio](https://github.com/EverettFish/holo-card-studio)) rendered through a Three.js holographic card (`src/components/HoloCard.tsx`): spectrum foil, light sweep, sparkle stars, pointer/gyro tilt, gold edges and a flip reveal on draw. Source PNGs live in `artwork/raw/` (git-ignored); `npm run artwork` resizes them into `public/cards/*.webp` + thumbnails and writes `src/data/artwork.json`.
+
 ## Stack
 
 - Astro 5 + `@astrojs/cloudflare` (SSR on Workers, static assets for SEO pages)
