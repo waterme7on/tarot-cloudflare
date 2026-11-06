@@ -1,0 +1,49 @@
+---
+import Base from '@/layouts/Base.astro';
+import SeoLinks from '@/components/SeoLinks.astro';
+import Faq from '@/components/Faq.astro';
+import { getCollection, render } from 'astro:content';
+import { getCard } from '@/data/cards';
+import { articleLd, breadcrumbLd, faqLd } from '@/lib/seo';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const entries = await getCollection('cards');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const card = getCard(entry.id);
+const site = Astro.site!.toString().replace(/\/$/, '');
+const path = `/cards/${entry.id}/`;
+const d = entry.data;
+---
+<Base
+  title={d.title}
+  description={d.description}
+  updatedAt={d.updatedAt}
+  author={d.author}
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Card Meanings', path: '/cards/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/cards/">Card Meanings</a> › {d.name}</nav>
+  <h1>{d.name} Tarot Card Meaning</h1>
+  {card && (
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card">
+        <p><strong>Upright keywords:</strong> {card.upright.keywords.join(', ')}</p>
+        <p><strong>Reversed keywords:</strong> {card.reversed.keywords.join(', ')}</p>
+        <p style="margin:0"><strong>Yes or no:</strong> <span style="text-transform:capitalize">{card.yesNo}</span></p>
+      </div>
+      <div class="card">
+        <p>{card.upright.summary}</p>
+        <a class="btn" href={`/?card=${card.slug}`}>Draw a card for your question</a>
+      </div>
+    </div>
+  )}
+  <p class="byline">Written by {d.author} · Edited by {d.editor} · Updated {d.updatedAt}</p>
+  <article class="prose"><Content /></article>
+  <Faq items={d.faq} />
+  <SeoLinks cards={d.relatedCards} spreads={d.relatedSpreads} questions={d.relatedQuestions} />
+</Base>

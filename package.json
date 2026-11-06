@@ -1,0 +1,42 @@
+{
+  "name": "tarot-cloudflare",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "npm run build && wrangler dev",
+    "typecheck": "astro check && tsc --noEmit -p tsconfig.worker.json",
+    "test": "vitest run",
+    "validate:content": "tsx scripts/validate-content.ts",
+    "seed:sql": "tsx scripts/seed-d1.ts",
+    "db:migrate:local": "wrangler d1 migrations apply tarot-db --local",
+    "db:migrate:preview": "wrangler d1 migrations apply tarot-db --remote --env preview",
+    "db:migrate:prod": "wrangler d1 migrations apply tarot-db --remote",
+    "db:seed:local": "npm run seed:sql && wrangler d1 execute tarot-db --local --file=./migrations/seed/cards.sql",
+    "db:seed:prod": "npm run seed:sql && wrangler d1 execute tarot-db --remote --file=./migrations/seed/cards.sql",
+    "backup": "tsx scripts/backup-d1-to-r2.ts",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:dry": "npm run build && wrangler deploy --dry-run",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.0",
+    "@astrojs/react": "^4.3.0",
+    "astro": "^5.13.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@cloudflare/workers-types": "^5.20261104.1",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0",
+    "wrangler": "^4.10.0"
+  }
+}

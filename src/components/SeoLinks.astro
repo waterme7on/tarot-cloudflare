@@ -1,0 +1,36 @@
+---
+import { getCard } from '@/data/cards';
+interface Props {
+  cards?: string[];
+  spreads?: string[];
+  questions?: string[];
+  title?: string;
+}
+const { cards = [], spreads = [], questions = [], title = 'Keep exploring' } = Astro.props;
+const spreadNames: Record<string, string> = { 'one-card': 'One Card Spread', 'three-card': 'Three Card Spread', 'celtic-cross': 'Celtic Cross Spread' };
+const questionNames: Record<string, string> = { love: 'Love questions', career: 'Career questions', money: 'Money questions', decision: 'Yes or no decisions' };
+---
+<aside class="card" style="margin-top:2rem">
+  <h2 style="margin-top:0;font-size:1.2rem">{title}</h2>
+  <div class="grid grid-3">
+    {cards.length > 0 && (
+      <div>
+        <h3>Related cards</h3>
+        <ul>{cards.map((s) => <li><a href={`/cards/${s}/`}>{getCard(s)?.name ?? s}</a></li>)}</ul>
+      </div>
+    )}
+    {spreads.length > 0 && (
+      <div>
+        <h3>Spreads</h3>
+        <ul>{spreads.map((s) => <li><a href={`/spreads/${s}/`}>{spreadNames[s] ?? s}</a></li>)}</ul>
+      </div>
+    )}
+    {questions.length > 0 && (
+      <div>
+        <h3>Questions</h3>
+        <ul>{questions.map((q) => <li><a href={`/questions/${q}/`}>{questionNames[q] ?? q}</a></li>)}</ul>
+      </div>
+    )}
+  </div>
+  <p style="margin:0"><a class="btn" href="/">Draw a card now</a></p>
+</aside>

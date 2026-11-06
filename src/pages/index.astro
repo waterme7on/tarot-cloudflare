@@ -1,0 +1,39 @@
+---
+import Base from '@/layouts/Base.astro';
+import DrawTool from '@/components/DrawTool';
+import SeoLinks from '@/components/SeoLinks.astro';
+import Faq from '@/components/Faq.astro';
+import { webAppLd, faqLd } from '@/lib/seo';
+import { MAJOR_ARCANA } from '@/data/cards-major';
+
+export const prerender = false;
+
+const site = Astro.site!.toString().replace(/\/$/, '');
+const faq = [
+  { q: 'Is this tarot card generator really random?', a: 'Yes. Each draw happens on a Cloudflare Worker using crypto.getRandomValues with rejection sampling, so every one of the 78 cards and both orientations have an equal chance. No AI decides the card.' },
+  { q: 'Do I need to sign up?', a: 'No. There is no account, no email and no birthday. Your optional question stays in your browser unless you explicitly include it in a paid report.' },
+  { q: 'Can I draw more than one card?', a: 'Yes. Choose a one-card draw for a quick answer, a three-card spread for past, present and future, or the ten-card Celtic Cross for a full picture.' },
+  { q: 'What does a reversed card mean?', a: 'A reversed card shows the same energy turned inward, blocked or delayed. Each card page explains both orientations in love, career and money.' },
+];
+---
+<Base
+  title="Tarot Card Generator – Free Random Tarot Card Draw (Upright & Reversed)"
+  description="Free tarot card generator: ask a question, shuffle and draw one or three cards instantly. Get upright or reversed meanings, a next step and a shareable result. No sign-up."
+  jsonLd={[webAppLd(site), faqLd(faq)]}
+>
+  <h1>Tarot Card Generator</h1>
+  <p class="muted">Ask a question, draw a card in under five seconds, and get a clear meaning plus one concrete next step. No account, no email, no birthday.</p>
+  <DrawTool client:load />
+
+  <section class="prose">
+    <h2>How this tarot card generator works</h2>
+    <p>Pick a spread and a question type, optionally type the question you have in mind (it stays on your device), and press <strong>Draw a Card</strong>. A Cloudflare Worker shuffles a full 78-card Rider-Waite deck with cryptographically secure randomness, chooses upright or reversed for each card, and returns the card's keywords, a reading matched to your question type, and a next action. The free interpretation comes from a consistent rules engine, so the same card always carries the same core meaning — no AI improvisation.</p>
+    <h2>One card, three cards or the Celtic Cross</h2>
+    <p>A single card is best for a daily pull or a yes-or-no lean. Three cards map past, present and future. The ten-card Celtic Cross goes deep on a complex situation. Read more on the <a href="/spreads/one-card/">one card</a>, <a href="/spreads/three-card/">three card</a> and <a href="/spreads/celtic-cross/">Celtic Cross</a> pages.</p>
+    <h2>Major Arcana meanings</h2>
+    <ul class="card-list">{MAJOR_ARCANA.map((c) => <li><a href={`/cards/${c.slug}/`}>{c.name}</a></li>)}</ul>
+    <p><a href="/cards/">See all card meanings →</a></p>
+  </section>
+  <Faq items={faq} />
+  <SeoLinks spreads={['one-card', 'three-card', 'celtic-cross']} questions={['love', 'career', 'money', 'decision']} cards={['the-lovers', 'the-star', 'the-tower']} />
+</Base>

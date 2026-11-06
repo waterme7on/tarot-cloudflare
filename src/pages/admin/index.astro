@@ -1,0 +1,48 @@
+---
+import Base from '@/layouts/Base.astro';
+
+export const prerender = false;
+
+const env = Astro.locals.runtime.env;
+const db = env.DB;
+const [orders, stats, readings, backups] = await Promise.all([
+  db.prepare(`SELECT id, public_token, product, status, amount_cents, currency, paid_at, delivered_at, first_viewed_at, error, created_at FROM reports ORDER BY created_at DESC LIMIT 100`).all<Record<string, string | number | null>>(),
+  db.prepare(`SELECT day, event_name, count FROM daily_event_stats WHERE day >= date('now','-14 days') ORDER BY day DESC, event_name`).all<{ day: string; event_name: string; count: number }>(),
+  db.prepare(`SELECT COUNT(*) AS total, SUM(CASE WHEN created_at >= datetime('now','-1 day') THEN 1 ELSE 0 END) AS last24h FROM readings`).first<{ total: number; last24h: number }>(),
+  db.prepare(`SELECT r2_key, size_bytes, created_at FROM backups ORDER BY created_at DESC LIMIT 5`).all<{ r2_key: string; size_bytes: number; created_at: string }>(),
+]);
+const statusCounts = orders.results.reduce<Record<string, number>>((acc, o) => ((acc[String(o.status)] = (acc[String(o.status)] ?? 0) + 1), acc), {});
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+<Base title="Admin – Tarot Tools" description="Internal dashboard protected by Cloudflare Access." noindex>
+  <h1>Admin</h1>
+  <p class="muted small">Protected by Cloudflare Access. Environment: {env.ENVIRONMENT}</p>
+  <div class="grid grid-3">
+    <div class="card"><h3>Readings</h3><p>Total: {readings?.total ?? 0}<br />Last 24h: {readings?.last24h ?? 0}</p></div>
+    <div class="card"><h3>Orders (last 100)</h3><p>{Object.entries(statusCounts).map(([k, v]) => <span>{k}: {v}<br /></span>)}</p></div>
+    <div class="card"><h3>Backups</h3><p>{backups.results.length === 0 ? 'None yet' : backups.results.map((b) => <span>{b.created_at.slice(0, 10)} · {Math.round(b.size_bytes / 1024)} KB<br /></span>)}</p></div>
+  </div>
+  <h2>Orders</h2>
+  <div style="overflow:auto">
+    <table>
+      <thead><tr><th>Created</th><th>Product</th><th>Status</th><th>Amount</th><th>Paid</th><th>Delivered</th><th>Viewed</th><th>Error</th></tr></thead>
+      <tbody>
+        {orders.results.map((o) => (
+          <tr>
+            <td>{String(o.created_at).slice(0, 16)}</td><td>{o.product}</td><td>{o.status}</td>
+            <td>{o.amount_cents ? `${(Number(o.amount_cents) / 100).toFixed(2)} ${String(o.currency).toUpperCase()}` : '-'}</td>
+            <td>{o.paid_at ? String(o.paid_at).slice(0, 16) : '-'}</td><td>{o.delivered_at ? String(o.delivered_at).slice(0, 16) : '-'}</td>
+            <td>{o.first_viewed_at ? 'yes' : 'no'}</td><td>{o.error ?? ''}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <h2>Daily events (14 days)</h2>
+  <div style="overflow:auto">
+    <table>
+      <thead><tr><th>Day</th><th>Event</th><th>Count</th></tr></thead>
+      <tbody>{stats.results.map((s) => <tr><td>{s.day}</td><td>{s.event_name}</td><td>{s.count}</td></tr>)}</tbody>
+    </table>
+  </div>
+</Base>

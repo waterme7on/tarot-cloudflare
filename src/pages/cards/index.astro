@@ -1,0 +1,39 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { ALL_CARDS } from '@/data/cards';
+import { breadcrumbLd } from '@/lib/seo';
+
+export const prerender = true;
+
+const site = Astro.site!.toString().replace(/\/$/, '');
+const deep = new Set((await getCollection('cards')).map((c) => c.id));
+const majors = ALL_CARDS.filter((c) => c.arcana === 'major');
+const suits = ['wands', 'cups', 'swords', 'pentacles'] as const;
+---
+<Base
+  title="Tarot Card Meanings – All 78 Cards, Upright & Reversed"
+  description="Browse tarot card meanings for all 78 cards. In-depth pages cover upright and reversed readings in love, career and money, with a yes-or-no answer for each card."
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Card Meanings', path: '/cards/' }])]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Card Meanings</nav>
+  <h1>Tarot Card Meanings</h1>
+  <p class="muted">Every card in the deck with its core keywords. Cards with a full page include upright, reversed, love, career, money and yes/no sections.</p>
+  <h2>Major Arcana</h2>
+  <ul class="card-list">
+    {majors.map((c) => (
+      <li>{deep.has(c.slug) ? <a href={`/cards/${c.slug}/`}>{c.name}</a> : <span class="muted" title={c.upright.keywords.join(', ')}>{c.name}</span>}</li>
+    ))}
+  </ul>
+  {suits.map((s) => (
+    <>
+      <h2 style="text-transform:capitalize">Suit of {s}</h2>
+      <ul class="card-list">
+        {ALL_CARDS.filter((c) => c.suit === s).map((c) => (
+          <li>{deep.has(c.slug) ? <a href={`/cards/${c.slug}/`}>{c.name}</a> : <span class="muted" title={c.upright.keywords.join(', ')}>{c.name}</span>}</li>
+        ))}
+      </ul>
+    </>
+  ))}
+  <p><a class="btn" href="/">Draw a card now</a></p>
+</Base>

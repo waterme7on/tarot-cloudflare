@@ -1,0 +1,39 @@
+:root{--bg:#0f0c1d;--bg2:#1b1533;--card:#231b40;--line:#3a2f5e;--text:#e8dcc0;--muted:#a99bc9;--gold:#c9a85c;--gold2:#e6c97a;--danger:#e07a7a;--ok:#8fd19e;--radius:14px;--font:ui-serif,Georgia,"Times New Roman",serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#2a1f4a 0%,var(--bg) 60%);color:var(--text);font-family:var(--sans);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--gold2)}a:hover{color:#fff}
+h1,h2,h3{font-family:var(--font);line-height:1.2;color:#fff;margin:0 0 .5em}
+h1{font-size:clamp(1.8rem,4vw,2.6rem)}h2{font-size:1.5rem;margin-top:2rem}h3{font-size:1.15rem}
+p{margin:0 0 1em}.muted{color:var(--muted)}.small{font-size:.875rem}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#000;padding:8px;z-index:10}
+.container{width:min(960px,100% - 2rem);margin:0 auto;padding:1.5rem 0 3rem;flex:1}
+.site-header{display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;align-items:center;justify-content:space-between;padding:1rem;max-width:960px;margin:0 auto;width:100%}
+.site-header nav{display:flex;flex-wrap:wrap;gap:1rem}.site-header nav a,.site-footer nav a{text-decoration:none;color:var(--muted)}.site-header nav a:hover{color:#fff}
+.brand{font-family:var(--font);font-size:1.35rem;color:var(--gold);text-decoration:none}
+.site-footer{border-top:1px solid var(--line);padding:1.5rem 1rem;text-align:center;font-size:.875rem}
+.site-footer nav{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:.75rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem}
+.grid{display:grid;gap:1rem}.grid-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.grid-3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:1px solid var(--gold);background:var(--gold);color:#1b1533;font-weight:600;padding:.8rem 1.4rem;border-radius:999px;cursor:pointer;font-size:1rem;text-decoration:none;min-height:44px}
+.btn:hover{background:var(--gold2);color:#1b1533}.btn[disabled]{opacity:.6;cursor:wait}
+.btn-ghost{background:transparent;color:var(--gold2)}.btn-ghost:hover{background:rgba(201,168,92,.12);color:#fff}
+.btn-row{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}.chip{border:1px solid var(--line);background:var(--bg2);color:var(--text);border-radius:999px;padding:.5rem .9rem;cursor:pointer;min-height:40px}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:rgba(201,168,92,.18);color:#fff}
+label{display:block;margin:.75rem 0 .35rem;color:var(--muted);font-size:.9rem}
+input[type=text],textarea,select{width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:.75rem;font:inherit}
+.tarot-card{aspect-ratio:2/3;border-radius:12px;border:2px solid var(--gold);background:linear-gradient(160deg,#2a1f4a,#120e24);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1rem;text-align:center;transition:transform .5s}
+.tarot-card.reversed{transform:rotate(180deg)}.tarot-card .glyph{width:64px;height:64px;border-radius:50%;border:2px solid var(--gold);display:grid;place-items:center;font-family:var(--font);font-size:1.4rem;color:var(--gold2)}
+.tarot-card .name{font-family:var(--font);font-size:1.1rem;color:#fff}
+.result-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,180px));gap:1rem;justify-content:center;margin:1rem 0}
+.result-meta{text-align:center;color:var(--muted);font-size:.85rem}
+.callout{border-left:3px solid var(--gold);padding:.75rem 1rem;background:rgba(201,168,92,.08);border-radius:0 10px 10px 0;margin:1rem 0}
+.prose h2{border-bottom:1px solid var(--line);padding-bottom:.3rem}.prose ul{padding-left:1.2rem}
+.breadcrumbs{font-size:.85rem;color:var(--muted);margin-bottom:1rem}.breadcrumbs a{color:var(--muted)}
+.card-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem}.card-list a{display:block;padding:.6rem .8rem;border:1px solid var(--line);border-radius:10px;text-decoration:none;background:var(--bg2)}
+.faq details{border:1px solid var(--line);border-radius:10px;padding:.6rem 1rem;margin-bottom:.5rem;background:var(--bg2)}.faq summary{cursor:pointer;font-weight:600;color:#fff}
+.byline{font-size:.85rem;color:var(--muted);margin:1rem 0}
+.error{color:var(--danger)}.ok{color:var(--ok)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{border-bottom:1px solid var(--line);padding:.5rem;text-align:left}
+@media (prefers-reduced-motion:reduce){.tarot-card{transition:none}}

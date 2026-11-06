@@ -1,0 +1,32 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { articleLd, breadcrumbLd } from '@/lib/seo';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const entries = await getCollection('guides');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const site = Astro.site!.toString().replace(/\/$/, '');
+const path = `/${entry.id}/`;
+const d = entry.data;
+---
+<Base
+  title={d.title}
+  description={d.description}
+  updatedAt={d.updatedAt}
+  author={d.author}
+  noindex={d.noindex}
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: d.title, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author })]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › {d.title}</nav>
+  <h1>{d.title}</h1>
+  <p class="byline">By {d.author} · Updated {d.updatedAt}</p>
+  <article class="prose"><Content /></article>
+  <p><a class="btn" href="/">Draw a card</a></p>
+</Base>

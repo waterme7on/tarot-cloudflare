@@ -1,0 +1,38 @@
+---
+import Base from '@/layouts/Base.astro';
+import { CardResult } from '@/components/CardResult';
+import { getReadingByToken } from '@/lib/db';
+import type { DrawResponse, DrawnCard, ReadingSummary } from '@/lib/schema';
+
+export const prerender = false;
+
+const token = Astro.params.token ?? '';
+const env = Astro.locals.runtime.env;
+const row = /^pub_[0-9a-f]{32}$/.test(token) ? await getReadingByToken(env.DB, token) : null;
+if (!row) return new Response(null, { status: 404 });
+const summary = JSON.parse(row.summary_json) as ReadingSummary;
+const reading: DrawResponse = {
+  readingId: row.id,
+  publicToken: row.public_token,
+  spread: row.spread,
+  questionType: row.question_type,
+  cards: JSON.parse(row.cards_json) as DrawnCard[],
+  headline: summary.headline,
+  summary: summary.summary,
+  nextAction: summary.nextAction,
+  limitation: summary.limitation,
+  yesNo: summary.yesNo,
+  createdAt: row.created_at,
+};
+const site = env.SITE_URL.replace(/\/$/, '');
+const cancelled = Astro.url.searchParams.get('checkout') === 'cancelled';
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+<Base title={`${reading.headline} – Tarot reading`} description={reading.summary.slice(0, 155)} noindex ogImage={`${site}/api/v1/share/${reading.publicToken}.svg`}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Shared reading</nav>
+  <h1>Your tarot reading</h1>
+  {cancelled && <p class="callout">Checkout was cancelled. Your free reading is still here, and you can buy the full report any time from this page.</p>}
+  <CardResult client:load reading={reading} />
+  <p class="muted small">This page is private to anyone with the link and is not indexed by search engines. It expires 90 days after the draw.</p>
+  <p><a class="btn btn-ghost" href="/">Draw your own card</a></p>
+</Base>

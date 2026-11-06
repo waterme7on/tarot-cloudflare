@@ -1,0 +1,54 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tarot-tools",
+  "main": "./dist/_worker.js/index.js",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page"
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "tarot-db", "database_id": "REPLACE_WITH_D1_ID", "migrations_dir": "migrations" }
+  ],
+  "kv_namespaces": [{ "binding": "CACHE", "id": "REPLACE_WITH_KV_ID" }],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "tarot-media" }],
+  "images": { "binding": "IMAGES" },
+  "ai": { "binding": "AI" },
+  "queues": {
+    "producers": [{ "binding": "REPORT_QUEUE", "queue": "tarot-reports" }],
+    "consumers": [{ "queue": "tarot-reports", "max_batch_size": 10, "max_batch_timeout": 30, "max_retries": 3 }]
+  },
+  "workflows": [
+    { "name": "tarot-report-workflow", "binding": "REPORT_WORKFLOW", "class_name": "ReportWorkflow" }
+  ],
+  "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "tarot_events" }],
+  "triggers": { "crons": ["0 3 * * *", "*/10 * * * *"] },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "SITE_URL": "https://tarot-tools.example.com",
+    "AI_GATEWAY_ID": "tarot-gateway",
+    "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct",
+    "REPORT_PRICE_SINGLE_CENTS": "499",
+    "REPORT_PRICE_THREE_CENTS": "999"
+  },
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "env": {
+    "preview": {
+      "name": "tarot-tools-preview",
+      "vars": { "ENVIRONMENT": "preview", "SITE_URL": "https://tarot-tools-preview.workers.dev", "AI_GATEWAY_ID": "tarot-gateway", "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct", "REPORT_PRICE_SINGLE_CENTS": "499", "REPORT_PRICE_THREE_CENTS": "999" },
+      "d1_databases": [{ "binding": "DB", "database_name": "tarot-db-preview", "database_id": "REPLACE_WITH_PREVIEW_D1_ID", "migrations_dir": "migrations" }],
+      "kv_namespaces": [{ "binding": "CACHE", "id": "REPLACE_WITH_PREVIEW_KV_ID" }],
+      "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "tarot-media-preview" }],
+      "images": { "binding": "IMAGES" },
+      "ai": { "binding": "AI" },
+      "queues": {
+        "producers": [{ "binding": "REPORT_QUEUE", "queue": "tarot-reports-preview" }],
+        "consumers": [{ "queue": "tarot-reports-preview", "max_batch_size": 10, "max_batch_timeout": 30, "max_retries": 3 }]
+      },
+      "workflows": [{ "name": "tarot-report-workflow-preview", "binding": "REPORT_WORKFLOW", "class_name": "ReportWorkflow" }],
+      "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "tarot_events_preview" }]
+    }
+  }
+}

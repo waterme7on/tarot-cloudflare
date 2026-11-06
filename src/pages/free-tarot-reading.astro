@@ -1,0 +1,36 @@
+---
+import Base from '@/layouts/Base.astro';
+import DrawTool from '@/components/DrawTool';
+import SeoLinks from '@/components/SeoLinks.astro';
+import Faq from '@/components/Faq.astro';
+import { breadcrumbLd, faqLd } from '@/lib/seo';
+
+export const prerender = false;
+
+const site = Astro.site!.toString().replace(/\/$/, '');
+const faq = [
+  { q: 'Is this free tarot reading really free?', a: 'Yes. One-card, three-card and Celtic Cross readings are free and unlimited within fair-use limits. A deeper AI-assisted written report is an optional one-time purchase.' },
+  { q: 'How accurate is a free tarot reading?', a: 'Tarot does not predict events. It gives you a structured prompt to look at your situation from a new angle. Treat the result as reflection, not a verdict.' },
+  { q: 'Should I ask yes or no questions?', a: 'You can. Choose the "Yes / No decision" question type and the result will show a lean (yes, no or maybe) along with the reasoning behind it.' },
+];
+---
+<Base
+  title="Free Tarot Reading Online – Instant 1 or 3 Card Reading, No Sign-Up"
+  description="Get a free tarot reading online in seconds. Choose love, career, money or a yes/no question, draw one or three cards and read upright and reversed meanings with a next step."
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Free Tarot Reading', path: '/free-tarot-reading/' }]), faqLd(faq)]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Free Tarot Reading</nav>
+  <h1>Free Tarot Reading</h1>
+  <p class="muted">A real shuffle, a real draw, a readable answer. Pick what the question is about and let the cards frame it.</p>
+  <DrawTool client:load defaultSpread="three-card" heading="Start your free reading" />
+  <section class="prose">
+    <h2>How to get the most out of a free reading</h2>
+    <p>Ask about something you can act on this week. "What should I pay attention to in my relationship?" gives the cards more to work with than "Will they text me?" Choose the question type that matches, because the interpretation changes: The Tower in a career question reads differently from The Tower in a love question.</p>
+    <h2>Reading three cards together</h2>
+    <p>In the past–present–future layout, look for the story. A reversed card in the past often names what you are still carrying; an upright card in the future describes what becomes available if you act on the present card's advice. Learn the method on the <a href="/spreads/three-card/">three card spread</a> page.</p>
+    <h2>When a free reading is not the right tool</h2>
+    <p>Tarot is for reflection and entertainment. It should never replace a doctor, a lawyer, a financial adviser or a therapist, and it cannot tell you what another person is thinking. If you want more depth, the paid report expands each card for your question type and adds a synthesis and next steps — the cards themselves never change.</p>
+  </section>
+  <Faq items={faq} />
+  <SeoLinks spreads={['one-card', 'three-card', 'celtic-cross']} questions={['love', 'career', 'money', 'decision']} cards={['the-sun', 'the-moon', 'wheel-of-fortune']} />
+</Base>

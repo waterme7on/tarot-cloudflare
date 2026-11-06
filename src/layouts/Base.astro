@@ -1,0 +1,78 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  noindex?: boolean;
+  jsonLd?: unknown[];
+  ogImage?: string;
+  updatedAt?: string;
+  author?: string;
+}
+const { title, description, canonical, noindex = false, jsonLd = [], ogImage, updatedAt, author } = Astro.props;
+const site = (Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '');
+const path = Astro.url.pathname;
+const canonicalUrl = canonical ?? `${site}${path}`;
+const turnstileKey = Astro.locals.runtime?.env?.PUBLIC_TURNSTILE_SITE_KEY ?? import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const baseLd = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tarot Tools', url: site },
+  { '@context': 'https://schema.org', '@type': 'Organization', name: 'Tarot Tools', url: site, email: 'support@tarot-tools.example.com' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    <link rel="alternate" hreflang="en" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Tarot Tools" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0f0c1d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {updatedAt && <meta property="article:modified_time" content={updatedAt} />}
+    {author && <meta name="author" content={author} />}
+    {[...baseLd, ...jsonLd].map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
+    {turnstileKey && <meta name="turnstile-site-key" content={turnstileKey} />}
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a href="/" class="brand" aria-label="Tarot Tools home">Tarot Tools</a>
+      <nav aria-label="Primary">
+        <a href="/">Card Generator</a>
+        <a href="/free-tarot-reading/">Free Reading</a>
+        <a href="/cards/">Card Meanings</a>
+        <a href="/spreads/three-card/">Spreads</a>
+        <a href="/questions/love/">Questions</a>
+      </nav>
+    </header>
+    <main id="main" class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p class="muted">For reflection and entertainment only. Not medical, legal, financial or psychological advice. 18+.</p>
+      <nav aria-label="Footer">
+        <a href="/methodology/">How it works</a>
+        <a href="/about/">About</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/disclaimer/">Disclaimer</a>
+        <a href="/refund/">Refunds</a>
+      </nav>
+      <p class="muted">© {new Date().getFullYear()} Tarot Tools. Hosted on Cloudflare.</p>
+    </footer>
+    {turnstileKey && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+  </body>
+</html>

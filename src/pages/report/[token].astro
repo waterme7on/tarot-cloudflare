@@ -1,0 +1,15 @@
+---
+import Base from '@/layouts/Base.astro';
+import ReportView from '@/components/ReportView';
+
+export const prerender = false;
+
+const token = Astro.params.token ?? '';
+if (!/^rep_[0-9a-f]{32}$/.test(token)) return new Response(null, { status: 404 });
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+<Base title="Your tarot report" description="Your private tarot report. This page is not indexed." noindex>
+  <h1>Your full reading</h1>
+  <ReportView client:load token={token} />
+  <p class="muted small">Keep this link: it is the only way to reopen your report. Questions or refunds: see our <a href="/refund/">refund policy</a>.</p>
+</Base>

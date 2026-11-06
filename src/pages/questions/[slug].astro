@@ -1,0 +1,33 @@
+---
+import Base from '@/layouts/Base.astro';
+import DrawTool from '@/components/DrawTool';
+import SeoLinks from '@/components/SeoLinks.astro';
+import Faq from '@/components/Faq.astro';
+import { getCollection, render } from 'astro:content';
+import { articleLd, breadcrumbLd, faqLd } from '@/lib/seo';
+
+export const prerender = false;
+
+const slug = Astro.params.slug ?? '';
+const entry = (await getCollection('questions')).find((e) => e.id === slug);
+if (!entry) return new Response(null, { status: 404 });
+const { Content } = await render(entry);
+const site = Astro.site!.toString().replace(/\/$/, '');
+const path = `/questions/${slug}/`;
+const d = entry.data;
+---
+<Base
+  title={d.title}
+  description={d.description}
+  updatedAt={d.updatedAt}
+  author={d.author}
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Questions', path: '/questions/love/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Questions › {d.name}</nav>
+  <h1>{d.name}</h1>
+  <DrawTool client:load defaultQuestionType={d.questionType} heading={`Ask a ${d.questionType} question`} />
+  <p class="byline">Written by {d.author} · Updated {d.updatedAt}</p>
+  <article class="prose"><Content /></article>
+  <Faq items={d.faq} />
+  <SeoLinks cards={d.relatedCards} spreads={d.relatedSpreads} questions={['love', 'career', 'money', 'decision'].filter((q) => q !== slug)} />
+</Base>

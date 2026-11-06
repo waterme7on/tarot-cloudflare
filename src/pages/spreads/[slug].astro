@@ -1,0 +1,35 @@
+---
+import Base from '@/layouts/Base.astro';
+import DrawTool from '@/components/DrawTool';
+import SeoLinks from '@/components/SeoLinks.astro';
+import Faq from '@/components/Faq.astro';
+import { getCollection, render } from 'astro:content';
+import { articleLd, breadcrumbLd, faqLd } from '@/lib/seo';
+import type { Spread } from '@/lib/schema';
+
+export const prerender = false;
+
+const slug = Astro.params.slug ?? '';
+const entry = (await getCollection('spreads')).find((e) => e.id === slug);
+if (!entry) return new Response(null, { status: 404 });
+const { Content } = await render(entry);
+const site = Astro.site!.toString().replace(/\/$/, '');
+const path = `/spreads/${slug}/`;
+const d = entry.data;
+---
+<Base
+  title={d.title}
+  description={d.description}
+  updatedAt={d.updatedAt}
+  author={d.author}
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Spreads', path: '/spreads/three-card/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Spreads › {d.name}</nav>
+  <h1>{d.name}</h1>
+  <p class="muted">{d.cardCount} {d.cardCount === 1 ? 'card' : 'cards'}: {d.positions.join(' · ')}</p>
+  <DrawTool client:load defaultSpread={slug as Spread} lockSpread heading={`Try the ${d.name.toLowerCase()}`} />
+  <p class="byline">Written by {d.author} · Updated {d.updatedAt}</p>
+  <article class="prose"><Content /></article>
+  <Faq items={d.faq} />
+  <SeoLinks cards={d.relatedCards} spreads={['one-card', 'three-card', 'celtic-cross'].filter((s) => s !== slug)} questions={d.relatedQuestions} />
+</Base>

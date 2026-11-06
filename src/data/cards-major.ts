@@ -1,0 +1,686 @@
+import type { CardData } from '../lib/schema';
+
+export const MAJOR_ARCANA: CardData[] = [
+  {
+    id: 'major-00',
+    slug: 'the-fool',
+    name: 'The Fool',
+    arcana: 'major',
+    suit: null,
+    number: 0,
+    upright: {
+      keywords: ['beginnings', 'spontaneity', 'innocence', 'leap of faith'],
+      summary: 'You stand at the edge of something unfamiliar with a light pack and no map. The Fool favors starting before you feel ready, trusting that the road teaches as you walk it.',
+      action: 'Take the first small step today on the thing you keep saying you will start "someday".',
+    },
+    reversed: {
+      keywords: ['recklessness', 'hesitation', 'naivety', 'poor timing'],
+      summary: 'Either you are leaping without looking at all, or you are so afraid of the cliff that you have not moved in months. The reversed Fool asks which of those is actually true for you.',
+      action: 'Write down the one real risk you are ignoring, then decide whether it is a reason to pause or just an excuse.',
+    },
+    love: {
+      upright: 'A fresh connection or a playful new chapter in an existing one. Let curiosity lead instead of rehearsing how it should go.',
+      reversed: 'Someone may be treating commitment casually, or you are holding back because the last leap hurt. Name what you actually want before the next date.',
+    },
+    career: {
+      upright: 'A new role, side project, or unconventional path is calling. Beginners often see openings that veterans have stopped noticing.',
+      reversed: 'Jumping ship without a plan, or staying frozen in a job you have outgrown. Gather one more piece of information, then commit either way.',
+    },
+    money: {
+      upright: 'An unplanned opportunity or a chance to experiment with a small amount. Keep the stakes low enough that a miss is a lesson, not a crisis.',
+      reversed: 'Impulse spending or a venture entered on a whim. Check whether you have a cushion before you chase the shiny thing.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-01',
+    slug: 'the-magician',
+    name: 'The Magician',
+    arcana: 'major',
+    suit: null,
+    number: 1,
+    upright: {
+      keywords: ['skill', 'willpower', 'resourcefulness', 'manifestation'],
+      summary: 'Everything you need is already on the table: tools, talent, and timing. The Magician is about channeling scattered potential into one deliberate act.',
+      action: 'List the four resources you already have for your goal and use at least one of them before the day ends.',
+    },
+    reversed: {
+      keywords: ['manipulation', 'untapped talent', 'trickery', 'scattered focus'],
+      summary: 'Skill without direction, or clever words covering an empty hand. Reversed, the Magician warns of sleight of hand, whether from someone else or from your own self-deception.',
+      action: 'Check one claim you have been accepting at face value, including any you have been making to yourself.',
+    },
+    love: {
+      upright: 'You have real influence over how this connection develops. Clear communication works like a spell here; say what you mean.',
+      reversed: 'Charm may be masking inconsistency. Watch whether actions match the promises, on both sides.',
+    },
+    career: {
+      upright: 'A moment to pitch, build, or present. Your competence is visible to people who matter if you step forward to show it.',
+      reversed: 'Talent going unused, or office politics built on spin. Focus on delivering something concrete rather than talking about it.',
+    },
+    money: {
+      upright: 'Your skills can be turned into income more directly than you think. Look for the practical craft others would pay for.',
+      reversed: 'Beware deals that sound too polished. If you cannot explain how it makes money, you do not understand it yet.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-02',
+    slug: 'the-high-priestess',
+    name: 'The High Priestess',
+    arcana: 'major',
+    suit: null,
+    number: 2,
+    upright: {
+      keywords: ['intuition', 'mystery', 'inner knowing', 'stillness'],
+      summary: 'Not everything has surfaced yet, and the answer is quieter than the noise around it. The High Priestess asks you to listen inward before you act outward.',
+      action: 'Sit for ten quiet minutes with your question and write down the first answer that arrives without arguing with it.',
+    },
+    reversed: {
+      keywords: ['ignored instincts', 'secrets', 'surface-level', 'disconnection'],
+      summary: 'You already sensed something and talked yourself out of it. Reversed, this card points to hidden information or a gut feeling being overruled by convenience.',
+      action: 'Recall the last time your instinct flagged something about this situation and look at it honestly now.',
+    },
+    love: {
+      upright: 'Depth is forming beneath the surface, and patience lets it show. Not every feeling needs to be announced immediately.',
+      reversed: 'Something is unspoken between you, or you are pretending not to notice a signal. Ask one direct question.',
+    },
+    career: {
+      upright: 'Observe before you commit. The real dynamics of this workplace or project are not in the official version.',
+      reversed: 'You may be missing context someone is withholding. Verify what you have been told before relying on it.',
+    },
+    money: {
+      upright: 'Hold rather than rush. Information you do not yet have could change the picture significantly.',
+      reversed: 'Fine print, hidden fees, or a feeling that something is off. Read everything twice before you sign.',
+    },
+    yesNo: 'maybe',
+  },
+  {
+    id: 'major-03',
+    slug: 'the-empress',
+    name: 'The Empress',
+    arcana: 'major',
+    suit: null,
+    number: 3,
+    upright: {
+      keywords: ['abundance', 'nurturing', 'creativity', 'sensuality', 'growth'],
+      summary: 'Things grow when they are tended, and the Empress is the season of tending. Creativity, comfort, and generosity are all pointing in the same direction right now.',
+      action: 'Spend an hour today on something that feeds you rather than something that drains you, and notice how your work changes afterward.',
+    },
+    reversed: {
+      keywords: ['creative block', 'smothering', 'neglect', 'dependence'],
+      summary: 'Either you are giving so much that nothing is left for your own garden, or you have stopped tending it altogether. The reversed Empress asks where the nourishment has gone.',
+      action: 'Identify one need of yours that you have been outsourcing to others and meet it yourself this week.',
+    },
+    love: {
+      upright: 'Warmth, affection, and a relationship that feels like home. Showing care through tangible gestures lands well now.',
+      reversed: 'Care can tip into control, or one person may be doing all the emotional labor. Rebalance who is holding what.',
+    },
+    career: {
+      upright: 'Creative projects and collaborative teams flourish. Mentoring someone or building something from scratch is well-timed.',
+      reversed: 'Burnout from always being the caretaker at work, or a stalled creative pipeline. Protect your own capacity first.',
+    },
+    money: {
+      upright: 'Resources are available and likely to multiply with steady attention. Investing in comfort and quality is not waste right now.',
+      reversed: 'Overspending to feel secure, or relying on someone else to carry the finances. Look at what you alone control.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-04',
+    slug: 'the-emperor',
+    name: 'The Emperor',
+    arcana: 'major',
+    suit: null,
+    number: 4,
+    upright: {
+      keywords: ['structure', 'authority', 'discipline', 'stability'],
+      summary: 'Order wins this round. The Emperor rewards clear rules, firm boundaries, and the kind of consistency that makes other people feel safe relying on you.',
+      action: 'Set one non-negotiable rule for yourself this week and keep it even when nobody is watching.',
+    },
+    reversed: {
+      keywords: ['rigidity', 'domination', 'weak leadership', 'chaos'],
+      summary: 'Control has become either tyranny or absence. Reversed, the Emperor shows a structure that is crushing people or one that has collapsed and left everyone guessing.',
+      action: 'Ask someone affected by your decisions whether they feel managed or micromanaged, and listen to the answer.',
+    },
+    love: {
+      upright: 'Commitment with clear expectations. A partner who shows up reliably, or the chance for you to be that person.',
+      reversed: 'Power struggles, stubbornness, or someone who needs to be right more than they need to be close. Loosen your grip.',
+    },
+    career: {
+      upright: 'Leadership, promotion, or the need to build systems. Taking responsibility publicly will be noticed.',
+      reversed: 'A boss who rules by fear, or your own inflexibility blocking collaboration. Pick one process to make less rigid.',
+    },
+    money: {
+      upright: 'Budgets, plans, and long-term structures serve you. Boring and disciplined beats clever and erratic here.',
+      reversed: 'Either no financial plan at all or one so strict it is making you miserable. Find a sustainable middle.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-05',
+    slug: 'the-hierophant',
+    name: 'The Hierophant',
+    arcana: 'major',
+    suit: null,
+    number: 5,
+    upright: {
+      keywords: ['tradition', 'guidance', 'institutions', 'shared values'],
+      summary: 'There is a well-worn path here, and it exists because it works. The Hierophant points to teachers, established methods, and the comfort of belonging to something larger.',
+      action: 'Find someone who has done this before you and ask them exactly how they did it.',
+    },
+    reversed: {
+      keywords: ['rebellion', 'dogma', 'questioning authority', 'unconventional'],
+      summary: 'The rules no longer fit, or they were never examined in the first place. Reversed, the Hierophant invites you to keep what is true and leave what is merely habit.',
+      action: 'Pick one convention you follow automatically and decide on purpose whether to keep it.',
+    },
+    love: {
+      upright: 'Shared values and a relationship others recognize. Traditional steps like meeting family or formal commitment feel natural.',
+      reversed: 'Pressure to fit a mold, or a partnership that works precisely because it ignores the script. Define your own terms together.',
+    },
+    career: {
+      upright: 'Formal training, certification, or working within an established organization pays off. Learn the system before you change it.',
+      reversed: 'A rigid hierarchy that is stifling you, or a chance to innovate outside the usual channels. Know which rules are load-bearing.',
+    },
+    money: {
+      upright: 'Conventional, well-understood approaches suit you now. Seek advice from a reputable, established source.',
+      reversed: 'Questioning conventional wisdom can be healthy, but make sure you are rejecting it for reasons, not just reflex.',
+    },
+    yesNo: 'maybe',
+  },
+  {
+    id: 'major-06',
+    slug: 'the-lovers',
+    name: 'The Lovers',
+    arcana: 'major',
+    suit: null,
+    number: 6,
+    upright: {
+      keywords: ['union', 'choice', 'alignment', 'attraction', 'values'],
+      summary: 'A meaningful connection or a crossroads that reveals what you truly value. The Lovers is less about romance alone and more about choosing with your whole self.',
+      action: 'Name the choice in front of you out loud and say which option matches the person you want to be.',
+    },
+    reversed: {
+      keywords: ['disharmony', 'misalignment', 'avoidance', 'imbalance'],
+      summary: 'Something in you or between you is pulling in two directions. Reversed, the Lovers signals a mismatch of values or a decision being dodged.',
+      action: 'Have the conversation you have been postponing, even if you only get through the first sentence.',
+    },
+    love: {
+      upright: 'Deep mutual attraction and a sense of being genuinely seen. Decisions about the relationship made now tend to hold.',
+      reversed: 'Mixed signals, a third factor, or wanting different futures. Honesty now prevents resentment later.',
+    },
+    career: {
+      upright: 'A partnership or collaboration that fits well. Choosing work aligned with your values pays off in motivation.',
+      reversed: 'A clash between what you believe and what the job requires. Decide how much of yourself you are willing to trade.',
+    },
+    money: {
+      upright: 'Joint finances or a shared decision go smoothly when both people are honest about priorities.',
+      reversed: 'Disagreements about spending, or a choice being avoided. Put the numbers on the table together.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-07',
+    slug: 'the-chariot',
+    name: 'The Chariot',
+    arcana: 'major',
+    suit: null,
+    number: 7,
+    upright: {
+      keywords: ['determination', 'victory', 'momentum', 'self-control'],
+      summary: 'Two opposing forces, one driver, forward motion. The Chariot is willpower harnessing conflict instead of being torn apart by it.',
+      action: 'Choose a direction for the next seven days and refuse to renegotiate it with yourself every morning.',
+    },
+    reversed: {
+      keywords: ['lack of direction', 'aggression', 'stalling', 'scattered effort'],
+      summary: 'The horses are pulling apart and the reins are slack. Reversed, the Chariot describes effort without aim, or force applied where steering was needed.',
+      action: 'Stop and write down where you are actually trying to go before you push any harder.',
+    },
+    love: {
+      upright: 'Pursuing someone or something with confidence. A relationship moving forward decisively, possibly across distance.',
+      reversed: 'Pushing too hard, or two people steering in different directions. Agree on the destination before arguing about the route.',
+    },
+    career: {
+      upright: 'Ambition rewarded through focus. A drive toward a target, a promotion, or a launch that needs your full attention.',
+      reversed: 'Burning energy on too many fronts, or forcing outcomes that need patience. Narrow your targets.',
+    },
+    money: {
+      upright: 'Disciplined progress toward a financial goal. Steady control of the reins gets you there faster than bursts.',
+      reversed: 'Aggressive moves without a plan, or stalling out. Re-check that the strategy still points where you want to end up.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-08',
+    slug: 'strength',
+    name: 'Strength',
+    arcana: 'major',
+    suit: null,
+    number: 8,
+    upright: {
+      keywords: ['courage', 'patience', 'compassion', 'quiet power'],
+      summary: 'The lion is not conquered but calmed. Strength is the steady hand that works through gentleness and persistence rather than force.',
+      action: 'Approach the situation that frightens you with calm persistence today instead of avoidance or confrontation.',
+    },
+    reversed: {
+      keywords: ['self-doubt', 'raw emotion', 'insecurity', 'forcing it'],
+      summary: 'Either the lion is running the show or you have forgotten you have any power at all. Reversed, Strength exposes fear dressed up as anger or as collapse.',
+      action: 'Notice what triggered your last overreaction and give yourself a gentler response to practice next time.',
+    },
+    love: {
+      upright: 'Compassion and patience deepen the bond. Vulnerability shown bravely is attractive here.',
+      reversed: 'Jealousy, neediness, or a sense of not being enough. Work on your relationship with yourself alongside the one with them.',
+    },
+    career: {
+      upright: 'Handling a difficult colleague, client, or crisis with composure. Your calm will be remembered.',
+      reversed: 'Imposter feelings or losing your temper under pressure. Take breaks before you reach the breaking point.',
+    },
+    money: {
+      upright: 'Resisting impulse with steady resolve. Small daily discipline matters more than dramatic gestures.',
+      reversed: 'Stress-driven decisions or giving up on a plan too soon. Return to the basics and rebuild confidence slowly.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-09',
+    slug: 'the-hermit',
+    name: 'The Hermit',
+    arcana: 'major',
+    suit: null,
+    number: 9,
+    upright: {
+      keywords: ['solitude', 'reflection', 'wisdom', 'searching'],
+      summary: 'Step back from the crowd and carry your own lamp. The Hermit is a deliberate withdrawal to find the answer that cannot be heard in company.',
+      action: 'Block one evening this week with no screens and no plans, and use it to think through your question properly.',
+    },
+    reversed: {
+      keywords: ['isolation', 'loneliness', 'withdrawal', 'refusing help'],
+      summary: 'Reflection has slid into hiding. Reversed, the Hermit shows solitude that no longer teaches, only insulates.',
+      action: 'Reach out to one person you have been avoiding and let them know how you are actually doing.',
+    },
+    love: {
+      upright: 'Time alone to understand what you want before you offer it to someone. Existing relationships benefit from a little breathing room.',
+      reversed: 'Shutting a partner out, or loneliness mistaken for independence. Let someone closer than feels comfortable.',
+    },
+    career: {
+      upright: 'Deep work, research, or independent study. Leaving the noise behind lets your expertise mature.',
+      reversed: 'Isolating yourself from the team, or refusing feedback that would help. Share a draft before it is perfect.',
+    },
+    money: {
+      upright: 'A pause to review your position privately and honestly. Clarity comes from looking at the real numbers alone.',
+      reversed: 'Avoiding your finances entirely, or refusing advice out of pride. Open the statement you have been ignoring.',
+    },
+    yesNo: 'maybe',
+  },
+  {
+    id: 'major-10',
+    slug: 'wheel-of-fortune',
+    name: 'Wheel of Fortune',
+    arcana: 'major',
+    suit: null,
+    number: 10,
+    upright: {
+      keywords: ['change', 'cycles', 'luck', 'turning point'],
+      summary: 'The wheel is turning and the scenery is about to change. Not everything is in your control, but how you ride the shift absolutely is.',
+      action: 'Say yes to one unexpected invitation or opening this week instead of defaulting to your routine.',
+    },
+    reversed: {
+      keywords: ['setbacks', 'resistance to change', 'bad timing', 'repeating patterns'],
+      summary: 'A cycle keeps coming back around because its lesson has not landed. Reversed, the Wheel points to clinging to a phase that is already ending.',
+      action: 'Identify the pattern that has repeated at least twice and decide what you will do differently this turn.',
+    },
+    love: {
+      upright: 'A chance meeting or a shift in the relationship that opens new possibilities. Go with the current.',
+      reversed: 'The same argument on a loop, or clinging to a phase that has passed. Break the sequence by changing your part.',
+    },
+    career: {
+      upright: 'Industry shifts, restructures, or sudden openings. Those who adapt quickly tend to land well.',
+      reversed: 'A delay or a reversal of fortune. Use the lull to prepare rather than to complain.',
+    },
+    money: {
+      upright: 'Circumstances are changing, possibly favorably. Stay flexible enough to adjust when the wheel settles.',
+      reversed: 'An unexpected setback or cycles of boom and bust. Build buffers for the next downturn while things are calm.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-11',
+    slug: 'justice',
+    name: 'Justice',
+    arcana: 'major',
+    suit: null,
+    number: 11,
+    upright: {
+      keywords: ['fairness', 'truth', 'accountability', 'cause and effect'],
+      summary: 'The scales are balancing and the account is coming due, for better or worse. Justice rewards honesty and clear thinking, and it does not look away.',
+      action: 'Make the decision you have been avoiding by weighing the facts on paper, not the feelings in the moment.',
+    },
+    reversed: {
+      keywords: ['unfairness', 'dishonesty', 'bias', 'avoiding consequences'],
+      summary: 'Something is out of balance and someone is not owning their part. Reversed, Justice can mean an unfair outcome or a truth you are bending to suit yourself.',
+      action: 'Admit one thing you got wrong in this situation before pointing to what others did.',
+    },
+    love: {
+      upright: 'Honest conversations and mutual accountability. A relationship built on fairness, or a necessary reckoning that clears the air.',
+      reversed: 'Blame, double standards, or a secret distorting the balance. Audit your own behavior first.',
+    },
+    career: {
+      upright: 'Contracts, reviews, and negotiations resolve fairly. Documentation and clear ethics protect you.',
+      reversed: 'Unfair treatment or being blamed for something that was not yours. Keep records and stay factual.',
+    },
+    money: {
+      upright: 'Balanced books and fair dealings. Agreements made now should be clear and written down.',
+      reversed: 'Disputes, an uneven split, or dodging a debt. Settle what you owe and ask for what you are owed.',
+    },
+    yesNo: 'maybe',
+  },
+  {
+    id: 'major-12',
+    slug: 'the-hanged-man',
+    name: 'The Hanged Man',
+    arcana: 'major',
+    suit: null,
+    number: 12,
+    upright: {
+      keywords: ['surrender', 'new perspective', 'pause', 'letting go'],
+      summary: 'Upside down, the world looks different and that is the point. The Hanged Man asks you to stop pushing and see what the pause reveals.',
+      action: 'Deliberately do nothing about your problem for three days and watch what changes without your interference.',
+    },
+    reversed: {
+      keywords: ['stalling', 'resistance', 'pointless sacrifice', 'indecision'],
+      summary: 'The pause has become a rut, or you are suffering for a cause that no longer deserves it. Reversed, the Hanged Man asks whether the waiting still has a purpose.',
+      action: 'Set a date by which you will act, and tell someone so it sticks.',
+    },
+    love: {
+      upright: 'Seeing a partner or a situation from a new angle. Patience and acceptance rather than pressure.',
+      reversed: 'Waiting on someone who will not decide, or giving up too much of yourself. Set a limit on how long you will hang there.',
+    },
+    career: {
+      upright: 'A project on hold, or a deliberate step back that leads to a better strategy. Use the time to rethink.',
+      reversed: 'Stagnation disguised as patience. If nothing has moved in months, it is time to move yourself.',
+    },
+    money: {
+      upright: 'Delayed returns or a necessary short-term sacrifice. Not the moment for major moves; let things settle.',
+      reversed: 'Indecision costing more than either choice would. Pick a direction and accept some imperfection.',
+    },
+    yesNo: 'maybe',
+  },
+  {
+    id: 'major-13',
+    slug: 'death',
+    name: 'Death',
+    arcana: 'major',
+    suit: null,
+    number: 13,
+    upright: {
+      keywords: ['endings', 'transformation', 'release', 'transition'],
+      summary: 'A chapter is closing so completely that pretending otherwise is no longer possible. Death clears the ground; what grows next depends on what you let go of now.',
+      action: 'Formally end one thing today that has already ended in practice: a subscription, a habit, a conversation.',
+    },
+    reversed: {
+      keywords: ['resisting change', 'stagnation', 'fear of endings', 'clinging'],
+      summary: 'You are holding the door shut on a change that is already halfway through. Reversed, Death shows the exhaustion of refusing an inevitable transition.',
+      action: 'Write down what you are afraid will happen if you let go, then check how much of it is actually likely.',
+    },
+    love: {
+      upright: 'The end of a relationship phase, or a complete shift in how you relate. Painful but clarifying.',
+      reversed: 'Staying in something that is over out of fear of the empty space. Grieve it so you can move.',
+    },
+    career: {
+      upright: 'A job, role, or industry chapter concluding. Leaving cleanly opens room for what fits better.',
+      reversed: 'Clinging to an outdated role or refusing to adapt to new methods. Change on your terms before it is forced.',
+    },
+    money: {
+      upright: 'A financial era ending: a source of income shifting, or old habits dropped for good.',
+      reversed: 'Refusing to cut a loss or close a chapter. Let go of the sunk cost and reassess cleanly.',
+    },
+    yesNo: 'no',
+  },
+  {
+    id: 'major-14',
+    slug: 'temperance',
+    name: 'Temperance',
+    arcana: 'major',
+    suit: null,
+    number: 14,
+    upright: {
+      keywords: ['balance', 'moderation', 'patience', 'blending'],
+      summary: 'Two cups pouring into each other without a drop lost. Temperance is the art of mixing opposites gradually until they become something new.',
+      action: 'Find the middle path between the two extremes you keep swinging between and try it for a week.',
+    },
+    reversed: {
+      keywords: ['excess', 'imbalance', 'impatience', 'clashing priorities'],
+      summary: 'The mix has gone wrong: too much of one thing, not enough of another. Reversed, Temperance warns of overdoing it in some area of your life.',
+      action: 'Pick the one area where you have been overdoing it and dial it back by a third, not to zero.',
+    },
+    love: {
+      upright: 'Harmony that grows through patience and compromise. Different temperaments blending into something steady.',
+      reversed: 'One person giving everything, or constant friction over pace. Slow down and recalibrate together.',
+    },
+    career: {
+      upright: 'Collaboration and diplomatic problem-solving. Steady, incremental progress is exactly right.',
+      reversed: 'Overwork, uneven workloads, or clashing styles on the team. Restore some proportion before quality slips.',
+    },
+    money: {
+      upright: 'Moderation and balance in spending and saving. Diversify and avoid extremes.',
+      reversed: 'Swinging between splurging and austerity. Set a sustainable rhythm instead of lurching.',
+    },
+    yesNo: 'maybe',
+  },
+  {
+    id: 'major-15',
+    slug: 'the-devil',
+    name: 'The Devil',
+    arcana: 'major',
+    suit: null,
+    number: 15,
+    upright: {
+      keywords: ['bondage', 'temptation', 'attachment', 'shadow', 'materialism'],
+      summary: 'The chains are loose enough to slip, which makes staying a choice. The Devil shows the comfort you keep returning to even though it is costing you.',
+      action: 'Name the habit, person, or belief you feel trapped by and list the real cost it has had in the last month.',
+    },
+    reversed: {
+      keywords: ['release', 'breaking free', 'reclaiming power', 'awareness'],
+      summary: 'The spell is breaking and the exit is visible. Reversed, the Devil marks the moment you see the chain clearly enough to start lifting it off.',
+      action: 'Take one concrete step away from what has been holding you, and tell someone who will hold you to it.',
+    },
+    love: {
+      upright: 'Intense attraction, possibly unhealthy attachment or a dynamic driven by need rather than care. Look at what keeps you there.',
+      reversed: 'Freeing yourself from a toxic cycle or codependence. The relationship can change, or you can leave it.',
+    },
+    career: {
+      upright: 'Golden handcuffs, a job that pays well and costs your spirit, or an unethical pressure. Know what you are trading.',
+      reversed: 'Leaving a draining situation or refusing to compromise your integrity. Reclaiming your time and your standards.',
+    },
+    money: {
+      upright: 'Debt spirals, compulsive spending, or being owned by what you own. Look honestly at what you cannot stop buying.',
+      reversed: 'Breaking a cycle of financial dependence or overspending. Small, consistent steps get you out.',
+    },
+    yesNo: 'no',
+  },
+  {
+    id: 'major-16',
+    slug: 'the-tower',
+    name: 'The Tower',
+    arcana: 'major',
+    suit: null,
+    number: 16,
+    upright: {
+      keywords: ['upheaval', 'revelation', 'sudden change', 'collapse'],
+      summary: 'Lightning hits what was built on a shaky foundation, and it goes fast. The Tower is disruptive, but it only takes down what could not have stood anyway.',
+      action: 'Stop defending the structure that is failing and start listing what you would build if you had to start over.',
+    },
+    reversed: {
+      keywords: ['averted disaster', 'fear of change', 'delayed collapse', 'inner upheaval'],
+      summary: 'Either you dodged the bolt or you are propping up a wall that keeps cracking. Reversed, the Tower often means a crisis is being postponed rather than resolved.',
+      action: 'Face the uncomfortable truth you keep patching over, before it chooses the timing for you.',
+    },
+    love: {
+      upright: 'A sudden revelation or rupture that changes the relationship permanently. What survives this is real.',
+      reversed: 'Narrowly avoiding a breakup, or quietly dreading one. Address the fault line instead of waiting for the quake.',
+    },
+    career: {
+      upright: 'Layoffs, a failed launch, or a shake-up that exposes what was not working. Painful but clarifying.',
+      reversed: 'A crisis you saw coming and managed, or one still looming. Prepare an exit plan either way.',
+    },
+    money: {
+      upright: 'A sudden financial shock that reveals how fragile the setup was. Rebuild on firmer ground.',
+      reversed: 'A near miss or a slow erosion you have been ignoring. Shore up the foundation now.',
+    },
+    yesNo: 'no',
+  },
+  {
+    id: 'major-17',
+    slug: 'the-star',
+    name: 'The Star',
+    arcana: 'major',
+    suit: null,
+    number: 17,
+    upright: {
+      keywords: ['hope', 'renewal', 'healing', 'inspiration', 'faith'],
+      summary: 'After the storm, the sky clears and the water is still. The Star is a quiet promise that the worst has passed and something gentler is possible.',
+      action: 'Do one small thing today that your future self will thank you for, even if the results are months away.',
+    },
+    reversed: {
+      keywords: ['discouragement', 'lost faith', 'disconnection', 'self-doubt'],
+      summary: 'The stars are still there but you have stopped looking up. Reversed, the Star reflects hope worn thin by disappointment rather than by reality.',
+      action: 'Recall a time you recovered from something you thought you would not, and write down what helped.',
+    },
+    love: {
+      upright: 'Healing after hurt, and a renewed openness to love. Trust rebuilt slowly and honestly.',
+      reversed: 'Guarded after disappointment, or losing faith that connection is possible. Be gentle; healing is not linear.',
+    },
+    career: {
+      upright: 'Renewed purpose and recognition after a hard period. Your vision for what you want is clearer now.',
+      reversed: 'Feeling uninspired or doubting your path. Reconnect with why you started.',
+    },
+    money: {
+      upright: 'Recovery and gradual improvement. Optimism paired with patience is well placed.',
+      reversed: 'Pessimism about ever getting ahead. Focus on one small win to restore momentum.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-18',
+    slug: 'the-moon',
+    name: 'The Moon',
+    arcana: 'major',
+    suit: null,
+    number: 18,
+    upright: {
+      keywords: ['illusion', 'fear', 'uncertainty', 'subconscious', 'dreams'],
+      summary: 'In this light, shapes shift and the path is hard to read. The Moon warns that anxiety and imagination are coloring what you think you see.',
+      action: 'Separate what you know for certain from what you fear might be true, and act only on the first list.',
+    },
+    reversed: {
+      keywords: ['clarity', 'released fear', 'truth emerging', 'confusion lifting'],
+      summary: 'The fog is thinning and what seemed like a monster is just a shadow. Reversed, the Moon marks confusion starting to resolve into something you can handle.',
+      action: 'Revisit the worry that has been loudest this week and check it against what actually happened.',
+    },
+    love: {
+      upright: 'Mixed signals, insecurity, or something unspoken clouding the connection. Do not fill the silence with assumptions.',
+      reversed: 'Misunderstandings clearing up, or a truth finally surfacing. Relief, even if the truth is complicated.',
+    },
+    career: {
+      upright: 'Unclear expectations, office rumors, or a situation that is not what it appears. Ask for specifics before acting.',
+      reversed: 'Hidden agendas coming to light, or your own anxiety about the job settling down. Trust what is documented.',
+    },
+    money: {
+      upright: 'Unclear terms, confusing numbers, or a deal that feels murky. Wait for better visibility.',
+      reversed: 'A financial confusion getting sorted or a deception uncovered. Review everything with fresh eyes.',
+    },
+    yesNo: 'no',
+  },
+  {
+    id: 'major-19',
+    slug: 'the-sun',
+    name: 'The Sun',
+    arcana: 'major',
+    suit: null,
+    number: 19,
+    upright: {
+      keywords: ['joy', 'success', 'vitality', 'clarity', 'warmth'],
+      summary: 'Nothing is hidden and nothing needs to be. The Sun is straightforward good news: energy, confidence, and a situation that is exactly what it looks like.',
+      action: 'Share your good news or your work openly today instead of waiting until it feels perfect.',
+    },
+    reversed: {
+      keywords: ['dimmed joy', 'overconfidence', 'temporary cloud', 'pessimism'],
+      summary: 'The sun is still shining but something is standing in front of it. Reversed, the Sun suggests good things you cannot quite enjoy, or optimism sliding into carelessness.',
+      action: 'List three things that are genuinely going well right now and give each one a minute of real attention.',
+    },
+    love: {
+      upright: 'A happy, open-hearted connection. Playfulness, honesty, and feeling fully seen.',
+      reversed: 'Happiness clouded by doubt or ego, or a relationship that looks good but feels flat. Let real warmth back in.',
+    },
+    career: {
+      upright: 'Success, recognition, and work that energizes you. A good time to be visible.',
+      reversed: 'Overconfidence leading to sloppiness, or a win that feels hollow. Check the details before you celebrate.',
+    },
+    money: {
+      upright: 'Prosperity and clarity about where you stand. Enjoy what you have while staying grounded.',
+      reversed: 'Spending on the assumption that good times last forever. Enjoy, but keep one eye on the forecast.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-20',
+    slug: 'judgement',
+    name: 'Judgement',
+    arcana: 'major',
+    suit: null,
+    number: 20,
+    upright: {
+      keywords: ['awakening', 'reckoning', 'calling', 'renewal'],
+      summary: 'A call you cannot un-hear, asking you to rise and account for who you have become. Judgement is the moment the past is weighed and a clearer future is chosen.',
+      action: 'Review the last year honestly, write one lesson you refuse to repeat, and one commitment you are ready to make.',
+    },
+    reversed: {
+      keywords: ['self-doubt', 'harsh judgment', 'ignoring the call', 'stuck in the past'],
+      summary: 'You hear the call but keep hitting snooze, or you are judging yourself so harshly that no verdict could ever be fair. Reversed, Judgement is about refusing to move forward.',
+      action: 'Forgive yourself for one specific thing today and let that be the end of the trial.',
+    },
+    love: {
+      upright: 'A relationship reaching a decisive turning point, or a reunion that brings closure. Honesty makes the choice clear.',
+      reversed: 'Replaying old mistakes, or refusing to take responsibility for your part. Release the verdict and move on.',
+    },
+    career: {
+      upright: 'A promotion, a career change, or a calling toward more meaningful work. Your efforts are being evaluated favorably.',
+      reversed: 'Doubting whether you deserve the next step, or ignoring a nagging sense that you should change course. Listen.',
+    },
+    money: {
+      upright: 'Past decisions coming to fruition. A good time to assess and reset your financial direction.',
+      reversed: 'Regret over past money choices or ignoring the need for change. The lesson matters more than the guilt.',
+    },
+    yesNo: 'yes',
+  },
+  {
+    id: 'major-21',
+    slug: 'the-world',
+    name: 'The World',
+    arcana: 'major',
+    suit: null,
+    number: 21,
+    upright: {
+      keywords: ['completion', 'wholeness', 'achievement', 'integration', 'travel'],
+      summary: 'The circle closes and you are standing inside it, whole. The World is the satisfaction of a journey fully finished, with the next one already beginning at its edge.',
+      action: 'Mark the completion of something you have been working on, however small, with an actual celebration.',
+    },
+    reversed: {
+      keywords: ['incompletion', 'loose ends', 'delays', 'seeking closure'],
+      summary: 'Almost there, but not quite. Reversed, the World points to a last step left undone, or a chapter you refuse to close because you want it to end differently.',
+      action: 'Write down the one loose end keeping this from feeling finished and tie it off this week.',
+    },
+    love: {
+      upright: 'A relationship that feels complete and fulfilling, or a milestone reached together. Travel or shared adventures are favored.',
+      reversed: 'Lacking closure with someone, or a partnership that stalls just before the next level. Finish the conversation.',
+    },
+    career: {
+      upright: 'A project completed, a goal achieved, or international opportunities opening. Take credit for the full arc.',
+      reversed: 'A project dragging on near its end, or a sense of unfulfilled potential. Push through the final mile.',
+    },
+    money: {
+      upright: 'A financial goal reached and a sense of security earned. Consider what the next cycle looks like.',
+      reversed: 'Nearly at the target but something keeps slipping. Identify the leak and close it.',
+    },
+    yesNo: 'yes',
+  },
+];

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /reading/
+Disallow: /report/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://tarot-tools.example.com/sitemap-index.xml
