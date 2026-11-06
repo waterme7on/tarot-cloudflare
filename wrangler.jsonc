@@ -10,9 +10,9 @@
     "not_found_handling": "404-page"
   },
   "d1_databases": [
-    { "binding": "DB", "database_name": "tarot-db", "database_id": "REPLACE_WITH_D1_ID", "migrations_dir": "migrations" }
+    { "binding": "DB", "database_name": "tarot-db", "database_id": "b40842ec-7013-4544-9977-c04bad7a8f58", "migrations_dir": "migrations" }
   ],
-  "kv_namespaces": [{ "binding": "CACHE", "id": "REPLACE_WITH_KV_ID" }],
+  "kv_namespaces": [{ "binding": "CACHE", "id": "6e7e931b38d5466a812bdcc34b0b78fc" }],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "tarot-media" }],
   "images": { "binding": "IMAGES" },
   "ai": { "binding": "AI" },
@@ -27,7 +27,7 @@
   "triggers": { "crons": ["0 3 * * *", "*/10 * * * *"] },
   "vars": {
     "ENVIRONMENT": "production",
-    "SITE_URL": "https://tarot-tools.example.com",
+    "SITE_URL": "https://tarot-tools.waterme7on333.workers.dev",
     "AI_GATEWAY_ID": "tarot-gateway",
     "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct",
     "REPORT_PRICE_SINGLE_CENTS": "499",
