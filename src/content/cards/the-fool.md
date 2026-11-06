@@ -1,5 +1,5 @@
 ---
-title: "The Fool Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Fool Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "The Fool tarot card meaning explained: upright and reversed, in love, career and money, plus a yes-or-no answer and what not to ask. Draw The Fool free."
 name: "The Fool"
 updatedAt: "2026-11-06"

@@ -1,5 +1,5 @@
 ---
-title: "Ten of Cups Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Ten of Cups Tarot Card Meaning: Upright & Reversed"
 description: "Ten of Cups tarot card meaning: lasting happiness, family harmony and emotional fulfilment. Upright and reversed, in love, career and money, with a yes-or-no verdict."
 name: "Ten of Cups"
 updatedAt: "2026-11-06"

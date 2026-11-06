@@ -1,5 +1,5 @@
 ---
-title: "Money Tarot Reading: Asking About Finances, Habits and Security"
+title: "Money Tarot Reading: Finances, Habits and Security"
 description: "A grounded guide to money tarot readings: which questions help, the Pentacles and Major Arcana cards that matter, and how to act. Reflection only, not financial advice."
 name: "Money Tarot Reading"
 questionType: "money"

@@ -1,5 +1,5 @@
 ---
-title: "The Emperor Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Emperor Tarot Card Meaning: Upright & Reversed"
 description: "The Emperor tarot card meaning: structure, authority, and discipline. Upright, reversed, love, career, money, a yes-or-no lean, and what not to ask this card."
 name: "The Emperor"
 updatedAt: "2026-11-06"

@@ -1,5 +1,5 @@
 ---
-title: "Strength Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Strength Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "Strength tarot card meaning: courage, patience, and quiet control. Upright and reversed readings for love, career, money, plus a yes-or-no lean and what not to ask."
 name: "Strength"
 updatedAt: "2026-11-06"

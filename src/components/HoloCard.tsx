@@ -94,6 +94,7 @@ function drawBack(): HTMLCanvasElement {
 export default function HoloCard({ slug, name, orientation = 'upright', reveal = false, revealDelayMs = 0, width = 220, interactive = true, foil = 0.75, className }: HoloCardProps) {
   const host = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
   const height = Math.round(width * 1.5);
 
   useEffect(() => {
@@ -117,6 +118,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
       renderer.setSize(el.clientWidth, el.clientHeight);
       renderer.setClearColor(0x000000, 0);
       el.append(renderer.domElement);
+      renderer.domElement.setAttribute('aria-hidden', 'true');
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(28, el.clientWidth / el.clientHeight, 0.1, 100);
@@ -188,6 +190,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
       });
       ro.observe(el);
 
+      setReady(true);
       let last = performance.now();
       let elapsed = 0;
       const inv = new THREE.Matrix4();
@@ -237,8 +240,16 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
   }, [slug, orientation, reveal, revealDelayMs, interactive, foil]);
 
   return (
-    <div ref={host} className={`holo-card ${className ?? ''}`} style={{ width, height }} aria-label={`${name}, ${orientation}`} role="img">
-      {failed && <img src={cardImage(slug)} alt={name} width={width} height={height} className={orientation === 'reversed' ? 'reversed' : ''} loading="lazy" />}
+    <div ref={host} className={`holo-card ${className ?? ''}`} style={{ width, height }}>
+      <img
+        src={cardImage(slug)}
+        alt={`${name} tarot card illustration${orientation === 'reversed' ? ' (reversed)' : ''}`}
+        width={768}
+        height={1152}
+        className={`${orientation === 'reversed' ? 'reversed' : ''} ${ready && !failed ? 'holo-hidden' : ''}`}
+        loading={reveal ? 'eager' : 'lazy'}
+        decoding="async"
+      />
     </div>
   );
 }

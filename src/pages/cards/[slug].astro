@@ -28,7 +28,7 @@ const d = entry.data;
   updatedAt={d.updatedAt}
   author={d.author}
   ogImage={hasArt(entry.id) ? `${site}${artUrl(entry.id)}` : undefined}
-  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Card Meanings', path: '/cards/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Card Meanings', path: '/cards/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author, image: hasArt(entry.id) ? `${site}${artUrl(entry.id)}` : undefined }), faqLd(d.faq)]}
 >
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/cards/">Card Meanings</a> › {d.name}</nav>
   <h1>{d.name} Tarot Card Meaning</h1>

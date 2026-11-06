@@ -1,5 +1,5 @@
 ---
-title: "Judgement Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Judgement Tarot Card Meaning: Upright & Reversed"
 description: "Judgement tarot card meaning explained: awakening, reckoning and a call you cannot ignore. Upright and reversed, in love, career and money. Draw Judgement free."
 name: "Judgement"
 updatedAt: "2026-11-06"

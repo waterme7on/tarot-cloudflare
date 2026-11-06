@@ -1,5 +1,5 @@
 ---
-title: "Love Tarot Reading: How to Ask About Relationships and Read the Answer"
+title: "Love Tarot Reading: How to Ask and Read the Answer"
 description: "A practical guide to love tarot readings: which questions work, how to phrase them, the cards that matter most, and how to act on what you draw. For reflection only."
 name: "Love Tarot Reading"
 questionType: "love"

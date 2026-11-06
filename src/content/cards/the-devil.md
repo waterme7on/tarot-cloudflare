@@ -1,5 +1,5 @@
 ---
-title: "The Devil Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Devil Tarot Card Meaning: Upright & Reversed"
 description: "The Devil tarot card meaning explained: attachment, temptation and the chains you can remove. Upright and reversed, in love, career and money. Draw The Devil free."
 name: "The Devil"
 updatedAt: "2026-11-06"

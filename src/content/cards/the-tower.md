@@ -1,5 +1,5 @@
 ---
-title: "The Tower Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Tower Tarot Card Meaning: Upright & Reversed"
 description: "The Tower tarot card meaning explained: sudden upheaval, revelation and rebuilding. Upright and reversed, in love, career and money, plus yes or no. Draw The Tower free."
 name: "The Tower"
 updatedAt: "2026-11-06"

@@ -39,7 +39,9 @@ table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{border-bottom:1p
 @media (prefers-reduced-motion:reduce){.tarot-card{transition:none}}
 .holo-card{position:relative;border-radius:12px;overflow:hidden;touch-action:none;cursor:grab;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
 .holo-card canvas{display:block;width:100%!important;height:100%!important}
-.holo-card img{display:block;width:100%;height:100%;object-fit:cover;border-radius:12px;border:2px solid var(--gold)}
+.holo-card img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;border-radius:12px;border:2px solid var(--gold)}
+.holo-card img.holo-hidden{visibility:hidden}
+.holo-card canvas{position:relative;z-index:1}
 .holo-card img.reversed{transform:rotate(180deg)}
 .card-art{display:block;width:100%;max-width:320px;aspect-ratio:2/3;object-fit:cover;border-radius:12px;border:2px solid var(--gold);margin:0 auto}
 .card-list img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;display:block;margin-bottom:.4rem}

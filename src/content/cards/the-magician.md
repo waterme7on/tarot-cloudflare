@@ -1,5 +1,5 @@
 ---
-title: "The Magician Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Magician Tarot Card Meaning: Upright & Reversed"
 description: "The Magician tarot card meaning in plain terms: upright, reversed, love, career, money, a direct yes-or-no lean, and the questions this card answers poorly."
 name: "The Magician"
 updatedAt: "2026-11-06"

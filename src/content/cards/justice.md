@@ -1,5 +1,5 @@
 ---
-title: "Justice Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Justice Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "Justice tarot card meaning explained: upright and reversed, in love, career and money, plus a yes-or-no answer and what not to ask. Draw Justice free."
 name: "Justice"
 updatedAt: "2026-11-06"

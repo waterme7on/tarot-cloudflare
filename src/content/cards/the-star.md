@@ -1,5 +1,5 @@
 ---
-title: "The Star Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Star Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "The Star tarot card meaning explained: hope, healing and renewed faith. Upright and reversed, in love, career and money, plus a yes-or-no answer. Draw The Star free."
 name: "The Star"
 updatedAt: "2026-11-06"

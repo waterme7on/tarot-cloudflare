@@ -1,5 +1,5 @@
 ---
-title: "The World Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The World Tarot Card Meaning: Upright & Reversed"
 description: "The World tarot card meaning explained: completion, wholeness and the end of a cycle. Upright and reversed, in love, career and money. Draw The World free."
 name: "The World"
 updatedAt: "2026-11-06"

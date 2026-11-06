@@ -1,5 +1,5 @@
 ---
-title: "The Lovers Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Lovers Tarot Card Meaning: Upright & Reversed"
 description: "The Lovers tarot card meaning: choice, union, and values. Clear upright and reversed readings for love, career, and money, plus a yes-or-no lean and what to avoid asking."
 name: "The Lovers"
 updatedAt: "2026-11-06"

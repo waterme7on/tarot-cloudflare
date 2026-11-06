@@ -1,5 +1,5 @@
 ---
-title: "The Hermit Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Hermit Tarot Card Meaning: Upright & Reversed"
 description: "The Hermit tarot card meaning: solitude, searching, and inner guidance. Upright, reversed, love, career, money readings, a yes-or-no lean, and what not to ask."
 name: "The Hermit"
 updatedAt: "2026-11-06"

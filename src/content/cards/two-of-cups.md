@@ -1,5 +1,5 @@
 ---
-title: "Two of Cups Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Two of Cups Tarot Card Meaning: Upright & Reversed"
 description: "Two of Cups tarot card meaning: partnership, mutual attraction and balanced exchange. Upright and reversed, in love, career and money, plus a yes-or-no reading."
 name: "Two of Cups"
 updatedAt: "2026-11-06"

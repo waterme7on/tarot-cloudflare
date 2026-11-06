@@ -1,5 +1,5 @@
 ---
-title: "Death Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Death Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "Death tarot card meaning explained: it rarely means physical death. Upright and reversed, in love, career and money, plus a yes-or-no answer. Draw Death free."
 name: "Death"
 updatedAt: "2026-11-06"

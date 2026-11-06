@@ -9,7 +9,8 @@ interface Props {
   updatedAt?: string;
   author?: string;
 }
-const { title, description, canonical, noindex = false, jsonLd = [], ogImage, updatedAt, author } = Astro.props;
+const { title, description, canonical, noindex = false, jsonLd = [], updatedAt, author } = Astro.props;
+const ogImage = Astro.props.ogImage ?? `${(Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '')}/og-default.png`;
 const site = (Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '');
 const path = Astro.url.pathname;
 const canonicalUrl = canonical ?? `${site}${path}`;
@@ -35,8 +36,11 @@ const baseLd = [
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content="Tarot Tools" />
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#0f0c1d" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -54,8 +58,8 @@ const baseLd = [
         <a href="/">Card Generator</a>
         <a href="/free-tarot-reading/">Free Reading</a>
         <a href="/cards/">Card Meanings</a>
-        <a href="/spreads/three-card/">Spreads</a>
-        <a href="/questions/love/">Questions</a>
+        <a href="/spreads/">Spreads</a>
+        <a href="/questions/">Questions</a>
       </nav>
     </header>
     <main id="main" class="container">

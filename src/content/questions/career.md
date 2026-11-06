@@ -1,5 +1,5 @@
 ---
-title: "Career Tarot Reading: Questions About Work, Jobs and Direction"
+title: "Career Tarot Reading: Work, Jobs and Direction"
 description: "How to use tarot for career questions: what to ask about jobs and changes, which cards tend to matter, and how to turn a reading into a next step. Reflection only."
 name: "Career Tarot Reading"
 questionType: "career"

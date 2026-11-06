@@ -1,0 +1,34 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { breadcrumbLd } from '@/lib/seo';
+import SeoLinks from '@/components/SeoLinks.astro';
+
+export const prerender = true;
+
+const site = Astro.site!.toString().replace(/\/$/, '');
+const spreads = (await getCollection('spreads')).sort((a, b) => a.data.cardCount - b.data.cardCount);
+---
+<Base
+  title="Tarot Spreads: One Card, Three Card and Celtic Cross Explained"
+  description="Choose a tarot spread for your question: a one-card pull for quick answers, the three-card past-present-future layout, or the ten-card Celtic Cross for depth."
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Spreads', path: '/spreads/' }])]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Spreads</nav>
+  <h1>Tarot Spreads</h1>
+  <p class="muted">A spread is the layout that gives each card a job. Smaller spreads answer faster; larger spreads show more of the situation. Every spread here can be drawn for free in the generator.</p>
+  <div class="grid grid-3">
+    {spreads.map((s) => (
+      <a class="card" href={`/spreads/${s.id}/`} style="text-decoration:none">
+        <h2 style="margin-top:0;font-size:1.2rem">{s.data.name}</h2>
+        <p class="muted small">{s.data.cardCount} {s.data.cardCount === 1 ? 'card' : 'cards'} · {s.data.positions.join(', ')}</p>
+        <p class="small">{s.data.description}</p>
+      </a>
+    ))}
+  </div>
+  <section class="prose">
+    <h2>Which spread should you use?</h2>
+    <p>Use <a href="/spreads/one-card/">one card</a> for a daily pull, a quick yes-or-no lean or a single focused question. Use <a href="/spreads/three-card/">three cards</a> when you want to see how a situation developed and where it is heading. Use the <a href="/spreads/celtic-cross/">Celtic Cross</a> when the question has many moving parts and you are willing to sit with ten cards. Whatever the layout, the cards are drawn with the same cryptographically secure shuffle described on the <a href="/methodology/">methodology page</a>.</p>
+  </section>
+  <SeoLinks questions={['love', 'career', 'money', 'decision']} cards={['the-fool', 'the-lovers', 'wheel-of-fortune']} />
+</Base>

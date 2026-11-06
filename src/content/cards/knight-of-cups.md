@@ -1,5 +1,5 @@
 ---
-title: "Knight of Cups Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Knight of Cups Tarot Card Meaning: Upright & Reversed"
 description: "Knight of Cups tarot card meaning: the romantic messenger, charm, offers and idealism. Upright and reversed, in love, career and money, with a yes-or-no answer."
 name: "Knight of Cups"
 updatedAt: "2026-11-06"

@@ -15,8 +15,9 @@ export function faqLd(items: { q: string; a: string }[]) {
   };
 }
 
-export function articleLd(site: string, input: { path: string; headline: string; description: string; updatedAt: string; author: string }) {
+export function articleLd(site: string, input: { path: string; headline: string; description: string; updatedAt: string; author: string; image?: string }) {
   return {
+    ...(input.image ? { image: [input.image] } : {}),
     '@context': 'https://schema.org',
     '@type': 'Article',
     mainEntityOfPage: `${site}${input.path}`,

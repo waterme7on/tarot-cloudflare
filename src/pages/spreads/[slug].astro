@@ -22,9 +22,9 @@ const d = entry.data;
   description={d.description}
   updatedAt={d.updatedAt}
   author={d.author}
-  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Spreads', path: '/spreads/three-card/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Spreads', path: '/spreads/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
 >
-  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Spreads › {d.name}</nav>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/spreads/">Spreads</a> › {d.name}</nav>
   <h1>{d.name}</h1>
   <p class="muted">{d.cardCount} {d.cardCount === 1 ? 'card' : 'cards'}: {d.positions.join(' · ')}</p>
   <DrawTool client:load defaultSpread={slug as Spread} lockSpread heading={`Try the ${d.name.toLowerCase()}`} />

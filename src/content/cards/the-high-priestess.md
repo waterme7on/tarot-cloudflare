@@ -1,5 +1,5 @@
 ---
-title: "The High Priestess Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The High Priestess Tarot Card Meaning: Upright & Reversed"
 description: "The High Priestess tarot card meaning: intuition, secrets, and waiting. Covers upright, reversed, love, career, money, yes-or-no, and what this card will not answer."
 name: "The High Priestess"
 updatedAt: "2026-11-06"

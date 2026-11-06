@@ -1,5 +1,5 @@
 ---
-title: "Ace of Pentacles Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Ace of Pentacles Tarot Card Meaning: Upright & Reversed"
 description: "Ace of Pentacles tarot card meaning: a tangible new opportunity, seed money and solid ground. Upright and reversed, in love, career and money, with a yes-or-no answer."
 name: "Ace of Pentacles"
 updatedAt: "2026-11-06"

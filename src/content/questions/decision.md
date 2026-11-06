@@ -1,5 +1,5 @@
 ---
-title: "Decision Tarot Reading: Yes/No Questions and Either/Or Choices"
+title: "Decision Tarot Reading: Yes/No and Either/Or Choices"
 description: "How to use tarot for decisions: framing yes/no and either/or questions, reading upright and reversed for a lean, and following through. For reflection only."
 name: "Decision Tarot Reading"
 questionType: "decision"

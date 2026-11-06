@@ -1,5 +1,5 @@
 ---
-title: "Ace of Cups Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "Ace of Cups Tarot Card Meaning: Upright & Reversed"
 description: "Ace of Cups tarot card meaning: new feelings, emotional openness and compassion. Upright and reversed, in love, career and money, with a yes-or-no answer."
 name: "Ace of Cups"
 updatedAt: "2026-11-06"

@@ -1,5 +1,5 @@
 ---
-title: "The Chariot Tarot Card Meaning: Upright, Reversed, Love, Career & Money"
+title: "The Chariot Tarot Card Meaning: Upright & Reversed"
 description: "The Chariot tarot card meaning: willpower, momentum, and control. Upright, reversed, love, career, money, a direct yes-or-no lean, and questions this card handles poorly."
 name: "The Chariot"
 updatedAt: "2026-11-06"

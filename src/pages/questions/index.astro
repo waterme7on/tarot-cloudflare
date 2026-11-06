@@ -1,0 +1,34 @@
+---
+import Base from '@/layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { breadcrumbLd } from '@/lib/seo';
+import SeoLinks from '@/components/SeoLinks.astro';
+
+export const prerender = true;
+
+const site = Astro.site!.toString().replace(/\/$/, '');
+const order = ['love', 'career', 'money', 'decision'];
+const questions = (await getCollection('questions')).sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+---
+<Base
+  title="Tarot Questions: Love, Career, Money and Yes-or-No Readings"
+  description="Guides for asking tarot about love, career, money and decisions: how to phrase the question, which cards matter most, and how to act on the answer you draw."
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Questions', path: '/questions/' }])]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Questions</nav>
+  <h1>What to Ask the Tarot</h1>
+  <p class="muted">The question type changes how a card is read. Pick the area your question belongs to, then draw with that context selected in the generator.</p>
+  <div class="grid grid-2">
+    {questions.map((q) => (
+      <a class="card" href={`/questions/${q.id}/`} style="text-decoration:none">
+        <h2 style="margin-top:0;font-size:1.2rem">{q.data.name}</h2>
+        <p class="small">{q.data.description}</p>
+      </a>
+    ))}
+  </div>
+  <section class="prose">
+    <h2>Asking better questions</h2>
+    <p>Questions you can act on this week give the cards more to work with than questions about other people's hidden thoughts. "What should I pay attention to in this relationship?" reads better than "Do they love me?". For yes-or-no questions, use the <a href="/questions/decision/">decision guide</a> and choose the decision question type so the result shows a lean with its reasoning. Tarot is for reflection and entertainment only; it is not medical, legal or financial advice.</p>
+  </section>
+  <SeoLinks spreads={['one-card', 'three-card', 'celtic-cross']} cards={['the-lovers', 'the-star', 'the-tower']} />
+</Base>

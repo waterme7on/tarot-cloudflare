@@ -21,9 +21,9 @@ const d = entry.data;
   description={d.description}
   updatedAt={d.updatedAt}
   author={d.author}
-  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Questions', path: '/questions/love/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
+  jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Questions', path: '/questions/' }, { name: d.name, path }]), articleLd(site, { path, headline: d.title, description: d.description, updatedAt: d.updatedAt, author: d.author }), faqLd(d.faq)]}
 >
-  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Questions › {d.name}</nav>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/questions/">Questions</a> › {d.name}</nav>
   <h1>{d.name}</h1>
   <DrawTool client:load defaultQuestionType={d.questionType} heading={`Ask a ${d.questionType} question`} />
   <p class="byline">Written by {d.author} · Updated {d.updatedAt}</p>
