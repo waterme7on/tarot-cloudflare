@@ -117,7 +117,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
       renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
       renderer.setSize(el.clientWidth, el.clientHeight);
       renderer.setClearColor(0x000000, 0);
-      el.append(renderer.domElement);
+      el.appendChild(renderer.domElement);
       renderer.domElement.setAttribute('aria-hidden', 'true');
 
       const scene = new THREE.Scene();
