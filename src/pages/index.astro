@@ -6,7 +6,8 @@ import Faq from '@/components/Faq.astro';
 import { webAppLd, faqLd } from '@/lib/seo';
 import { MAJOR_ARCANA } from '@/data/cards-major';
 import { ALL_CARDS } from '@/data/cards';
-import HoloCard from '@/components/HoloCard';
+import { getCollection } from 'astro:content';
+const publishedCards = new Set((await getCollection('cards')).map((entry) => entry.id));
 
 const dayIndex = Math.floor(Date.now() / 86400_000) % ALL_CARDS.length;
 const cardOfDay = ALL_CARDS[dayIndex]!;
@@ -25,23 +26,31 @@ const faq = [
   title="Tarot Card Generator – Free Random Tarot Draw, No Sign-Up"
   description="Free tarot card generator: ask a question, draw one or three cards instantly and get upright or reversed meanings, a next step and a shareable result."
   jsonLd={[webAppLd(site), faqLd(faq)]}
+  readingEntry
 >
-  <h1>Tarot Card Generator</h1>
-  <p class="muted">Ask a question, draw a card in under five seconds, and get a clear meaning plus one concrete next step. No account, no email, no birthday.</p>
-  <div class="grid grid-2" style="align-items:start;margin-bottom:1rem">
-    <DrawTool client:load />
-    <aside class="card" style="text-align:center">
-      <h2 style="margin-top:0;font-size:1.1rem">Card of the day</h2>
-      <div style="display:flex;justify-content:center"><HoloCard client:idle slug={cardOfDay.slug} name={cardOfDay.name} width={200} /></div>
-      <p style="margin:.75rem 0 .25rem"><a href={`/cards/${cardOfDay.slug}/`}><strong>{cardOfDay.name}</strong></a></p>
-      <p class="muted small">{cardOfDay.upright.summary}</p>
-      <p class="muted small" style="margin:0">All 78 cards are illustrated with holographic foil. Hover or tilt to see it.</p>
-    </aside>
+  <div class="home-experience">
+    <header class="reading-intro">
+      <h1>Tarot Card Generator<span>Make room for <br />a new thought.</span></h1>
+      <p class="intro-copy">Not a prediction. A moment to pause, turn a card, and find your next small step.</p>
+      <div class="intro-deck" aria-label="Original tarot illustrations">
+        <img src="/cards/thumbs/the-moon.webp" width="160" height="240" alt="The Moon tarot illustration" />
+        <img src="/cards/thumbs/the-sun.webp" width="160" height="240" alt="The Sun tarot illustration" fetchpriority="high" />
+        <img src="/cards/thumbs/the-star.webp" width="160" height="240" alt="The Star tarot illustration" />
+      </div>
+      <p class="intro-note">78 illustrated cards · No account needed<br />For entertainment and self-reflection, ages 18+</p>
+    </header>
+    <DrawTool client:load immersive />
   </div>
+  <aside class="daily-note">
+    <img src={`/cards/thumbs/${cardOfDay.slug}.webp`} alt={`${cardOfDay.name} card of the day`} width="80" height="120" loading="lazy" />
+    <div><h2>{cardOfDay.name}</h2><p class="eyebrow">A daily reflection</p><p>{cardOfDay.upright.summary}</p>
+      <a href={publishedCards.has(cardOfDay.slug) ? `/cards/${cardOfDay.slug}/` : '/cards/'}>Explore the deck →</a>
+    </div>
+  </aside>
 
   <section class="prose">
     <h2>How this tarot card generator works</h2>
-    <p>Pick a spread and a question type, optionally type the question you have in mind (it stays on your device), and press <strong>Draw a Card</strong>. A Cloudflare Worker shuffles a full 78-card Rider-Waite deck with cryptographically secure randomness, chooses upright or reversed for each card, and returns the card's keywords, a reading matched to your question type, and a next action. The free interpretation comes from a consistent rules engine, so the same card always carries the same core meaning — no AI improvisation.</p>
+    <p>Pick a spread and a question type, optionally type the question you have in mind (it stays on your device), and press <strong>Shuffle &amp; draw</strong>. A Cloudflare Worker shuffles a full 78-card Rider-Waite deck with cryptographically secure randomness, chooses upright or reversed for each card, and returns the card's keywords, a reading matched to your question type, and a next action. The free interpretation comes from a consistent rules engine, so the same card always carries the same core meaning — no AI improvisation.</p>
     <h2>One card, three cards or the Celtic Cross</h2>
     <p>A single card is best for a daily pull or a yes-or-no lean. Three cards map past, present and future. The ten-card Celtic Cross goes deep on a complex situation. Read more on the <a href="/spreads/one-card/">one card</a>, <a href="/spreads/three-card/">three card</a> and <a href="/spreads/celtic-cross/">Celtic Cross</a> pages.</p>
     <h2>Major Arcana meanings</h2>

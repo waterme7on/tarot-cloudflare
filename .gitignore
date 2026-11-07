@@ -10,3 +10,4 @@ dist/
 migrations/seed/*.sql
 backups/
 artwork/raw/
+.gstack/

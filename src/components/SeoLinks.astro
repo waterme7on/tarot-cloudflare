@@ -1,5 +1,7 @@
 ---
 import { getCard } from '@/data/cards';
+import { getCollection } from 'astro:content';
+const publishedCards = new Set((await getCollection('cards')).map((entry) => entry.id));
 interface Props {
   cards?: string[];
   spreads?: string[];
@@ -16,7 +18,7 @@ const questionNames: Record<string, string> = { love: 'Love questions', career: 
     {cards.length > 0 && (
       <div>
         <h3>Related cards</h3>
-        <ul>{cards.map((s) => <li><a href={`/cards/${s}/`}>{getCard(s)?.name ?? s}</a></li>)}</ul>
+        <ul>{cards.map((s) => <li><a href={publishedCards.has(s) ? `/cards/${s}/` : `/cards/#${s}`}>{getCard(s)?.name ?? s}</a></li>)}</ul>
       </div>
     )}
     {spreads.length > 0 && (

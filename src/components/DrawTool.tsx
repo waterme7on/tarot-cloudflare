@@ -1,137 +1,152 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
 import { CardResult } from './CardResult';
+import CardBack from './CardBack';
 
 declare global {
   interface Window {
-    turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => string; reset: (id?: string) => void; getResponse: (id?: string) => string | undefined };
+    turnstile?: { render: (el: HTMLElement, opts: Record<string, unknown>) => string; reset: (id?: string) => void; getResponse: (id?: string) => string | undefined; remove: (id: string) => void };
   }
 }
 
-const QUESTION_LABELS: Record<QuestionType, string> = { general: 'General', love: 'Love', career: 'Career', money: 'Money', decision: 'Yes / No decision' };
-const SPREAD_LABELS: Record<Spread, string> = { 'one-card': 'One card', 'three-card': 'Three cards', 'celtic-cross': 'Celtic Cross (10)' };
+const TOPICS: { value: QuestionType; label: string; hint: string }[] = [
+  { value: 'general', label: 'A little perspective', hint: 'See today from a different angle' },
+  { value: 'love', label: 'Love & connection', hint: 'Relationships, feelings, boundaries' },
+  { value: 'career', label: 'Work & direction', hint: 'Your next move, on your terms' },
+  { value: 'money', label: 'Money & habits', hint: 'Reflect on resources, not investments' },
+  { value: 'decision', label: 'A choice to make', hint: 'Find a lean, not a final verdict' },
+];
+const TOPIC_ART: Record<QuestionType, string> = { general: 'the-star', love: 'the-lovers', career: 'the-magician', money: 'ace-of-pentacles', decision: 'justice' };
+const SPREAD_OPTIONS: { value: Spread; label: string; hint: string; count: number }[] = [
+  { value: 'one-card', label: 'One clear thought', hint: 'One card · a focus for today', count: 1 },
+  { value: 'three-card', label: 'The bigger picture', hint: 'Three cards · past, present, future', count: 3 },
+  { value: 'celtic-cross', label: 'Room to explore', hint: 'Ten cards · take your time', count: 10 },
+];
+interface Props { defaultSpread?: Spread; defaultQuestionType?: QuestionType; lockSpread?: boolean; heading?: string; immersive?: boolean }
 
-interface Props {
-  defaultSpread?: Spread;
-  defaultQuestionType?: QuestionType;
-  lockSpread?: boolean;
-  heading?: string;
-}
-
-function uuid(): string {
-  return crypto.randomUUID();
-}
-
-export default function DrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'general', lockSpread = false, heading }: Props) {
-  const [spread, setSpread] = useState<Spread>(defaultSpread);
-  const [questionType, setQuestionType] = useState<QuestionType>(defaultQuestionType);
+export default function DrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'general', lockSpread = false, heading, immersive = false }: Props) {
+  const [step, setStep] = useState(immersive ? -1 : 0);
+  const [spread, setSpread] = useState(defaultSpread);
+  const [questionType, setQuestionType] = useState(defaultQuestionType);
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DrawResponse | null>(null);
-  const idemRef = useRef<string>(uuid());
-  const turnstileRef = useRef<HTMLDivElement>(null);
+  const [siteKey, setSiteKey] = useState('');
+  const id = useId();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const idemRef = useRef<string | null>(null);
+  const pendingRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const shuffleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => { abortRef.current?.abort(); clearTimeout(shuffleTimer.current); }, []);
+  const widgetRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
-  const siteKey = typeof document !== 'undefined' ? document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content : undefined;
-
+  const selectedTopic = TOPICS.find((t) => t.value === questionType)!;
+  const selectedSpread = SPREAD_OPTIONS.find((s) => s.value === spread)!;
+  useEffect(() => { setSiteKey(document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content ?? ''); }, []);
   useEffect(() => {
-    if (!siteKey || !turnstileRef.current) return;
-    const tryRender = () => {
-      if (window.turnstile && turnstileRef.current && !widgetId.current) {
-        widgetId.current = window.turnstile.render(turnstileRef.current, { sitekey: siteKey, size: 'flexible', theme: 'dark' });
-        return true;
-      }
-      return false;
+    if (step < 0 || (!immersive && step === 0)) return;
+    headingRef.current?.focus({ preventScroll: true });
+    headingRef.current?.closest('section')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+  }, [step]);
+  useEffect(() => {
+    if (!siteKey || step !== 2 || result) return;
+    const render = () => {
+      if (!window.turnstile || !widgetRef.current || widgetId.current) return;
+      widgetId.current = window.turnstile.render(widgetRef.current, { sitekey: siteKey, theme: 'light', size: 'flexible' });
     };
-    if (!tryRender()) {
-      const t = setInterval(() => tryRender() && clearInterval(t), 300);
-      return () => clearInterval(t);
-    }
-  }, [siteKey]);
-
-  const draw = useCallback(async () => {
+    render();
+    const timer = window.setInterval(render, 300);
+    return () => {
+      clearInterval(timer);
+      if (widgetId.current) window.turnstile?.remove(widgetId.current);
+      widgetId.current = null;
+    };
+  }, [siteKey, step, result]);
+  function changeStep(next: number) { setError(null); setStep(next); }
+  async function draw() {
+    if (pendingRef.current) return;
+    pendingRef.current = true;
     setLoading(true);
     setError(null);
-    const turnstileToken = siteKey ? window.turnstile?.getResponse(widgetId.current ?? undefined) : undefined;
-    if (siteKey && !turnstileToken) {
-      setError('Please complete the human check first.');
-      setLoading(false);
-      return;
-    }
     try {
-      const res = await fetch('/api/v1/draw', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ spread, questionType, locale: 'en', idempotencyKey: idemRef.current, turnstileToken, questionLength: question.trim().length }),
-      });
-      const data = (await res.json()) as DrawResponse & { error?: { message: string; retryAfterSeconds?: number } };
+      const turnstileToken = siteKey ? window.turnstile?.getResponse(widgetId.current ?? undefined) : undefined;
+      if (siteKey && !turnstileToken) { setError('Complete the human check, then try again. Your choices are saved here.'); return; }
+      idemRef.current ??= crypto.randomUUID();
+      abortRef.current = new AbortController();
+      const [res] = await Promise.all([
+        fetch('/api/v1/draw', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: abortRef.current.signal,
+          body: JSON.stringify({ spread, questionType, locale: 'en', idempotencyKey: idemRef.current, turnstileToken, questionLength: question.trim().length }),
+        }),
+        new Promise<void>((resolve) => { shuffleTimer.current = setTimeout(resolve, immersive && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 700 : 0); }),
+      ]);
+      const data = await res.json() as DrawResponse & { error?: { message: string } };
       if (!res.ok || data.error) {
-        setError(data.error?.message ?? 'Something went wrong. Please try again.');
+        setError(data.error?.message ?? 'Your reading could not load. Try again with the same choices.');
         if (siteKey) window.turnstile?.reset(widgetId.current ?? undefined);
         return;
       }
       setResult(data);
-      history.replaceState(null, '', `/reading/${data.publicToken}/`);
-      void fetch('/api/v1/events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'report_cta_viewed', readingId: data.readingId, route: location.pathname }) });
     } catch {
-      setError('Network error. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [spread, questionType, question, siteKey]);
-
-  const reset = () => {
-    setResult(null);
-    idemRef.current = uuid();
-    if (siteKey) window.turnstile?.reset(widgetId.current ?? undefined);
-    history.replaceState(null, '', location.pathname.startsWith('/reading/') ? '/' : location.pathname);
-  };
-
-  if (result) {
-    return <CardResult reading={result} question={question} onReset={reset} />;
+      if (abortRef.current?.signal.aborted) return;
+      setError('Connection interrupted. Try again; we will recover the same draw if it was saved.');
+      if (siteKey) window.turnstile?.reset(widgetId.current ?? undefined);
+    } finally { pendingRef.current = false; setLoading(false); }
   }
-
+  function reset() { setResult(null); setStep(immersive ? -1 : 0); setQuestion(''); setError(null); idemRef.current = null; }
+  if (result) return <CardResult reading={result} question={question} onReset={reset} immersive={immersive} />;
+  if (immersive && step === -1) return (
+    <section className="reading-table table-welcome" id="draw-tool" data-active="false" aria-labelledby={`${id}-welcome`}>
+      <div className="table-welcome-copy"><p className="table-format">{defaultSpread === 'three-card' ? 'Past, present, possibility' : 'One card. A different perspective.'}</p>
+        <h2 id={`${id}-welcome`}>{defaultSpread === 'three-card' ? 'See the story\nbetween the cards.' : 'A quiet moment.\nA card for you.'}</h2>
+        <p>No predictions. Just a little space to reflect.</p>
+      </div>
+      <div className="table-hero-deck" aria-hidden="true"><div className="hero-card"><CardBack /></div><div className="hero-card"><CardBack /></div><div className="hero-card"><CardBack /></div></div>
+      <div className="table-welcome-actions"><button className="btn table-primary" type="button" onClick={() => changeStep(0)}>Begin my reading <span aria-hidden="true">→</span></button><p>Free, no account needed. For ages 18+.</p></div>
+      <noscript><p>Enable JavaScript for the interactive draw, or browse the <a href="/cards/">illustrated deck and card meanings</a>.</p></noscript>
+    </section>
+  );
   return (
-    <section className="card" aria-labelledby="draw-heading">
-      <h2 id="draw-heading" style={{ marginTop: 0 }}>
-        {heading ?? 'Draw a card'}
-      </h2>
-      {!lockSpread && (
-        <>
-          <label htmlFor="spread">Spread</label>
-          <div className="chips" role="group" aria-label="Spread">
-            {(Object.keys(SPREAD_LABELS) as Spread[]).map((s) => (
-              <button key={s} type="button" className="chip" aria-pressed={spread === s} onClick={() => setSpread(s)}>
-                {SPREAD_LABELS[s]}
-              </button>
-            ))}
+    <section className={`reading-app ${immersive ? 'reading-table table-setup' : ''}`} id="draw-tool" data-active={immersive ? 'true' : undefined} data-step={step} aria-labelledby={`${id}-heading`} aria-busy={loading}>
+      {immersive ? <div className="table-toolbar"><button type="button" disabled={loading} onClick={() => changeStep(step - 1)} aria-label="Previous step">←</button><span>{['Your focus', 'Your spread', 'Your moment'][step]}</span><button type="button" disabled={loading} onClick={() => changeStep(-1)}>Leave table</button></div> : <div className="flow-topline"><span>Your moment of clarity</span><span>Free · 18+</span></div>}
+      <ol className="flow-progress" aria-label="Reading progress">
+        {['Focus', 'Spread', 'Draw'].map((label, i) => <li key={label} aria-current={step === i ? 'step' : undefined} className={step >= i ? 'reached' : ''}><span>{i + 1}</span>{label}</li>)}
+      </ol>
+      <div className="flow-body">
+        <h2 id={`${id}-heading`} tabIndex={-1} ref={headingRef}>{step === 0 ? 'What’s on your mind?' : step === 1 ? 'How much space do you need?' : 'Take a breath. Make some room.'}</h2>
+        <p className="flow-caption">{step === 0 ? (heading ?? 'Start with a feeling. You don’t need the perfect question.') : step === 1 ? 'A single card is a good place to start. Every spread is free.' : 'Hold your question gently. The cards are prompts, not predictions.'}</p>
+        {step === 0 && <div className="topic-list" role="group" aria-label="Question type">
+          {TOPICS.map((topic, i) => <button type="button" key={topic.value} className="choice-row" aria-pressed={questionType === topic.value} onClick={() => { setQuestionType(topic.value); idemRef.current = null; }}>
+            {immersive ? <img className="topic-art" src={`/cards/thumbs/${TOPIC_ART[topic.value]}.webp`} alt="" width="48" height="58" /> : <span className="choice-mark" aria-hidden="true">0{i + 1}</span>}<span><strong>{topic.label}</strong><small>{topic.hint}</small></span><span className="choice-dot" aria-hidden="true" />
+          </button>)}
+        </div>}
+        {step === 1 && <>
+          <div className="spread-list" role="group" aria-label="Spread">
+            {SPREAD_OPTIONS.filter((s) => !lockSpread || s.value === defaultSpread).map((option) => <button type="button" className="choice-row" key={option.value} aria-pressed={spread === option.value} onClick={() => { setSpread(option.value); idemRef.current = null; }}>
+              {immersive ? <span className={`spread-preview spread-preview-${option.count}`} aria-hidden="true">{Array.from({ length: Math.min(option.count, 5) }, (_, i) => <i key={i} />)}</span> : <span className="spread-mark" aria-hidden="true">{option.count}</span>}<span><strong>{option.label}</strong><small>{option.hint}</small></span><span className="choice-dot" aria-hidden="true" />
+            </button>)}
           </div>
-        </>
-      )}
-      <label>Question type</label>
-      <div className="chips" role="group" aria-label="Question type">
-        {(Object.keys(QUESTION_LABELS) as QuestionType[]).map((q) => (
-          <button key={q} type="button" className="chip" aria-pressed={questionType === q} onClick={() => setQuestionType(q)}>
-            {QUESTION_LABELS[q]}
-          </button>
-        ))}
+          <details className="question-note" open={!immersive || undefined}><summary>{question ? 'Edit your question' : 'Add a question (optional)'}</summary>
+            <label htmlFor={`${id}-question`}>What would you like to reflect on?</label>
+            <textarea id={`${id}-question`} rows={2} maxLength={200} value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What could I approach differently today?" autoComplete="off" aria-describedby={`${id}-privacy`} />
+            <p id={`${id}-privacy`} className="microcopy">Your words stay on this device during the free draw.</p>
+          </details>
+        </>}
+        {step === 2 && <>
+          {immersive ? <button type="button" className={`table-shuffle-deck ${loading ? 'is-shuffling' : ''}`} onClick={() => void draw()} disabled={loading} aria-label="Tap the deck to shuffle and draw"><span className="shuffle-card"><CardBack /></span><span className="shuffle-card"><CardBack /></span><span className="shuffle-card"><CardBack /></span></button> : <div className={`ritual-deck ${loading ? 'shuffling' : ''}`} aria-hidden="true"><div className="deck-back" /><div className="deck-back" /><div className="deck-back"><span>TT</span></div></div>}
+          <p className="draw-recap"><strong>{selectedTopic.label}</strong><span>{selectedSpread.count} {selectedSpread.count === 1 ? 'card' : 'cards'} · 78-card deck</span></p>
+          {siteKey && <div ref={widgetRef} className="human-check" />}
+          <p className="microcopy" role="status">{loading ? 'Shuffling and saving your reading…' : 'Tap the deck or the button below. Every card has an equal chance.'}</p>
+        </>}
+        {error && <p className="flow-error" role="alert">{error}</p>}
       </div>
-      <label htmlFor="question">Your question (optional, stays on your device)</label>
-      <input id="question" type="text" maxLength={200} value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Should I take the new job?" autoComplete="off" />
-      {siteKey && <div ref={turnstileRef} style={{ marginTop: '1rem' }} />}
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="btn-row">
-        <button type="button" className="btn" onClick={draw} disabled={loading}>
-          {loading ? 'Shuffling…' : 'Draw a Card'}
-        </button>
+      <div className="flow-actions">
+        {!immersive && step > 0 && <button className="back-button" type="button" disabled={loading} onClick={() => changeStep(step - 1)}>Back</button>}
+        <button className="btn flow-primary" type="button" disabled={loading} onClick={() => step < 2 ? changeStep(step + 1) : void draw()}>{loading ? 'Shuffling your cards…' : step === 0 ? 'Choose my spread' : step === 1 ? 'Ready to draw' : 'Shuffle & draw'}<span aria-hidden="true">→</span></button>
       </div>
-      <p className="muted small" style={{ marginTop: '1rem' }}>
-        Cards are drawn on Cloudflare's edge with cryptographically secure randomness. Your question is never sent or stored.
-      </p>
+      <noscript><p className="flow-caption">Enable JavaScript to draw cards. You can still browse all <a href="/cards/">card meanings</a>.</p></noscript>
     </section>
   );
 }

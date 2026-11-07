@@ -8,6 +8,7 @@ interface Props {
   ogImage?: string;
   updatedAt?: string;
   author?: string;
+  readingEntry?: boolean;
 }
 const { title, description, canonical, noindex = false, jsonLd = [], updatedAt, author } = Astro.props;
 const ogImage = Astro.props.ogImage ?? `${(Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '')}/og-default.png`;
@@ -42,18 +43,22 @@ const baseLd = [
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#0f0c1d" />
+    <meta name="theme-color" content="#080b12" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/app-icon.svg" />
     {updatedAt && <meta property="article:modified_time" content={updatedAt} />}
     {author && <meta name="author" content={author} />}
     {[...baseLd, ...jsonLd].map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
     {turnstileKey && <meta name="turnstile-site-key" content={turnstileKey} />}
+    <link rel="preload" href="/fonts/instrument-serif-regular.v1.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/dm-sans-latin.v1.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/reading-table.css" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
-      <a href="/" class="brand" aria-label="Tarot Tools home">Tarot Tools</a>
+      <a href="/" class="brand" aria-label="Tarot Tools home"><img src="/brand/logo-horizontal-dark.svg" alt="" width="166" height="32" /></a>
       <nav aria-label="Primary">
         <a href="/">Card Generator</a>
         <a href="/free-tarot-reading/">Free Reading</a>
@@ -65,6 +70,12 @@ const baseLd = [
     <main id="main" class="container">
       <slot />
     </main>
+    <nav class="mobile-dock" aria-label="Mobile navigation">
+      <a href="/" aria-current={path === '/' ? 'page' : undefined}><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2" /><path d="m12 8 3 4-3 4-3-4z" /></svg>Draw</a>
+      <a href="/cards/" aria-current={path.startsWith('/cards') ? 'page' : undefined}><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="16" rx="1" /><rect x="14" y="4" width="7" height="16" rx="1" /></svg>The deck</a>
+      <a href="/spreads/" aria-current={path.startsWith('/spreads') ? 'page' : undefined}><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 7h4v12H3zM10 3h4v16h-4zM17 7h4v12h-4z" /></svg>Spreads</a>
+      <a href="/methodology/" aria-current={path === '/methodology/' ? 'page' : undefined}><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7v1" /></svg>How it works</a>
+    </nav>
     <footer class="site-footer">
       <p class="muted">For reflection and entertainment only. Not medical, legal, financial or psychological advice. 18+.</p>
       <nav aria-label="Footer">
@@ -74,6 +85,7 @@ const baseLd = [
         <a href="/terms/">Terms</a>
         <a href="/disclaimer/">Disclaimer</a>
         <a href="/refund/">Refunds</a>
+        <a href="/holo-card-license.txt">Visual credits</a>
       </nav>
       <p class="muted">© {new Date().getFullYear()} Tarot Tools. Hosted on Cloudflare.</p>
     </footer>

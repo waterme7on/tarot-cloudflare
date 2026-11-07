@@ -12,7 +12,7 @@
     "validate:content": "tsx scripts/validate-content.ts",
     "seed:sql": "tsx scripts/seed-d1.ts",
     "db:migrate:local": "wrangler d1 migrations apply tarot-db --local",
-    "db:migrate:preview": "wrangler d1 migrations apply tarot-db --remote --env preview",
+    "db:migrate:preview": "wrangler d1 migrations apply tarot-db-preview --remote --env preview",
     "db:migrate:prod": "wrangler d1 migrations apply tarot-db --remote",
     "db:seed:local": "npm run seed:sql && wrangler d1 execute tarot-db --local --file=./migrations/seed/cards.sql",
     "db:seed:prod": "npm run seed:sql && wrangler d1 execute tarot-db --remote --file=./migrations/seed/cards.sql",

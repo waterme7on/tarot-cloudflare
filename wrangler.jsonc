@@ -40,9 +40,9 @@
   "env": {
     "preview": {
       "name": "tarot-tools-preview",
-      "vars": { "ENVIRONMENT": "preview", "SITE_URL": "https://tarot-tools-preview.workers.dev", "AI_GATEWAY_ID": "tarot-gateway", "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct", "REPORT_PRICE_SINGLE_CENTS": "499", "REPORT_PRICE_THREE_CENTS": "999" },
-      "d1_databases": [{ "binding": "DB", "database_name": "tarot-db-preview", "database_id": "REPLACE_WITH_PREVIEW_D1_ID", "migrations_dir": "migrations" }],
-      "kv_namespaces": [{ "binding": "CACHE", "id": "REPLACE_WITH_PREVIEW_KV_ID" }],
+      "vars": { "ENVIRONMENT": "preview", "SITE_URL": "https://tarot-tools-preview.waterme7on333.workers.dev", "AI_GATEWAY_ID": "tarot-gateway", "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct", "REPORT_PRICE_SINGLE_CENTS": "499", "REPORT_PRICE_THREE_CENTS": "999" },
+      "d1_databases": [{ "binding": "DB", "database_name": "tarot-db-preview", "database_id": "463399d8-55ab-49d8-819d-2ba8b1eaa299", "migrations_dir": "migrations" }],
+      "kv_namespaces": [{ "binding": "CACHE", "id": "84029e0f7cb24b1097b67842179c2cbc" }],
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "tarot-media-preview" }],
       "images": { "binding": "IMAGES" },
       "ai": { "binding": "AI" },
@@ -51,7 +51,8 @@
         "consumers": [{ "queue": "tarot-reports-preview", "max_batch_size": 10, "max_batch_timeout": 30, "max_retries": 3 }]
       },
       "workflows": [{ "name": "tarot-report-workflow-preview", "binding": "REPORT_WORKFLOW", "class_name": "ReportWorkflow" }],
-      "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "tarot_events_preview" }]
+      "analytics_engine_datasets": [{ "binding": "EVENTS", "dataset": "tarot_events_preview" }],
+      "triggers": { "crons": [] }
     }
   }
 }

@@ -62,7 +62,7 @@ We designed the system to collect as little as possible.
 - **No accounts are required** for free readings.
 - **Payments are handled by Waffo.** We never see or store your card number.
 
-Full details are in our [privacy policy](/guides/privacy), and our [disclaimer](/guides/disclaimer) sets out the scope of the service.
+Full details are in our [privacy policy](/privacy), and our [disclaimer](/disclaimer) sets out the scope of the service.
 
 ## Verifying for yourself
 

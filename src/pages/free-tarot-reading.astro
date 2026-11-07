@@ -18,11 +18,14 @@ const faq = [
   title="Free Tarot Reading Online – Instant 1 or 3 Card Reading, No Sign-Up"
   description="Get a free tarot reading online in seconds. Pick love, career, money or a yes/no question, draw one or three cards and read upright and reversed meanings."
   jsonLd={[breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Free Tarot Reading', path: '/free-tarot-reading/' }]), faqLd(faq)]}
+  readingEntry
 >
-  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Free Tarot Reading</nav>
-  <h1>Free Tarot Reading</h1>
-  <p class="muted">A real shuffle, a real draw, a readable answer. Pick what the question is about and let the cards frame it.</p>
-  <DrawTool client:load defaultSpread="three-card" heading="Start your free reading" />
+  <header class="reading-page-intro">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Free Tarot Reading</nav>
+    <h1>Free Tarot Reading</h1>
+    <p class="muted">A real shuffle, a real draw, a readable answer. Pick what the question is about and let the cards frame it.</p>
+  </header>
+  <DrawTool client:load defaultSpread="three-card" heading="Start your free reading" immersive />
   <section class="prose">
     <h2>How to get the most out of a free reading</h2>
     <p>Ask about something you can act on this week. "What should I pay attention to in my relationship?" gives the cards more to work with than "Will they text me?" Choose the question type that matches, because the interpretation changes: The Tower in a career question reads differently from The Tower in a love question.</p>
