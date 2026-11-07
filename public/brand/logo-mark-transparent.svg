@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs><mask id="moon-mask" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="64" height="64" fill="white"/><circle cx="37.5" cy="28" r="9.2" fill="black"/></mask></defs>
+  <g transform="rotate(10 32 32)">
+    <rect x="17.5" y="9.5" width="29" height="45" rx="4.2" fill="none" stroke="#C9A85C" stroke-width="3.7"/>
+    <circle cx="31.9" cy="32.5" r="10" fill="#C9A85C" mask="url(#moon-mask)"/>
+    <path d="M27.5 16.7h8.5M27.5 47.2h8.5" stroke="#C9A85C" stroke-width="2.5" stroke-linecap="round"/>
+  </g></svg>

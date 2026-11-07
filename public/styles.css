@@ -9,7 +9,7 @@ p{margin:0 0 1em}.muted{color:var(--muted)}.small{font-size:.875rem}
 .container{width:min(960px,100% - 2rem);margin:0 auto;padding:1.5rem 0 3rem;flex:1}
 .site-header{display:flex;flex-wrap:wrap;gap:.75rem 1.5rem;align-items:center;justify-content:space-between;padding:1rem;max-width:960px;margin:0 auto;width:100%}
 .site-header nav{display:flex;flex-wrap:wrap;gap:1rem}.site-header nav a,.site-footer nav a{text-decoration:none;color:var(--muted)}.site-header nav a:hover{color:#fff}
-.brand{font-family:var(--font);font-size:1.35rem;color:var(--gold);text-decoration:none}
+.brand{display:inline-flex;flex:none;align-items:center;text-decoration:none}.brand img{display:block;width:166px;max-width:48vw;height:auto}
 .site-footer{border-top:1px solid var(--line);padding:1.5rem 1rem;text-align:center;font-size:.875rem}
 .site-footer nav{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin-bottom:.75rem}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem}
