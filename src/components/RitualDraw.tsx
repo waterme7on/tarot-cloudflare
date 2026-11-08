@@ -53,6 +53,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   const startX = useRef<number | null>(null);
   const suppressTap = useRef(false);
   const appRef = useRef<HTMLElement>(null);
+  const slotsRef = useRef<HTMLDivElement>(null);
   const count = SPREADS.find((item) => item.value === spread)!.count;
   const nextLabel = spread === 'one-card' ? 'Your card' : spread === 'three-card' ? ['Past', 'Present', 'Future'][selected.length] : CROSS_POSITIONS[selected.length];
   const finishedPicking = selected.length === count;
@@ -85,6 +86,10 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   useEffect(() => {
     if (stage !== 'prepare') appRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
   }, [stage]);
+
+  useEffect(() => {
+    if (slotsRef.current) slotsRef.current.scrollLeft = Math.max(0, (selected.length - 2) * 57);
+  }, [selected.length]);
 
   function reset() {
     clearTimeout(deckTimer.current);
@@ -233,7 +238,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
             <div className="ritual-heading">
               <span className="ritual-kicker">The deck is yours</span>
               <h2>{stage === 'shuffling' ? 'Shuffling…' : 'Ready when you are.'}</h2>
-              <p>{stage === 'shuffling' ? 'Each card has an equal chance.' : 'Tap the deck to shuffle all 78 cards.'}</p>
+              <p>{stage === 'shuffling' ? 'Each card has an equal chance.' : 'Tap the deck to fan out 78 card positions.'}</p>
             </div>
             <button className={'ritual-deck-button' + (stage === 'shuffling' ? ' is-shuffling' : '')} type="button" disabled={stage === 'shuffling'} onClick={shuffle} aria-label="Shuffle all 78 tarot cards">
               <span className="ritual-deck-layer"><CardBack /></span>
@@ -277,7 +282,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
                 <button type="button" disabled={loading || finishedPicking} aria-label="Next card position" onClick={() => setFocus((n) => wrapPosition(n + 1))}>→</button>
               </div>
             </div>
-            <div className="ritual-slots" role="status" aria-live="polite">
+            <div className="ritual-slots" ref={slotsRef} role="status" aria-live="polite">
               {Array.from({ length: count }, (_, index) => <span key={index} className={'ritual-slot' + (index < selected.length ? ' is-filled' : '') + (index === selected.length ? ' is-next' : '')}>
                 <span className="ritual-slot-image" aria-hidden="true">{index < selected.length ? '✦' : index + 1}</span>
                 <small>{spread === 'one-card' ? 'You' : spread === 'three-card' ? ['Past', 'Present', 'Future'][index] : CROSS_POSITIONS[index]}</small>
@@ -287,6 +292,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
           </div>
         )}
         {error && <p className="ritual-error" role="alert">{error}</p>}
+        <noscript><p className="ritual-error">Enable JavaScript to draw cards or browse the <a href="/cards/">card meanings</a>.</p></noscript>
       </div>
       <div className="ritual-actionbar">
         <button className="ritual-primary" type="button" disabled={loading || stage === 'shuffling'} onClick={() => {
