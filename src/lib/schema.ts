@@ -61,6 +61,8 @@ export interface DrawRequest {
   idempotencyKey: string;
   turnstileToken?: string;
   questionLength?: number;
+  /** Distinct positions in the shuffled 78-card deck, chosen before reveal. */
+  slots?: number[];
 }
 
 export interface DrawResponse {
