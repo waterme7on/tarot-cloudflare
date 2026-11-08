@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { ALL_CARDS, getCard } from '@/data/cards';
-import { drawCards } from '@/lib/draw';
+import { drawCards, validDrawSlots } from '@/lib/draw';
 import { buildFreeSummary } from '@/lib/interpretation';
 import { checkRateLimit, LIMITS } from '@/lib/rate-limit';
 import { clientIp, hashIp, randomToken, verifyTurnstile } from '@/lib/auth';
@@ -21,6 +21,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!isSpread(body.spread)) return error(400, 'invalid_spread', 'spread must be one-card, three-card or celtic-cross');
   if (!isQuestionType(body.questionType)) return error(400, 'invalid_question_type', 'questionType must be general, love, career, money or decision');
   if (typeof body.idempotencyKey !== 'string' || !UUID_RE.test(body.idempotencyKey)) return error(400, 'invalid_idempotency_key', 'idempotencyKey must be a UUID');
+  if (body.slots !== undefined && !validDrawSlots(body.slots, body.spread === 'one-card' ? 1 : body.spread === 'three-card' ? 3 : 10)) {
+    return error(400, 'invalid_slots', 'slots must be unique integer positions within 0–77, one per card');
+  }
   const locale = typeof body.locale === 'string' && /^[a-z]{2}(-[a-z]{2})?$/i.test(body.locale) ? body.locale.toLowerCase() : 'en';
 
   const existing = await getReadingByIdempotency(env.DB, body.idempotencyKey);
@@ -39,7 +42,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   track(env, { name: 'draw_started', route: '/api/v1/draw', locale, meta: { spread: body.spread, questionType: body.questionType } });
 
-  const cards = drawCards(ALL_CARDS, body.spread);
+  const cards = drawCards(ALL_CARDS, body.spread, undefined, body.slots);
   const summary = buildFreeSummary(cards, getCard, body.spread, body.questionType);
   const id = randomToken('rdg');
   const publicToken = randomToken('pub');
@@ -57,7 +60,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     utm: null,
   });
 
-  track(env, { name: 'draw_completed', readingId: id, route: '/api/v1/draw', locale, meta: { spread: body.spread, questionType: body.questionType, questionLength: body.questionLength ?? 0 } });
+  track(env, { name: 'draw_completed', readingId: id, route: '/api/v1/draw', locale, meta: { spread: body.spread, questionType: body.questionType, questionLength: body.questionLength ?? 0, interactivePick: !!body.slots } });
 
   return json(toResponse(id, publicToken, body.spread, body.questionType, cards, summary, new Date().toISOString()));
 };
