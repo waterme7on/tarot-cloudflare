@@ -149,7 +149,13 @@ export function createExports(manifest: SSRManifest) {
   return {
     default: {
       async fetch(request, env, ctx) {
-        return handle(manifest, app, request as unknown as Parameters<typeof handle>[2], env as unknown as Parameters<typeof handle>[3], ctx as unknown as Parameters<typeof handle>[4]);
+        const response = await handle(manifest, app, request as unknown as Parameters<typeof handle>[2], env as unknown as Parameters<typeof handle>[3], ctx as unknown as Parameters<typeof handle>[4]);
+        if (env.ENVIRONMENT !== 'preview' || response.headers.get('X-Robots-Tag') === 'noindex, nofollow') return response;
+
+        // Static assets can bypass Astro middleware even when the Worker runs first.
+        const previewResponse = new Response(response.body, response);
+        previewResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
+        return previewResponse;
       },
       async queue(batch, env) {
         await handleQueue(batch as MessageBatch<ReportQueueMessage>, env);

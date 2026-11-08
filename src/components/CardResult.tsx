@@ -116,12 +116,10 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
         {reading.cards.map((c) => <figure key={c.position}><img src={`/cards/thumbs/${c.slug}.webp`} width={120} height={180} className={c.orientation} alt={`${c.name}, ${c.orientation}`} /><figcaption>{c.positionLabel}<strong>{c.name}</strong></figcaption></figure>)}
       </div>
       <details className="meaning-details"><summary>Explore each card’s meaning</summary>
-        {reading.cards.map((c) => <div key={c.position}><h3>{c.name} <small>({c.orientation})</small></h3><p>{c.summary}</p><p className="microcopy">{c.keywords.join(' · ')}</p></div>)}
+        {reading.cards.map((c) => <div key={c.position}><h3>{c.name} <small>({c.orientation})</small></h3>{reading.cards.length > 1 && <p className="microcopy">{c.positionLabel}</p>}<p>{c.summary}</p><p className="microcopy">{c.keywords.join(' · ')}</p></div>)}
       </details>
       <div className="callout">
-        <p>
-          <strong>Reading:</strong> {reading.summary}
-        </p>
+        {reading.spread !== 'celtic-cross' && <p><strong>Reading:</strong> {reading.summary}</p>}
         <p>
           <strong>Next action:</strong> {reading.nextAction}
         </p>
@@ -129,6 +127,12 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
           {reading.limitation}
         </p>
       </div>
+      {reading.spread === 'celtic-cross' && (
+        <details className="meaning-details">
+          <summary>Read the full Celtic Cross interpretation</summary>
+          <p>{reading.summary}</p>
+        </details>
+      )}
 
       <label className="action-choice"><input type="checkbox" checked={actionChosen} onChange={(e) => setActionChosen(e.target.checked)} /><span>{actionChosen ? 'One small intention, chosen. Take it into your day.' : 'I’ll take one small step today.'}</span></label>
       <ShareCard reading={reading} />
