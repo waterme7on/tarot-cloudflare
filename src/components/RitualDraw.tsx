@@ -190,7 +190,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   return (
     <section className={'reading-app reading-table ritual-app ritual-' + stage} id="draw-tool" ref={appRef} aria-label="Interactive tarot reading" aria-busy={loading}>
       <div className="ritual-topbar">
-        <button type="button" className="ritual-back" disabled={loading} onClick={() => stage === 'prepare' ? reset() : reset()} aria-label="Start over">↶ <span>Start over</span></button>
+        <button type="button" className="ritual-back" disabled={loading || stage === 'prepare'} onClick={reset} aria-label="Start over">↶ <span>Start over</span></button>
         <span className="ritual-name">Your reading</span>
         <span className="ritual-counter">{stage === 'choose' ? String(Math.min(selected.length + 1, count)) + ' / ' + count : '78 cards'}</span>
       </div>
