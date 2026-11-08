@@ -20,11 +20,11 @@ A decision tarot reading is the one most people actually want: "Should I do this
 
 ## Two kinds of decision question
 
-**Yes/no.** "Should I apply for this role?" "Is now the time to have the conversation?" These work with a [single card](/spreads/one-card) and a rule for reading the lean.
+**Yes/no.** "Should I apply for this role?" "Is now the time to have the conversation?" These work with a [single card](/spreads/one-card/) and a rule for reading the lean.
 
-**Either/or.** "Stay in this city or move?" "Option A or Option B?" These work with a [three card spread](/spreads/three-card) using Option A / Option B / What I am missing, or Situation / Action / Outcome.
+**Either/or.** "Stay in this city or move?" "Option A or Option B?" These work with a [three card spread](/spreads/three-card/) using Option A / Option B / What I am missing, or Situation / Action / Outcome.
 
-For a decision with history and several people involved, the [Celtic Cross](/spreads/celtic-cross) shows the wider context.
+For a decision with history and several people involved, the [Celtic Cross](/spreads/celtic-cross/) shows the wider context.
 
 ## Good and bad decision questions
 

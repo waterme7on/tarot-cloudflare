@@ -28,7 +28,7 @@ Reach for one card when you want a focused prompt rather than a full map. It wor
 - **A specific, bounded question.** "What do I need to know about this conversation?"
 - **Learning the deck.** Reading one card alone lets you notice its imagery and posture without the noise of neighbors.
 
-A single card is less useful when the situation has several moving parts, when you want to see how things developed over time, or when you are asking about more than one person. For those, the [three card spread](/spreads/three-card) or the [Celtic Cross](/spreads/celtic-cross) will serve you better.
+A single card is less useful when the situation has several moving parts, when you want to see how things developed over time, or when you are asking about more than one person. For those, the [three card spread](/spreads/three-card/) or the [Celtic Cross](/spreads/celtic-cross/) will serve you better.
 
 ## How to ask a one card question
 
@@ -39,7 +39,7 @@ The quality of a one card reading depends almost entirely on the question.
 3. **Keep the time frame short.** One card suits today, this week, this conversation, not "the next five years."
 4. **Write the question down before you draw.** This stops you quietly changing the question after you see the card.
 
-For a yes/no question, decide in advance how you will read the result. Many readers treat upright as leaning yes and reversed as leaning no, with the card's own meaning adding the "but" or "because." Our [decision reading guide](/questions/decision) goes deeper.
+For a yes/no question, decide in advance how you will read the result. Many readers treat upright as leaning yes and reversed as leaning no, with the card's own meaning adding the "but" or "because." Our [decision reading guide](/questions/decision/) goes deeper.
 
 ## Reading the card upright
 

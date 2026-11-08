@@ -43,7 +43,7 @@ Ask what you can do, notice, or understand. Avoid asking what someone else will 
 1. **Start with "What" or "How," not "Will."** "What" and "How" open the reading toward reflection. "Will" closes it into a prediction.
 2. **Name the specific situation.** "The argument we had on Sunday" is better than "our problems."
 3. **Include yourself.** "What can I do" or "what do I need to see" keeps the reading actionable.
-4. **Decide the spread before drawing.** A [single card](/spreads/one-card) for a quick mood, [three cards](/spreads/three-card) (You, Them, Relationship) for most questions, the [Celtic Cross](/spreads/celtic-cross) when there is history and outside pressure.
+4. **Decide the spread before drawing.** A [single card](/spreads/one-card/) for a quick mood, [three cards](/spreads/three-card/) (You, Them, Relationship) for most questions, the [Celtic Cross](/spreads/celtic-cross/) when there is history and outside pressure.
 
 ## Cards that matter most in love readings
 

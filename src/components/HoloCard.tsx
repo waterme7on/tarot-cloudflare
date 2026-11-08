@@ -100,137 +100,210 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
   useEffect(() => {
     const el = host.current;
     if (!el) return;
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let dispose = () => {};
     let cancelled = false;
-
-    (async () => {
-      let THREE: typeof import('three');
-      try {
-        THREE = await import('three');
-      } catch {
-        setFailed(true);
-        return;
+    let disposed = false;
+    const cleanups: Array<() => void> = [];
+    const dispose = () => {
+      if (disposed) return;
+      disposed = true;
+      // Release partial setups too, even if an individual cleanup fails.
+      for (const cleanup of cleanups.splice(0).reverse()) {
+        try { cleanup(); } catch { /* Continue releasing the remaining resources. */ }
       }
-      if (cancelled) return;
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-      renderer.setSize(el.clientWidth, el.clientHeight);
-      renderer.setClearColor(0x000000, 0);
-      el.appendChild(renderer.domElement);
-      renderer.domElement.setAttribute('aria-hidden', 'true');
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(28, el.clientWidth / el.clientHeight, 0.1, 100);
-      camera.position.set(0, 0, 7.2);
-
-      const loader = new THREE.TextureLoader();
-      let art: import('three').Texture;
-      try {
-        art = await loader.loadAsync(cardImage(slug));
-      } catch {
+    };
+    const fail = () => {
+      dispose();
+      if (!cancelled) {
+        setReady(false);
         setFailed(true);
-        renderer.dispose();
-        renderer.domElement.remove();
-        return;
       }
-      art.colorSpace = THREE.SRGBColorSpace;
-      art.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-      const back = new THREE.CanvasTexture(drawBack());
-      back.colorSpace = THREE.SRGBColorSpace;
+    };
+    setReady(false);
+    setFailed(false);
 
-      const uniforms = { uTime: { value: 0 }, uFoil: { value: foil }, uView: { value: new THREE.Vector3(0, 0, 1) }, tArt: { value: art }, tBack: { value: back } };
-      const front = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRONT });
-      const backMat = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: BACK });
-      const edge = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: EDGE });
-      const geo = new THREE.BoxGeometry(2, 3, 0.035);
-      const mesh = new THREE.Mesh(geo, [edge, edge, edge, edge, front, backMat]);
-      const root = new THREE.Group();
-      root.add(mesh);
-      scene.add(root);
+    void (async () => {
+      try {
+        const THREE = await import('three');
+        if (cancelled) return;
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+        // Register ownership before any setup or await can fail or be cancelled.
+        cleanups.push(
+          () => renderer.domElement.remove(),
+          () => renderer.forceContextLoss(),
+          () => renderer.dispose(),
+        );
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        renderer.setSize(el.clientWidth || 1, el.clientHeight || 1);
+        renderer.setClearColor(0x000000, 0);
+        renderer.domElement.style.position = 'absolute';
+        renderer.domElement.style.inset = '0';
+        renderer.domElement.setAttribute('aria-hidden', 'true');
+        el.appendChild(renderer.domElement);
 
-      const base = { x: 0, y: 0, z: orientation === 'reversed' ? Math.PI : 0 };
-      let targetX = 0;
-      let targetY = reveal ? Math.PI : 0;
-      let rotX = 0;
-      let rotY = targetY;
-      let hover = false;
-      const start = performance.now();
-      const revealAt = start + revealDelayMs;
-      let revealed = !reveal;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(28, (el.clientWidth || 1) / (el.clientHeight || 1), 0.1, 100);
+        camera.position.set(0, 0, 7.2);
 
-      const onMove = (e: PointerEvent) => {
-        if (!interactive) return;
-        const r = el.getBoundingClientRect();
-        const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-        const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
-        targetY = nx * 0.55;
-        targetX = ny * 0.45;
-        hover = true;
-      };
-      const onLeave = () => {
-        hover = false;
-      };
-      const onOrient = (e: DeviceOrientationEvent) => {
-        if (!interactive || hover || e.gamma == null || e.beta == null) return;
-        targetY = THREE.MathUtils.clamp(e.gamma / 45, -1, 1) * 0.5;
-        targetX = THREE.MathUtils.clamp((e.beta - 40) / 45, -1, 1) * 0.4;
-      };
-      el.addEventListener('pointermove', onMove);
-      el.addEventListener('pointerleave', onLeave);
-      window.addEventListener('deviceorientation', onOrient);
-
-      const ro = new ResizeObserver(() => {
-        const w = el.clientWidth;
-        const h = el.clientHeight;
-        if (!w || !h) return;
-        renderer.setSize(w, h);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-      });
-      ro.observe(el);
-
-      setReady(true);
-      let last = performance.now();
-      let elapsed = 0;
-      const inv = new THREE.Matrix4();
-      renderer.setAnimationLoop((now) => {
-        const dt = Math.min((now - last) / 1000, 0.1);
-        last = now;
-        elapsed += dt;
-        if (!revealed && now >= revealAt) {
-          revealed = true;
-          targetY = 0;
+        const art = await new THREE.TextureLoader().loadAsync(cardImage(slug));
+        if (cancelled || disposed) {
+          art.dispose();
+          return;
         }
-        if (revealed && !hover && interactive && !reduced) {
-          targetY = Math.sin(elapsed * 0.6) * 0.18;
-          targetX = Math.sin(elapsed * 0.8) * 0.08;
-        }
-        const ease = reduced ? 1 : 1 - Math.exp(-dt * (revealed ? 6 : 3.2));
-        rotX += (targetX - rotX) * ease;
-        rotY += (targetY - rotY) * ease;
-        root.rotation.set(base.x + rotX, base.y + rotY, base.z);
-        root.updateMatrixWorld(true);
-        uniforms.uView.value.copy(camera.position).applyMatrix4(inv.copy(root.matrixWorld).invert()).normalize();
-        uniforms.uTime.value = reduced ? 0 : elapsed;
-        renderer.render(scene, camera);
-      });
+        cleanups.push(() => art.dispose());
+        art.colorSpace = THREE.SRGBColorSpace;
+        art.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+        const back = new THREE.CanvasTexture(drawBack());
+        cleanups.push(() => back.dispose());
+        back.colorSpace = THREE.SRGBColorSpace;
 
-      dispose = () => {
-        renderer.setAnimationLoop(null);
-        ro.disconnect();
-        el.removeEventListener('pointermove', onMove);
-        el.removeEventListener('pointerleave', onLeave);
-        window.removeEventListener('deviceorientation', onOrient);
-        geo.dispose();
-        front.dispose();
-        backMat.dispose();
-        edge.dispose();
-        art.dispose();
-        back.dispose();
-        renderer.dispose();
-        renderer.domElement.remove();
-      };
+        const uniforms = { uTime: { value: 0 }, uFoil: { value: foil }, uView: { value: new THREE.Vector3(0, 0, 1) }, tArt: { value: art }, tBack: { value: back } };
+        const front = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRONT });
+        cleanups.push(() => front.dispose());
+        const backMat = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: BACK });
+        cleanups.push(() => backMat.dispose());
+        const edge = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: EDGE });
+        cleanups.push(() => edge.dispose());
+        const geo = new THREE.BoxGeometry(2, 3, 0.035);
+        cleanups.push(() => geo.dispose());
+        const mesh = new THREE.Mesh(geo, [edge, edge, edge, edge, front, backMat]);
+        const root = new THREE.Group();
+        root.add(mesh);
+        scene.add(root);
+
+        const base = { x: 0, y: 0, z: orientation === 'reversed' ? Math.PI : 0 };
+        let targetX = 0;
+        let revealed = !reveal || reduced.matches;
+        let targetY = revealed ? 0 : Math.PI;
+        let rotX = 0;
+        let rotY = targetY;
+        let hover = false;
+        const revealAt = performance.now() + revealDelayMs;
+        let last = performance.now();
+        let elapsed = 0;
+        let frame: number | null = null;
+        let inView = typeof IntersectionObserver === 'undefined';
+        let hasRendered = false;
+        const inv = new THREE.Matrix4();
+        const canRender = () => !cancelled && !disposed && inView && !document.hidden && el.clientWidth > 0 && el.clientHeight > 0;
+        const stop = () => {
+          if (frame !== null) cancelAnimationFrame(frame);
+          frame = null;
+        };
+        cleanups.push(stop);
+
+        const render = (now: number) => {
+          if (!canRender()) return;
+          try {
+            const dt = Math.min((now - last) / 1000, 0.1);
+            last = now;
+            if (!reduced.matches) elapsed += dt;
+            if (!revealed && (reduced.matches || now >= revealAt)) {
+              revealed = true;
+              targetY = 0;
+            }
+            if (revealed && !hover && interactive && !reduced.matches) {
+              targetY = Math.sin(elapsed * 0.6) * 0.18;
+              targetX = Math.sin(elapsed * 0.8) * 0.08;
+            }
+            const ease = reduced.matches ? 1 : 1 - Math.exp(-dt * (revealed ? 6 : 3.2));
+            rotX += (targetX - rotX) * ease;
+            rotY += (targetY - rotY) * ease;
+            root.rotation.set(base.x + rotX, base.y + rotY, base.z);
+            root.updateMatrixWorld(true);
+            uniforms.uView.value.copy(camera.position).applyMatrix4(inv.copy(root.matrixWorld).invert()).normalize();
+            uniforms.uTime.value = reduced.matches ? 0 : elapsed;
+            renderer.render(scene, camera);
+            if (!hasRendered) {
+              hasRendered = true;
+              setReady(true);
+            }
+          } catch {
+            fail();
+          }
+        };
+        const tick = (now: number) => {
+          frame = null;
+          render(now);
+          if (canRender() && !reduced.matches) frame = requestAnimationFrame(tick);
+        };
+        const resume = () => {
+          stop();
+          if (!canRender()) return;
+          last = performance.now();
+          render(last);
+          if (canRender() && !reduced.matches) frame = requestAnimationFrame(tick);
+        };
+        const renderStatic = () => {
+          if (reduced.matches) render(performance.now());
+        };
+
+        const onMove = (e: PointerEvent) => {
+          if (!interactive || reduced.matches || !canRender()) return;
+          const r = el.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+          const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+          targetY = nx * 0.55;
+          targetX = ny * 0.45;
+          hover = true;
+          renderStatic();
+        };
+        const onLeave = () => {
+          hover = false;
+          if (reduced.matches) {
+            targetX = targetY = 0;
+            renderStatic();
+          }
+        };
+        const onOrient = (e: DeviceOrientationEvent) => {
+          if (!interactive || reduced.matches || !canRender() || hover || e.gamma == null || e.beta == null) return;
+          targetY = THREE.MathUtils.clamp(e.gamma / 45, -1, 1) * 0.5;
+          targetX = THREE.MathUtils.clamp((e.beta - 40) / 45, -1, 1) * 0.4;
+        };
+        el.addEventListener('pointermove', onMove);
+        cleanups.push(() => el.removeEventListener('pointermove', onMove));
+        el.addEventListener('pointerleave', onLeave);
+        cleanups.push(() => el.removeEventListener('pointerleave', onLeave));
+        window.addEventListener('deviceorientation', onOrient);
+        cleanups.push(() => window.removeEventListener('deviceorientation', onOrient));
+        document.addEventListener('visibilitychange', resume);
+        cleanups.push(() => document.removeEventListener('visibilitychange', resume));
+        reduced.addEventListener('change', resume);
+        cleanups.push(() => reduced.removeEventListener('change', resume));
+
+        const ro = new ResizeObserver(() => {
+          if (cancelled || disposed) return;
+          const w = el.clientWidth;
+          const h = el.clientHeight;
+          if (!w || !h) {
+            stop();
+            return;
+          }
+          try {
+            renderer.setSize(w, h);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            resume();
+          } catch {
+            fail();
+          }
+        });
+        cleanups.push(() => ro.disconnect());
+        ro.observe(el);
+        if (typeof IntersectionObserver !== 'undefined') {
+          const io = new IntersectionObserver(([entry]) => {
+            if (cancelled || disposed || !entry) return;
+            inView = entry.isIntersecting;
+            resume();
+          });
+          cleanups.push(() => io.disconnect());
+          io.observe(el);
+        }
+        resume();
+      } catch {
+        fail();
+      }
     })();
 
     return () => {
@@ -240,13 +313,15 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
   }, [slug, orientation, reveal, revealDelayMs, interactive, foil]);
 
   return (
-    <div ref={host} className={`holo-card ${className ?? ''}`} style={{ width, height }}>
+    <div ref={host} className={`holo-card ${className ?? ''}`} style={{ width, maxWidth: '100%', aspectRatio: `${width} / ${height}` }}>
       <img
         src={cardImage(slug)}
         alt={`${name} tarot card illustration${orientation === 'reversed' ? ' (reversed)' : ''}`}
         width={768}
         height={1152}
-        className={`${orientation === 'reversed' ? 'reversed' : ''} ${ready && !failed ? 'holo-hidden' : ''}`}
+        className={orientation === 'reversed' ? 'reversed' : ''}
+        // Opacity preserves the accessible SSR image after the canvas takes over.
+        style={{ opacity: ready && !failed ? 0 : 1 }}
         loading={reveal ? 'eager' : 'lazy'}
         decoding="async"
       />

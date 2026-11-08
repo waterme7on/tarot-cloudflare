@@ -41,7 +41,7 @@ The weak questions are not forbidden. They are just unlikely to give you anythin
 1. **Name the specific decision or situation.** "This offer from the design agency" rather than "my career."
 2. **Ask about your contribution.** Work has many actors; the only one you control is you.
 3. **Set a time frame.** "This quarter" or "before the review in March" keeps the reading grounded.
-4. **Match the spread to the question.** A [one card draw](/spreads/one-card) for a daily focus. A [three card Situation/Action/Outcome](/spreads/three-card) for a choice. The [Celtic Cross](/spreads/celtic-cross) when the situation has history, politics, and several people involved.
+4. **Match the spread to the question.** A [one card draw](/spreads/one-card/) for a daily focus. A [three card Situation/Action/Outcome](/spreads/three-card/) for a choice. The [Celtic Cross](/spreads/celtic-cross/) when the situation has history, politics, and several people involved.
 
 ## Cards that often matter in career readings
 

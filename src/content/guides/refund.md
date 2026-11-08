@@ -42,6 +42,6 @@ We aim to respond within a few business days. Refunds go to the original payment
 
 ## 6. What is not covered
 
-Disagreement with the content of a random card draw, and requests made more than 14 days after purchase (except duplicate charges). Purchases by anyone under 18 are not permitted under our [terms](/guides/terms); contact us and we will handle these individually.
+Disagreement with the content of a random card draw, and requests made more than 14 days after purchase (except duplicate charges). Purchases by anyone under 18 are not permitted under our [terms](/terms/); contact us and we will handle these individually.
 
-See also our [privacy policy](/guides/privacy).
+See also our [privacy policy](/privacy/).

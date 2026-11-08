@@ -1,39 +1,59 @@
-import { useState } from 'react';
-import type { DrawResponse, DrawnCard } from '../lib/schema';
-import { hasArt } from '../lib/artwork';
+import { useEffect, useId, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+import type { DrawResponse } from '../lib/schema';
+import CardBack from './CardBack';
 import HoloCard from './HoloCard';
 import { ShareCard } from './ShareCard';
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .filter((w) => !['of', 'the'].includes(w.toLowerCase()))
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 3);
-}
-
-export function TarotCardFace({ card, index = 0, reveal = true }: { card: DrawnCard; index?: number; reveal?: boolean }) {
-  return (
-    <div>
-      {hasArt(card.slug) ? (
-        <HoloCard slug={card.slug} name={card.name} orientation={card.orientation} reveal={reveal} revealDelayMs={350 + index * 650} width={180} />
-      ) : (
-        <div className={`tarot-card ${card.orientation}`} aria-hidden="true">
-          <div className="glyph">{initials(card.name)}</div>
-          <div className="name">{card.name}</div>
-        </div>
-      )}
-      <p className="result-meta" style={{ marginTop: '.5rem' }}>
-        {card.positionLabel} · {card.orientation}
-      </p>
-    </div>
-  );
-}
-
-export function CardResult({ reading, question, onReset, reveal = true }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean }) {
+export function CardResult({ reading, question, onReset, reveal = true, immersive = false }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean; immersive?: boolean }) {
   const [checkout, setCheckout] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [consent, setConsent] = useState(false);
+  const [activeCard, setActiveCard] = useState(0);
+  const [opened, setOpened] = useState(false);
+  const [pickedSlots, setPickedSlots] = useState<number[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
+  const [advancing, setAdvancing] = useState(false);
+  const pickLock = useRef(false);
+  const transitionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const fanSize = Math.max(7, reading.cards.length);
+  const motionDelay = (ms: number) => matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ms;
+  function revealNext(slot: number) {
+    if (pickLock.current || pickedSlots.includes(slot)) return;
+    pickLock.current = true;
+    clearTimeout(transitionTimer.current);
+    setSelectedSlot(slot);
+    setPickedSlots((slots) => [...slots, slot]);
+    transitionTimer.current = setTimeout(() => {
+      setOpened(true);
+      setSelectedSlot(null);
+    }, motionDelay(280));
+  }
+  function advanceReading() {
+    if (advancing) return;
+    setAdvancing(true);
+    clearTimeout(transitionTimer.current);
+    transitionTimer.current = setTimeout(() => {
+      if (activeCard === reading.cards.length - 1) {
+        setShowSummary(true);
+        return;
+      }
+      pickLock.current = false;
+      setOpened(false);
+      setSelectedSlot(null);
+      setActiveCard((index) => index + 1);
+      setAdvancing(false);
+    }, motionDelay(180));
+  }
+  const [showSummary, setShowSummary] = useState(!reveal);
+  const [actionChosen, setActionChosen] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const id = useId();
+  const currentCard = reading.cards[activeCard]!;
+  useEffect(() => () => clearTimeout(transitionTimer.current), []);
+  useEffect(() => {
+    headingRef.current?.focus({ preventScroll: true });
+    headingRef.current?.closest('section')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+  }, [activeCard, showSummary]);
   const product = reading.spread === 'one-card' ? 'single' : 'three';
   const price = product === 'single' ? '$4.99' : '$9.99';
 
@@ -57,27 +77,47 @@ export function CardResult({ reading, question, onReset, reveal = true }: { read
     }
   };
 
+  if (!showSummary) return (
+    <section className={`reading-app reveal-app ${immersive ? 'reading-table table-reveal' : ''}`} id="draw-tool" data-active={immersive ? 'true' : undefined} data-opened={opened} data-advancing={advancing || undefined} aria-labelledby={`${id}-reveal-heading`}>
+      {immersive ? <div className="table-toolbar"><span>Your reading</span><span>{activeCard + 1} / {reading.cards.length}</span><a href={`/reading/${reading.publicToken}/`}>Save &amp; close</a></div> : <div className="flow-topline"><span>Your cards are ready</span><span>{activeCard + 1} / {reading.cards.length}</span></div>}
+      <progress className="reveal-progress" aria-label="Cards revealed" value={activeCard + (opened ? 1 : 0)} max={reading.cards.length} />
+      <div className="flow-body reveal-body">
+        <h2 id={`${id}-reveal-heading`} ref={headingRef} tabIndex={-1}>{currentCard.positionLabel}</h2>
+        <p className="flow-caption">{opened ? 'Notice what resonates. Leave what doesn’t.' : immersive ? 'Tap a card back to reveal your next card.' : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
+        <div className="reveal-stage">
+          {opened ? <div className={`table-turned-card ${advancing ? 'is-leaving' : ''}`} key={activeCard}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={240} reveal={false} /></div> : immersive ?
+            <div className={`table-fan ${selectedSlot !== null ? 'has-selection' : ''}`} key={`fan-${activeCard}`} role="group" aria-label="Deck card backs">{Array.from({ length: fanSize }, (_, i) => <button type="button" key={i} className={`fan-card ${selectedSlot === i ? 'is-selected' : ''}`} style={{ '--slot': i / (fanSize - 1), '--dip': Math.abs(i / (fanSize - 1) - .5) } as CSSProperties} disabled={pickedSlots.includes(i) || selectedSlot !== null} onClick={() => revealNext(i)} aria-label={`Reveal card ${activeCard + 1} from position ${i + 1}`}><CardBack /></button>)}</div> :
+            <button type="button" className={`deck-back reveal-card ${selectedSlot !== null ? 'is-selected' : ''}`} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>}
+        </div>
+        {immersive && !opened && <>
+          <div className="table-positions" aria-label="Spread positions">{reading.cards.map((card, i) => <div key={card.position} className={i < activeCard ? 'filled' : i === activeCard ? 'current' : ''} aria-current={i === activeCard ? 'step' : undefined}>{i < activeCard ? <img src={`/cards/thumbs/${card.slug}.webp`} alt={`${card.name}, ${card.orientation}`} className={card.orientation} width="48" height="72" /> : <span aria-hidden="true">{i + 1}</span>}<small>{card.positionLabel}</small></div>)}</div>
+          <p className="microcopy">Your draw is already set by a random shuffle. Taps reveal the cards in order.</p>
+        </>}
+        {opened && <div className="revealed-meaning" role="status"><h3>{currentCard.name}</h3><p className="orientation-label">{currentCard.orientation}</p><p>{currentCard.summary}</p></div>}
+      </div>
+      <div className="flow-actions">
+        {opened ? <button className="btn flow-primary" type="button" disabled={advancing} onClick={advanceReading}>{activeCard === reading.cards.length - 1 ? 'Bring it together' : 'Meet the next card'}<span aria-hidden="true">→</span></button> :
+          <button className="btn flow-primary" type="button" disabled={selectedSlot !== null} onClick={() => revealNext(Array.from({ length: fanSize }, (_, i) => i).find((i) => !pickedSlots.includes(i))!)}>{selectedSlot !== null ? 'Turning your card…' : 'Reveal my card'}<span aria-hidden="true">→</span></button>}
+      </div>
+      <button type="button" className="quiet-button" onClick={() => { clearTimeout(transitionTimer.current); setShowSummary(true); }}>Skip to the full reading</button>
+    </section>
+  );
+
   return (
-    <section className="card" aria-live="polite">
-      <h2 style={{ marginTop: 0, textAlign: 'center' }}>{reading.headline}</h2>
+    <section className={`reading-app result-app summary-enter ${immersive ? 'reading-table table-summary' : ''}`} id="draw-tool" data-active={immersive ? 'true' : undefined} aria-labelledby={`${id}-result-heading`}>
+      {immersive ? <div className="table-toolbar"><span>Reading complete</span><a href={`/reading/${reading.publicToken}/`}>Save &amp; close</a></div> : <div className="flow-topline"><span>Reading complete</span><span>{reading.cards.length} / {reading.cards.length} cards</span></div>}
+      <h2 ref={headingRef} tabIndex={-1} id={`${id}-result-heading`}>A thought to take with you.</h2>
       {reading.yesNo && (
-        <p style={{ textAlign: 'center', fontSize: '1.4rem', fontFamily: 'var(--font)', color: 'var(--gold2)' }}>
+        <p className="yesno-lean" style={{ textAlign: 'center', fontSize: '1.4rem', fontFamily: 'var(--font)', color: 'var(--gold2)' }}>
           Lean: <strong>{reading.yesNo.toUpperCase()}</strong>
         </p>
       )}
-      <div className="result-cards">
-        {reading.cards.map((c, i) => (
-          <TarotCardFace key={c.position} card={c} index={i} reveal={reveal} />
-        ))}
+      <div className="reading-strip" aria-label="Your drawn cards">
+        {reading.cards.map((c) => <figure key={c.position}><img src={`/cards/thumbs/${c.slug}.webp`} width={120} height={180} className={c.orientation} alt={`${c.name}, ${c.orientation}`} /><figcaption>{c.positionLabel}<strong>{c.name}</strong></figcaption></figure>)}
       </div>
-      {reading.cards.map((c) => (
-        <p key={c.position}>
-          <strong>
-            <a href={`/cards/${c.slug}/`}>{c.name}</a> ({c.orientation})
-          </strong>
-          : {c.summary} <span className="muted small">Keywords: {c.keywords.join(', ')}</span>
-        </p>
-      ))}
+      <details className="meaning-details"><summary>Explore each card’s meaning</summary>
+        {reading.cards.map((c) => <div key={c.position}><h3>{c.name} <small>({c.orientation})</small></h3><p>{c.summary}</p><p className="microcopy">{c.keywords.join(' · ')}</p></div>)}
+      </details>
       <div className="callout">
         <p>
           <strong>Reading:</strong> {reading.summary}
@@ -90,9 +130,11 @@ export function CardResult({ reading, question, onReset, reveal = true }: { read
         </p>
       </div>
 
+      <label className="action-choice"><input type="checkbox" checked={actionChosen} onChange={(e) => setActionChosen(e.target.checked)} /><span>{actionChosen ? 'One small intention, chosen. Take it into your day.' : 'I’ll take one small step today.'}</span></label>
       <ShareCard reading={reading} />
+      <div className="reading-exits"><a href={`/reading/${reading.publicToken}/`}>Open a link to this reading</a>{onReset && <button type="button" className="quiet-button" onClick={onReset}>Start a new reading</button>}</div>
 
-      <div className="card" style={{ marginTop: '1.5rem', borderColor: 'var(--gold)' }}>
+      <div className="report-offer">
         <h3 style={{ marginTop: 0 }}>Get the full reading — {price}</h3>
         <p className="muted small">
           A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, three concrete next steps and a journaling prompt. Delivered in minutes to a private link. If it fails to generate within 10 minutes you are refunded automatically. Entertainment only.
@@ -108,11 +150,6 @@ export function CardResult({ reading, question, onReset, reveal = true }: { read
           <button type="button" className="btn" onClick={startCheckout} disabled={checkout.loading}>
             {checkout.loading ? 'Opening checkout…' : 'Get the full reading'}
           </button>
-          {onReset && (
-            <button type="button" className="btn btn-ghost" onClick={onReset}>
-              Draw again
-            </button>
-          )}
         </div>
       </div>
     </section>
