@@ -1,0 +1,130 @@
+/* Mobile-first tarot ritual. Intentionally separate from legacy and SEO page styles. */
+.ritual-app{--ritual-ink:#101725;--ritual-line:rgba(216,194,141,.19);--ritual-gold:#dfc994;--ritual-ivory:#f2eee6;display:flex;flex-direction:column;max-width:760px;height:670px;min-height:570px;overflow:hidden;background:linear-gradient(160deg,#151e2d,#0c1420 75%);border:1px solid var(--ritual-line);border-radius:20px;color:var(--ritual-ivory);box-shadow:none;isolation:isolate}
+.ritual-app::before{display:none}
+.ritual-app button,.ritual-app textarea{font:inherit}
+.ritual-app button:focus-visible,.ritual-app summary:focus-visible,.ritual-fan:focus-visible{outline:2px solid var(--ritual-gold);outline-offset:3px}
+.ritual-topbar{height:57px;flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.65rem;padding:0 1.3rem;border-bottom:1px solid rgba(255,255,255,.075);font-size:.75rem;color:#abb5c1;position:relative;z-index:4}
+.ritual-back{border:0;background:transparent;color:inherit;display:inline-flex;align-items:center;justify-self:start;gap:.4rem;min-height:44px;min-width:44px;padding:0 .2rem;cursor:pointer;text-align:left}
+.ritual-back:disabled{opacity:.5}
+.ritual-name{font-weight:600;color:var(--ritual-ivory)}
+.ritual-counter{justify-self:end;font-variant-numeric:tabular-nums;font-size:.76rem}
+.ritual-scroll{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;min-height:0;min-width:0;flex:1;scrollbar-width:thin;scrollbar-color:#546173 transparent}
+.ritual-prepare,.ritual-pick-scene,.ritual-deck-scene{max-width:570px;padding:1.4rem 1.4rem .65rem;margin:0 auto;width:100%;box-sizing:border-box}
+.ritual-heading{margin:0 0 1.55rem;text-align:center}
+.ritual-heading h2{font-family:var(--sans);font-weight:600;font-size:clamp(1.55rem,4vw,2.05rem);letter-spacing:-.035em;line-height:1.15;margin:.52rem 0 .6rem;color:var(--ritual-ivory)}
+.ritual-heading p{font-size:.83rem;color:#abb6c3;margin:0;line-height:1.45}
+.ritual-kicker{display:block;color:var(--ritual-gold);font-size:.71rem;font-weight:500;letter-spacing:.015em}
+.ritual-section{margin:1.3rem 0}
+.ritual-section h3{font-family:var(--sans);font-size:.82rem;color:#e9e3d7;margin:0 0 .7rem;font-weight:600}
+.ritual-topics{display:flex;flex-wrap:wrap;gap:.48rem}
+.ritual-chip{appearance:none;border:1px solid rgba(234,223,203,.2);border-radius:100px;background:#141d2b;color:#c4ccd5;min-height:45px;padding:.45rem .95rem;font-size:.79rem;cursor:pointer;transition:color .18s ease,background .18s ease,border-color .18s ease}
+.ritual-chip[aria-pressed="true"]{border-color:var(--ritual-gold);background:#28303b;color:var(--ritual-ivory)}
+.ritual-spreads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}
+.ritual-spread{appearance:none;border:1px solid rgba(234,223,203,.15);border-radius:10px;background:#131c2b;color:var(--ritual-ivory);display:flex;flex-direction:column;align-items:center;gap:.26rem;min-height:130px;padding:1rem .35rem .75rem;cursor:pointer;transition:border-color .2s,background .2s}
+.ritual-spread[aria-pressed="true"]{border-color:var(--ritual-gold);background:#27303d}
+.ritual-spread strong{font-size:.78rem;font-weight:600}
+.ritual-spread small{font-size:.65rem;color:#acb7c4;line-height:1.3;text-align:center}
+.ritual-mini-cards{height:44px;width:58px;position:relative;display:block;margin-bottom:.15rem}
+.ritual-mini-cards i{position:absolute;top:3px;left:18px;width:24px;height:36px;border:1px solid #ceb783;border-radius:2px;background:#1b2638}
+.ritual-mini-cards i:first-child:nth-last-child(3){left:6px;top:7px;transform:rotate(-13deg)}
+.ritual-mini-cards i:nth-child(2){left:18px;z-index:1}
+.ritual-mini-cards i:nth-child(3){left:30px;top:7px;transform:rotate(13deg)}
+.ritual-question{margin:1.5rem 0 .5rem;border-top:1px solid rgba(255,255,255,.1);padding-top:.8rem}
+.ritual-question summary{display:flex;align-items:center;min-height:44px;color:#ddd0b1;cursor:pointer;font-size:.79rem}
+.ritual-question label{display:block;color:#a5b2c0;font-size:.73rem;margin:.1rem 0 .45rem}
+.ritual-question textarea{border-radius:8px;width:100%;min-height:78px;font-size:16px;resize:vertical;background:#0e1724;border:1px solid rgba(255,255,255,.2);padding:.7rem;color:#f4f0e8}
+.ritual-disclaimer{text-align:center;font-size:.7rem;color:#8f9aa9;line-height:1.45;margin:1rem 0}
+.ritual-actionbar{background:#101725;padding:.85rem 1.4rem 1rem;flex:none;border-top:1px solid rgba(255,255,255,.08);position:relative;z-index:5}
+.ritual-primary{appearance:none;background:var(--ritual-gold);color:#151b23;border:0;border-radius:10px;display:flex;align-items:center;justify-content:space-between;font-weight:700!important;font-size:.9rem!important;min-height:52px;padding:.65rem 1.15rem;width:100%;cursor:pointer;transition:background .15s ease,transform .15s ease}
+.ritual-primary:active{transform:scale(.993)}
+.ritual-primary:disabled{opacity:.64;cursor:default}
+.ritual-actionbar>p{font-size:.67rem;text-align:center;margin:.45rem 0 0;color:#93a0af}
+.ritual-deck-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding-bottom:1.7rem}
+.ritual-deck-scene .ritual-heading{margin-bottom:1.1rem}
+.ritual-deck-button{position:relative;background:transparent;border:0;padding:0;width:192px;height:270px;cursor:pointer;perspective:800px}
+.ritual-deck-layer{width:166px;height:249px;position:absolute;left:13px;top:5px;transition:transform .3s ease;filter:drop-shadow(0 12px 16px rgba(0,0,0,.35))}
+.ritual-deck-layer:nth-child(1){transform:translate(-14px,6px) rotate(-9deg)}
+.ritual-deck-layer:nth-child(2){transform:translate(14px,6px) rotate(9deg)}
+.ritual-deck-layer:nth-child(3){transform:translateY(-6px)}
+.ritual-deck-button:not(:disabled):hover .ritual-deck-layer:nth-child(1){transform:translate(-24px,4px) rotate(-15deg)}
+.ritual-deck-button:not(:disabled):hover .ritual-deck-layer:nth-child(2){transform:translate(24px,4px) rotate(15deg)}
+.ritual-deck-button.is-shuffling .ritual-deck-layer:nth-child(1){animation:ritual-shuffle-left .4s ease-in-out infinite alternate}
+.ritual-deck-button.is-shuffling .ritual-deck-layer:nth-child(2){animation:ritual-shuffle-right .4s ease-in-out infinite alternate}
+.ritual-deck-button.is-shuffling .ritual-deck-layer:nth-child(3){animation:ritual-shuffle-center .4s ease-in-out infinite alternate}
+@keyframes ritual-shuffle-left{to{transform:translate(47px,-5px) rotate(12deg)}}
+@keyframes ritual-shuffle-right{to{transform:translate(-47px,-5px) rotate(-12deg)}}
+@keyframes ritual-shuffle-center{to{transform:translateY(-22px)}}
+.ritual-deck-caption{font-size:.82rem;color:var(--ritual-gold);margin:.6rem 0 0}
+.ritual-pick-scene{display:flex;flex-direction:column;min-height:100%;align-items:center}
+.ritual-pick-heading{margin-bottom:.15rem}
+.ritual-fan-frame{width:100%;max-width:430px;flex:none}
+.ritual-fan{position:relative;width:100%;height:240px;outline:0;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
+.ritual-fan:active{cursor:grabbing}
+.ritual-fan-card{position:absolute;top:48px;left:50%;margin-left:-51px;width:102px;height:153px;padding:0;background:transparent;border:0;transform:translateX(calc(var(--offset) * 43px)) translateY(calc(var(--distance) * 11px)) rotate(calc(var(--offset) * 7deg));transition:transform .22s ease,filter .22s ease,opacity .2s ease;cursor:pointer;transform-origin:50% 110%;filter:drop-shadow(0 6px 12px rgba(0,0,0,.3));-webkit-tap-highlight-color:transparent}
+.ritual-fan-card.is-focused{transform:translateY(-19px) scale(1.07);filter:drop-shadow(0 15px 18px rgba(0,0,0,.46)) brightness(1.08)}
+.ritual-fan-card.is-used{opacity:.26;filter:grayscale(1)}
+.ritual-fan-card:disabled{cursor:default}
+.ritual-focus-marker{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);color:var(--ritual-gold);font-size:1.15rem;pointer-events:none}
+.ritual-fan-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin:-2px 0 .85rem;color:#b5c0c9;font-size:.74rem;font-variant-numeric:tabular-nums}
+.ritual-fan-controls button{width:48px;height:44px;border:1px solid rgba(220,199,156,.23);border-radius:9px;background:rgba(255,255,255,.035);color:var(--ritual-ivory);cursor:pointer}
+.ritual-fan-controls button:disabled{opacity:.4}
+.ritual-slots{display:flex;align-items:flex-start;justify-content:center;gap:.55rem;max-width:100%;overflow-x:auto;scrollbar-width:thin;padding:.3rem 0 .7rem}
+.ritual-slot{display:flex;flex-direction:column;align-items:center;gap:.34rem;flex:0 0 55px;min-width:0}
+.ritual-slot-image{border:1px solid rgba(216,194,141,.25);border-radius:5px;height:53px;width:35px;display:grid;place-items:center;background:rgba(255,255,255,.025);font-size:.79rem;color:#929eaf}
+.ritual-slot.is-filled .ritual-slot-image{background:#343748;border-color:var(--ritual-gold);color:var(--ritual-gold)}
+.ritual-slot.is-next .ritual-slot-image{border-color:var(--ritual-gold)}
+.ritual-slot small{font-size:.62rem;color:#a4b1c0;text-align:center;white-space:nowrap;max-width:65px;overflow:hidden;text-overflow:ellipsis}
+.ritual-human-check{width:min(100%,300px);min-height:64px;margin:.5rem auto}
+.ritual-human-check iframe{max-width:100%}
+.ritual-error{font-size:.77rem;color:#ffc3b6;padding:.6rem 1rem;text-align:center;margin:.5rem auto;max-width:430px}
+.ritual-selected-back{position:relative;width:210px;height:315px;margin:auto;padding:0;display:block;background:transparent;border:0;cursor:pointer;transition:transform .28s ease,opacity .28s ease;filter:drop-shadow(0 20px 20px rgba(0,0,0,.35))}
+.ritual-selected-back.is-selected{transform:perspective(900px) rotateY(89deg);opacity:.8}
+.ritual-selected-back span{position:absolute;left:50%;bottom:13px;transform:translateX(-50%);white-space:nowrap;border-radius:4px;padding:.3rem .55rem;background:rgba(11,17,26,.9);color:#e4d3a2;font-size:.72rem}
+@media(max-width:760px){
+  .home-experience .reading-intro{margin:0}
+  .home-experience .reading-intro h1{font-size:.76rem;font-weight:500;line-height:1.2;color:#b9c2ca}
+  .home-experience{gap:.65rem;padding:.2rem 0 2rem}
+  .reading-page-intro{margin:.5rem auto .9rem}
+  .reading-page-intro h1{font-size:1.8rem;margin:.35rem 0}
+  .reading-page-intro>p:last-child{font-size:.77rem;margin:.25rem 0}
+  .ritual-app{height:calc(100dvh - 168px);min-height:480px;max-width:none;border-radius:16px}
+  .ritual-topbar{height:48px;padding:0 .85rem;font-size:.72rem}
+  .ritual-prepare,.ritual-pick-scene,.ritual-deck-scene{padding:1rem .9rem .3rem}
+  .ritual-heading{margin-bottom:1rem}
+  .ritual-heading h2{font-size:1.7rem;margin:.34rem 0 .45rem}
+  .ritual-heading p{font-size:.77rem}
+  .ritual-section{margin:.92rem 0}
+  .ritual-chip{padding:.36rem .78rem;min-height:44px;font-size:.75rem}
+  .ritual-spreads{gap:.42rem}
+  .ritual-spread{padding:.8rem .3rem .55rem;min-height:115px}
+  .ritual-spread strong{font-size:.74rem}
+  .ritual-spread small{font-size:.61rem}
+  .ritual-question{margin:.65rem 0 0}
+  .ritual-disclaimer{font-size:.65rem}
+  .ritual-actionbar{padding:.65rem .85rem calc(.8rem + env(safe-area-inset-bottom) * .15)}
+  .ritual-primary{min-height:50px}
+  .ritual-actionbar>p{margin:.3rem 0 0}
+  .ritual-deck-button{width:160px;height:234px}
+  .ritual-deck-layer{width:142px;height:213px;left:9px;top:8px}
+  .ritual-fan{height:215px}
+  .ritual-fan-card{width:88px;height:132px;margin-left:-44px;top:49px;transform:translateX(calc(var(--offset) * 37px)) translateY(calc(var(--distance) * 9px)) rotate(calc(var(--offset) * 7deg))}
+  .ritual-pick-heading{margin-bottom:0}
+  .ritual-pick-heading h2{font-size:1.55rem}
+  .ritual-fan-controls{margin:-5px 0 .65rem}
+  .ritual-slot{flex-basis:52px}
+  .ritual-slot-image{width:31px;height:47px}
+  .table-reveal .reveal-stage{min-height:318px}
+  .table-reveal .flow-actions{padding-bottom:calc(1rem + env(safe-area-inset-bottom))}
+  .table-reveal .table-turned-card{width:200px;height:300px}
+  .table-reveal .ritual-selected-back{width:190px;height:285px}
+}
+@media(max-width:360px){
+  .ritual-app{min-height:470px}
+  .ritual-prepare,.ritual-pick-scene,.ritual-deck-scene{padding-inline:.7rem}
+  .ritual-fan-card{transform:translateX(calc(var(--offset) * 33px)) translateY(calc(var(--distance) * 9px)) rotate(calc(var(--offset) * 7deg))}
+  .ritual-topics{gap:.3rem}
+  .ritual-chip{padding-inline:.66rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .ritual-app *, .ritual-app *::before, .ritual-app *::after,.ritual-selected-back{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
