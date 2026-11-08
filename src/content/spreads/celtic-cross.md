@@ -21,7 +21,7 @@ The Celtic Cross is the best known of the large tarot spreads. Ten cards are lai
 
 ## When to use it
 
-Use the Celtic Cross for a question that has been on your mind for a while and that you want to look at from every side: a long-running relationship, a stuck career, a financial pattern you keep repeating, or a major decision with a long tail. For daily check-ins or quick yes/no questions, the [one card](/spreads/one-card) or [three card](/spreads/three-card) spreads are quicker and clearer.
+Use the Celtic Cross for a question that has been on your mind for a while and that you want to look at from every side: a long-running relationship, a stuck career, a financial pattern you keep repeating, or a major decision with a long tail. For daily check-ins or quick yes/no questions, the [one card](/spreads/one-card/) or [three card](/spreads/three-card/) spreads are quicker and clearer.
 
 ## The cross: positions 1 to 6
 

@@ -60,4 +60,4 @@ The site does not set tracking cookies. A short-lived session value may be used 
 
 ## Changes and contact
 
-If this policy changes, we will update the date at the top of this page. Questions: **support@tarot-tools.example.com**. See also our [terms of service](/terms) and [disclaimer](/disclaimer).
+If this policy changes, we will update the date at the top of this page. Questions: **support@tarot-tools.example.com**. See also our [terms of service](/terms/) and [disclaimer](/disclaimer/).

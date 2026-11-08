@@ -16,7 +16,7 @@ You must be at least **18 years old** to use the site or purchase a report. By u
 
 ## 2. Purpose of the service
 
-The site is provided **for reflection and entertainment only**. Readings, card meanings, spread guides, and deep reports are not predictions and are not advice of any kind. Nothing on the site constitutes medical, legal, financial, psychological, or other professional advice. If you need such advice, consult a qualified professional. See our [disclaimer](/disclaimer).
+The site is provided **for reflection and entertainment only**. Readings, card meanings, spread guides, and deep reports are not predictions and are not advice of any kind. Nothing on the site constitutes medical, legal, financial, psychological, or other professional advice. If you need such advice, consult a qualified professional. See our [disclaimer](/disclaimer/).
 
 ## 3. No guarantees
 
@@ -45,7 +45,7 @@ Deep reports are **digital goods**. When you purchase one:
 - Delivery is by a **link** provided after payment and, where you supply an email address, sent to that address. Keep the link and order token safe.
 - Report files are available for 180 days from creation, after which they are deleted.
 - Payments are processed by Waffo Pancake (Waffo.com Limited, merchant of record). We do not store your card details.
-- Refunds follow our [refund policy](/refund). Because the goods are digital and delivered immediately, statutory cancellation rights may not apply once the report has been accessed, except as set out in that policy.
+- Refunds follow our [refund policy](/refund/). Because the goods are digital and delivered immediately, statutory cancellation rights may not apply once the report has been accessed, except as set out in that policy.
 - Prices are shown before purchase and may change for future purchases.
 
 AI-assisted reports are produced by a language model and are labelled as such. They may be generic or contain mistakes. They are an extended prompt for reflection, not a professional opinion.
@@ -56,7 +56,7 @@ All original text, card interpretations, and design on the site are owned by Tar
 
 ## 7. Privacy
 
-Our handling of your data is described in the [privacy policy](/privacy), which forms part of these terms.
+Our handling of your data is described in the [privacy policy](/privacy/), which forms part of these terms.
 
 ## 8. Limitation of liability
 

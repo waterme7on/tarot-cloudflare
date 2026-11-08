@@ -13,9 +13,10 @@ interface Props {
 const { title, description, canonical, noindex = false, jsonLd = [], updatedAt, author } = Astro.props;
 const ogImage = Astro.props.ogImage ?? `${(Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '')}/og-default.png`;
 const site = (Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '');
-const path = Astro.url.pathname;
+const path = Astro.url.pathname === '/' ? '/' : `${Astro.url.pathname.replace(/\/+$/, '')}/`;
 const canonicalUrl = canonical ?? `${site}${path}`;
 const turnstileKey = Astro.locals.runtime?.env?.PUBLIC_TURNSTILE_SITE_KEY ?? import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const isPreview = Astro.locals.runtime?.env?.ENVIRONMENT === 'preview';
 const baseLd = [
   { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tarot Tools', url: site },
   { '@context': 'https://schema.org', '@type': 'Organization', name: 'Tarot Tools', url: site, email: 'support@tarot-tools.example.com' },
@@ -29,7 +30,7 @@ const baseLd = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
-    {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+    {noindex || isPreview ? <meta name="robots" content={isPreview ? 'noindex, nofollow' : 'noindex, follow'} /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
     <link rel="alternate" hreflang="en" href={canonicalUrl} />
     <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
     <meta property="og:type" content="website" />
@@ -58,7 +59,7 @@ const baseLd = [
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
-      <a href="/" class="brand" aria-label="Tarot Tools home"><img src="/brand/logo-horizontal-dark.svg" alt="" width="166" height="32" /></a>
+      <a href="/" class="brand" aria-label="Reveal, Tarot Tools home"><img src="/brand/logo-horizontal-dark.svg" alt="" width="166" height="32" /></a>
       <nav aria-label="Primary">
         <a href="/">Card Generator</a>
         <a href="/free-tarot-reading/">Free Reading</a>

@@ -6,6 +6,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.requestId = crypto.randomUUID();
   const path = context.url.pathname;
 
+  if (path !== '/' && !path.endsWith('/') && !path.startsWith('/api/') && !path.includes('.')) {
+    const url = new URL(context.url);
+    url.pathname = `${path}/`;
+    return context.redirect(url.toString(), 308);
+  }
+
   if (path.startsWith('/admin')) {
     const denied = await requireAccess(context.request, context.locals.runtime?.env);
     if (denied) return denied;
@@ -25,7 +31,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
       "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self'; form-action 'self' https://pancake.waffo.ai; base-uri 'self'; object-src 'none'",
     );
   }
-  if (NOINDEX_PREFIXES.some((p) => path.startsWith(p))) h.set('X-Robots-Tag', 'noindex, follow');
+  if (context.locals.runtime?.env?.ENVIRONMENT === 'preview') h.set('X-Robots-Tag', 'noindex, nofollow');
+  else if (NOINDEX_PREFIXES.some((p) => path.startsWith(p))) h.set('X-Robots-Tag', 'noindex, follow');
   return response;
 });
 

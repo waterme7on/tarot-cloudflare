@@ -37,7 +37,7 @@ Use this when you need to decide something.
 - **Action** suggests the stance or step that fits those circumstances.
 - **Outcome** shows what that action tends to lead to.
 
-This is the best three card layout for [decision questions](/questions/decision). It replaces the passive "what will happen" with the more useful "what happens if I do this."
+This is the best three card layout for [decision questions](/questions/decision/). It replaces the passive "what will happen" with the more useful "what happens if I do this."
 
 ## Variation: You, Them, Relationship
 
@@ -47,7 +47,7 @@ Use this for any question involving two people: partners, friends, colleagues, f
 - **Them** reflects the other person's position as far as the cards can suggest it.
 - **Relationship** shows the dynamic between you, which is often different from either side alone.
 
-Be careful with the "Them" card. It is a prompt for empathy, not a window into someone's private mind. Read it as "what might be true for them" and hold it lightly. See the [love reading guide](/questions/love) for more.
+Be careful with the "Them" card. It is a prompt for empathy, not a window into someone's private mind. Read it as "what might be true for them" and hold it lightly. See the [love reading guide](/questions/love/) for more.
 
 ## Other useful trios
 

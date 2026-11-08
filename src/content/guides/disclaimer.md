@@ -29,7 +29,7 @@ We make no claims that readings are accurate, that they predict events, or that 
 
 ## AI-assisted content
 
-Free readings are produced by a deterministic rules engine written by our editorial team and do not involve AI. Optional paid deep reports are generated with the help of a language model and are **clearly labelled as AI-assisted**. AI text can be fluent and still wrong, generic, or inconsistent. Treat it as an extended prompt for reflection, not as an authority. AI never changes the cards you drew. See [how our generator works](/methodology) for details.
+Free readings are produced by a deterministic rules engine written by our editorial team and do not involve AI. Optional paid deep reports are generated with the help of a language model and are **clearly labelled as AI-assisted**. AI text can be fluent and still wrong, generic, or inconsistent. Treat it as an extended prompt for reflection, not as an authority. AI never changes the cards you drew. See [how our generator works](/methodology/) for details.
 
 ## Age
 
@@ -37,4 +37,4 @@ The site is intended for adults aged 18 and over.
 
 ## Questions
 
-If anything here is unclear, email **support@tarot-tools.example.com**. See also our [terms of service](/terms) and [privacy policy](/privacy).
+If anything here is unclear, email **support@tarot-tools.example.com**. See also our [terms of service](/terms/) and [privacy policy](/privacy/).

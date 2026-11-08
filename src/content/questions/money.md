@@ -42,7 +42,7 @@ Ask about your own behavior, attitude, and awareness, not about outcomes you can
 1. **Name the real topic.** Is this about debt, saving, spending, earning, or a specific purchase? Say so.
 2. **Make it about you.** "What is my pattern" or "what do I need to see" keeps the reading in reach of action.
 3. **Keep the scope tight.** "This month" or "this decision," not "my financial future."
-4. **Choose the spread.** A [single card](/spreads/one-card) for "what should I notice about my spending this week?" A [three card](/spreads/three-card) Past/Present/Future for a pattern over time. The [Celtic Cross](/spreads/celtic-cross) when money is tangled with family, work, and old fears.
+4. **Choose the spread.** A [single card](/spreads/one-card/) for "what should I notice about my spending this week?" A [three card](/spreads/three-card/) Past/Present/Future for a pattern over time. The [Celtic Cross](/spreads/celtic-cross/) when money is tangled with family, work, and old fears.
 
 ## Cards that often matter in money readings
 
