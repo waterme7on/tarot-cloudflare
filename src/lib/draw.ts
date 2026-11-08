@@ -53,11 +53,19 @@ export function shuffle<T>(items: T[], rng: RandomSource = cryptoRandom): T[] {
   return arr;
 }
 
-export function drawCards(deck: CardData[], spread: Spread, rng: RandomSource = cryptoRandom): DrawnCard[] {
+export function validDrawSlots(slots: unknown, count: number, deckSize = 78): slots is number[] {
+  return Array.isArray(slots) && slots.length === count &&
+    slots.every((n: unknown) => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < deckSize) &&
+    new Set(slots).size === count;
+}
+
+export function drawCards(deck: CardData[], spread: Spread, rng: RandomSource = cryptoRandom, slots?: readonly number[]): DrawnCard[] {
   const count = SPREAD_SIZES[spread];
   const positions = SPREAD_POSITIONS[spread];
+  if (slots !== undefined && !validDrawSlots(slots, count, deck.length)) throw new RangeError('invalid selected card slots');
   const shuffled = shuffle(deck, rng);
-  return shuffled.slice(0, count).map((card, i) => {
+  const selected = slots ? slots.map((slot) => shuffled[slot]!) : shuffled.slice(0, count);
+  return selected.map((card, i) => {
     const orientation = randomOrientation(rng);
     const meaning = card[orientation];
     return {
