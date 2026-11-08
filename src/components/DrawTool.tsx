@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
 import { CardResult } from './CardResult';
+import RitualDraw from './RitualDraw';
 import CardBack from './CardBack';
 
 declare global {
@@ -24,7 +25,7 @@ const SPREAD_OPTIONS: { value: Spread; label: string; hint: string; count: numbe
 ];
 interface Props { defaultSpread?: Spread; defaultQuestionType?: QuestionType; lockSpread?: boolean; heading?: string; immersive?: boolean }
 
-export default function DrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'general', lockSpread = false, heading, immersive = false }: Props) {
+function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'general', lockSpread = false, heading, immersive = false }: Props) {
   const [step, setStep] = useState(immersive ? -1 : 0);
   const [spread, setSpread] = useState(defaultSpread);
   const [questionType, setQuestionType] = useState(defaultQuestionType);
@@ -149,4 +150,9 @@ export default function DrawTool({ defaultSpread = 'one-card', defaultQuestionTy
       <noscript><p className="flow-caption">Enable JavaScript to draw cards. You can still browse all <a href="/cards/">card meanings</a>.</p></noscript>
     </section>
   );
+}
+
+
+export default function DrawTool(props: Props) {
+  return props.immersive ? <RitualDraw {...props} /> : <LegacyDrawTool {...props} />;
 }

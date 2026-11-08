@@ -23,6 +23,21 @@ describe('guided mobile flow SSR', () => {
     expect(html).not.toContain('<canvas');
     expect(html).toContain('Enable JavaScript');
   });
+  it('renders the immersive touch-first preparation screen rather than a welcome gate', () => {
+    const html = renderToStaticMarkup(createElement(DrawTool, { immersive: true, defaultSpread: 'three-card' }));
+    expect(html).toContain('ritual-app');
+    expect(html).toContain('What’s on your mind?');
+    expect(html).toContain('Continue to the deck');
+    expect(html).toContain('Three cards');
+    expect(html).not.toContain('Begin my reading');
+    expect(html).not.toContain('<canvas');
+  });
+  it('keeps selected cards face-down until the user turns them over', () => {
+    const html = renderToStaticMarkup(createElement(CardResult, { reading, immersive: true, preselected: true }));
+    expect(html).toContain('Tap to turn over');
+    expect(html).toContain('Turn over your selected card 1');
+    expect(html).not.toContain('the-star.webp');
+  });
   it('does not expose the face before the reveal action', () => {
     const html = renderToStaticMarkup(createElement(CardResult, { reading }));
     expect(html).toContain('Reveal card 1');
