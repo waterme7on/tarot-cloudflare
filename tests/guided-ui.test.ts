@@ -44,5 +44,7 @@ describe('guided mobile flow SSR', () => {
     const html = renderToStaticMarkup(createElement(CardResult, { reading: expanded, reveal: false }));
     expect(html.match(/<img /g)).toHaveLength(10);
     expect(html).not.toContain('holo-card');
+    expect(html).toContain('<summary>Read the full Celtic Cross interpretation</summary>');
+    expect(html.indexOf(expanded.nextAction)).toBeLessThan(html.indexOf(expanded.summary));
   });
 });
