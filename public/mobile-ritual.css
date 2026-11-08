@@ -68,7 +68,7 @@
 .ritual-fan-controls{display:flex;align-items:center;justify-content:center;gap:1.2rem;margin:-2px 0 .85rem;color:#b5c0c9;font-size:.74rem;font-variant-numeric:tabular-nums}
 .ritual-fan-controls button{width:48px;height:44px;border:1px solid rgba(220,199,156,.23);border-radius:9px;background:rgba(255,255,255,.035);color:var(--ritual-ivory);cursor:pointer}
 .ritual-fan-controls button:disabled{opacity:.4}
-.ritual-slots{display:flex;align-items:flex-start;justify-content:center;gap:.55rem;max-width:100%;overflow-x:auto;scrollbar-width:thin;padding:.3rem 0 .7rem}
+.ritual-slots{display:flex;align-items:flex-start;justify-content:safe center;gap:.55rem;max-width:100%;overflow-x:auto;scrollbar-width:thin;padding:.3rem 0 .7rem}
 .ritual-slot{display:flex;flex-direction:column;align-items:center;gap:.34rem;flex:0 0 55px;min-width:0}
 .ritual-slot-image{border:1px solid rgba(216,194,141,.25);border-radius:5px;height:53px;width:35px;display:grid;place-items:center;background:rgba(255,255,255,.025);font-size:.79rem;color:#929eaf}
 .ritual-slot.is-filled .ritual-slot-image{background:#343748;border-color:var(--ritual-gold);color:var(--ritual-gold)}
@@ -87,7 +87,7 @@
   .reading-page-intro{margin:.5rem auto .9rem}
   .reading-page-intro h1{font-size:1.8rem;margin:.35rem 0}
   .reading-page-intro>p:last-child{font-size:.77rem;margin:.25rem 0}
-  .ritual-app{height:calc(100dvh - 168px);min-height:480px;max-width:none;border-radius:16px}
+  .ritual-app{height:calc(100dvh - 214px);min-height:min(470px,calc(100dvh - 205px));max-width:none;border-radius:16px}
   .ritual-topbar{height:48px;padding:0 .85rem;font-size:.72rem}
   .ritual-prepare,.ritual-pick-scene,.ritual-deck-scene{padding:1rem .9rem .3rem}
   .ritual-heading{margin-bottom:1rem}
@@ -119,7 +119,7 @@
   .table-reveal .ritual-selected-back{width:190px;height:285px}
 }
 @media(max-width:360px){
-  .ritual-app{min-height:470px}
+  .ritual-app{min-height:min(450px,calc(100dvh - 205px))}
   .ritual-prepare,.ritual-pick-scene,.ritual-deck-scene{padding-inline:.7rem}
   .ritual-fan-card{transform:translateX(calc(var(--offset) * 33px)) translateY(calc(var(--distance) * 9px)) rotate(calc(var(--offset) * 7deg))}
   .ritual-topics{gap:.3rem}
