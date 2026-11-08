@@ -83,7 +83,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       <progress className="reveal-progress" aria-label="Cards revealed" value={activeCard + (opened ? 1 : 0)} max={reading.cards.length} />
       <div className="flow-body reveal-body">
         <h2 id={`${id}-reveal-heading`} ref={headingRef} tabIndex={-1}>{currentCard.positionLabel}</h2>
-        <p className="flow-caption">{opened ? 'Notice what resonates. Leave what doesn’t.' : (preselected ? 'Tap the card you chose to turn it over.' : 'Tap a card back to reveal your next card.') : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
+        <p className="flow-caption">{opened ? 'Notice what resonates. Leave what doesn’t.' : preselected ? 'Tap the card you chose to turn it over.' : immersive ? 'Tap a card back to reveal your next card.' : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
         <div className="reveal-stage">
           {opened ? <div className={`table-turned-card ${advancing ? 'is-leaving' : ''}`} key={activeCard}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={240} reveal={false} /></div> : preselected ?
             <button type="button" className={'ritual-selected-back' + (selectedSlot !== null ? ' is-selected' : '')} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={'Turn over your selected card ' + (activeCard + 1)}><CardBack /><span>Tap to turn over</span></button> : immersive ?
