@@ -5,7 +5,7 @@ import CardBack from './CardBack';
 import HoloCard from './HoloCard';
 import { ShareCard } from './ShareCard';
 
-export function CardResult({ reading, question, onReset, reveal = true, immersive = false }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean; immersive?: boolean }) {
+export function CardResult({ reading, question, onReset, reveal = true, immersive = false, preselected = false }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean; immersive?: boolean; preselected?: boolean }) {
   const [checkout, setCheckout] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [consent, setConsent] = useState(false);
   const [activeCard, setActiveCard] = useState(0);
@@ -83,21 +83,22 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       <progress className="reveal-progress" aria-label="Cards revealed" value={activeCard + (opened ? 1 : 0)} max={reading.cards.length} />
       <div className="flow-body reveal-body">
         <h2 id={`${id}-reveal-heading`} ref={headingRef} tabIndex={-1}>{currentCard.positionLabel}</h2>
-        <p className="flow-caption">{opened ? 'Notice what resonates. Leave what doesn’t.' : immersive ? 'Tap a card back to reveal your next card.' : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
+        <p className="flow-caption">{opened ? 'Notice what resonates. Leave what doesn’t.' : (preselected ? 'Tap the card you chose to turn it over.' : 'Tap a card back to reveal your next card.') : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
         <div className="reveal-stage">
-          {opened ? <div className={`table-turned-card ${advancing ? 'is-leaving' : ''}`} key={activeCard}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={240} reveal={false} /></div> : immersive ?
+          {opened ? <div className={`table-turned-card ${advancing ? 'is-leaving' : ''}`} key={activeCard}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={240} reveal={false} /></div> : preselected ?
+            <button type="button" className={'ritual-selected-back' + (selectedSlot !== null ? ' is-selected' : '')} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={'Turn over your selected card ' + (activeCard + 1)}><CardBack /><span>Tap to turn over</span></button> : immersive ?
             <div className={`table-fan ${selectedSlot !== null ? 'has-selection' : ''}`} key={`fan-${activeCard}`} role="group" aria-label="Deck card backs">{Array.from({ length: fanSize }, (_, i) => <button type="button" key={i} className={`fan-card ${selectedSlot === i ? 'is-selected' : ''}`} style={{ '--slot': i / (fanSize - 1), '--dip': Math.abs(i / (fanSize - 1) - .5) } as CSSProperties} disabled={pickedSlots.includes(i) || selectedSlot !== null} onClick={() => revealNext(i)} aria-label={`Reveal card ${activeCard + 1} from position ${i + 1}`}><CardBack /></button>)}</div> :
             <button type="button" className={`deck-back reveal-card ${selectedSlot !== null ? 'is-selected' : ''}`} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>}
         </div>
         {immersive && !opened && <>
           <div className="table-positions" aria-label="Spread positions">{reading.cards.map((card, i) => <div key={card.position} className={i < activeCard ? 'filled' : i === activeCard ? 'current' : ''} aria-current={i === activeCard ? 'step' : undefined}>{i < activeCard ? <img src={`/cards/thumbs/${card.slug}.webp`} alt={`${card.name}, ${card.orientation}`} className={card.orientation} width="48" height="72" /> : <span aria-hidden="true">{i + 1}</span>}<small>{card.positionLabel}</small></div>)}</div>
-          <p className="microcopy">Your draw is already set by a random shuffle. Taps reveal the cards in order.</p>
+          <p className="microcopy">{preselected ? 'These are the positions you chose. Reveal each card in order.' : 'Your draw is already set by a random shuffle. Taps reveal the cards in order.'}</p>
         </>}
         {opened && <div className="revealed-meaning" role="status"><h3>{currentCard.name}</h3><p className="orientation-label">{currentCard.orientation}</p><p>{currentCard.summary}</p></div>}
       </div>
       <div className="flow-actions">
         {opened ? <button className="btn flow-primary" type="button" disabled={advancing} onClick={advanceReading}>{activeCard === reading.cards.length - 1 ? 'Bring it together' : 'Meet the next card'}<span aria-hidden="true">→</span></button> :
-          <button className="btn flow-primary" type="button" disabled={selectedSlot !== null} onClick={() => revealNext(Array.from({ length: fanSize }, (_, i) => i).find((i) => !pickedSlots.includes(i))!)}>{selectedSlot !== null ? 'Turning your card…' : 'Reveal my card'}<span aria-hidden="true">→</span></button>}
+          <button className="btn flow-primary" type="button" disabled={selectedSlot !== null} onClick={() => revealNext(preselected ? activeCard : Array.from({ length: fanSize }, (_, i) => i).find((i) => !pickedSlots.includes(i))!)}>{selectedSlot !== null ? 'Turning your card…' : 'Reveal my card'}<span aria-hidden="true">→</span></button>}
       </div>
       <button type="button" className="quiet-button" onClick={() => { clearTimeout(transitionTimer.current); setShowSummary(true); }}>Skip to the full reading</button>
     </section>
