@@ -239,7 +239,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         };
 
         const onMove = (e: PointerEvent) => {
-          if (!interactive || !canRender()) return;
+          if (!interactive || reduced.matches || !canRender()) return;
           const r = el.getBoundingClientRect();
           if (!r.width || !r.height) return;
           const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
