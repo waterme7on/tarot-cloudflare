@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { drawCards, randomInt, shuffle, type RandomSource } from '../src/lib/draw';
+import { drawCards, randomInt, shuffle, validDrawSlots, type RandomSource } from '../src/lib/draw';
 import { ALL_CARDS, getCard } from '../src/data/cards';
 import { buildFreeSummary, buildRulesReport } from '../src/lib/interpretation';
 import { validateReport } from '../src/lib/ai';
@@ -25,6 +25,28 @@ describe('randomInt', () => {
       expect(v).toBeGreaterThanOrEqual(0);
       expect(v).toBeLessThan(78);
     }
+  });
+});
+
+describe('interactive slot picking', () => {
+  it('validates the count, bounds, integer values and uniqueness', () => {
+    expect(validDrawSlots([0], 1)).toBe(true);
+    expect(validDrawSlots([1, 20, 77], 3)).toBe(true);
+    expect(validDrawSlots([1, 1, 77], 3)).toBe(false);
+    expect(validDrawSlots([-1, 2, 3], 3)).toBe(false);
+    expect(validDrawSlots([0, 4, 78], 3)).toBe(false);
+    expect(validDrawSlots([0, 4, 7.1], 3)).toBe(false);
+    expect(validDrawSlots('1,2,3', 3)).toBe(false);
+    expect(validDrawSlots([1, 2], 3)).toBe(false);
+  });
+  it('returns exactly the selected card positions in order from a server shuffle', () => {
+    const rng: RandomSource = { fill: (buffer) => { buffer[0] = 0; } };
+    const deck = shuffle(ALL_CARDS, rng);
+    const slots = [1, 37, 77];
+    const selected = drawCards(ALL_CARDS, 'three-card', rng, slots);
+    expect(selected.map((card) => card.slug)).toEqual(slots.map((slot) => deck[slot]!.slug));
+    expect(selected.map((card) => card.positionLabel)).toEqual(['Past', 'Present', 'Future']);
+    expect(() => drawCards(ALL_CARDS, 'three-card', rng, [1, 1, 3])).toThrow('invalid selected card slots');
   });
 });
 
