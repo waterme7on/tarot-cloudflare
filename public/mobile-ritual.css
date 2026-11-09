@@ -180,15 +180,33 @@
 @media(max-width:760px){
   /* Mobile browser chrome changes height as the address bar collapses: use
      dvh and position the actual stage, never a sticky action over page text. */
-  body:has(.ritual-app),body:has(.ritual-reveal-screen),body:has(.ritual-summary-screen){overflow:hidden;touch-action:pan-y}
-  body:has(.ritual-app) .mobile-dock,
+  /* Only enter fullscreen after a deliberate Continue action. On first load
+     the reading widget stays in document flow and the SEO content remains
+     scrollable and discoverable on mobile. */
+  body:has(.ritual-app:not(.ritual-prepare)),
+  body:has(.ritual-reveal-screen),
+  body:has(.ritual-summary-screen){overflow:hidden;touch-action:pan-y}
+  body:has(.ritual-app:not(.ritual-prepare)) .mobile-dock,
   body:has(.ritual-reveal-screen) .mobile-dock,
   body:has(.ritual-summary-screen) .mobile-dock{display:none}
-  .home-experience .ritual-app,.ritual-app,.reading-app.ritual-reveal-screen,.reading-app.ritual-summary-screen{
+  .home-experience .ritual-app:not(.ritual-prepare),
+  .ritual-app:not(.ritual-prepare),
+  .reading-app.ritual-reveal-screen,
+  .reading-app.ritual-summary-screen{
     position:fixed;inset:0;z-index:100;box-sizing:border-box;
     width:100%;max-width:none;height:100dvh;max-height:100dvh;
     min-height:0;margin:0;border:0;border-radius:0;box-shadow:none;
   }
+  /* The SEO entry state is an ordinary page section, not a blocking overlay. */
+  .home-experience .ritual-app.ritual-prepare,
+  .ritual-app.ritual-prepare{
+    position:relative;inset:auto;width:100%;height:auto;max-height:none;
+    min-height:0;margin:0;border:1px solid rgba(216,194,141,.19);
+    border-radius:16px;overflow:visible;box-shadow:none;
+  }
+  .ritual-app.ritual-prepare .ritual-scroll{overflow:visible;flex:0 1 auto}
+  .ritual-app.ritual-prepare .ritual-actionbar{position:relative;bottom:auto;border-radius:0 0 16px 16px}
+  .ritual-app.ritual-prepare .ritual-topbar{min-height:48px;padding:0 .85rem}
   .ritual-app{background:radial-gradient(ellipse at 50% 25%,#1b2637 0%,#101827 62%,#0c1420 100%)}
   .ritual-topbar{height:auto;min-height:calc(56px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 1.05rem 0;box-sizing:border-box}
   .ritual-scroll{width:100%;min-height:0;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
@@ -306,3 +324,12 @@
   .ritual-reveal-screen .revealed-meaning{animation:none!important;transition:none!important}
   .ritual-reveal-screen .ritual-selected-back.is-selected{opacity:0;transform:none}
 }
+
+/* Low-intensity, event-driven feedback: only a newly filled slot settles in. */
+.ritual-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.ritual-slot.is-filled .ritual-slot-image{animation:ritual-slot-lock .27s cubic-bezier(.2,.75,.2,1) both}
+@keyframes ritual-slot-lock{
+  from{opacity:.5;transform:translateY(-9px) scale(1.09)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){.ritual-slot.is-filled .ritual-slot-image{animation:none!important}}
