@@ -234,11 +234,12 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (stage !== 'choose' || extracting || loading || finishedPicking) return;
     startX.current = event.clientX;
     suppressTap.current = false;
   }
   function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
-    if (startX.current === null) return;
+    if (stage !== 'choose' || extracting || loading || finishedPicking || startX.current === null) return;
     const distance = event.clientX - startX.current;
     startX.current = null;
     if (Math.abs(distance) < 26) return;
@@ -315,6 +316,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
             </div>
             <div className="ritual-fan-frame">
               <div className="ritual-fan" role="group" tabIndex={0} aria-label="Swipe card positions or use the arrow controls" onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={() => { startX.current = null; }} onKeyDown={(event) => {
+                if (stage !== 'choose' || extracting || loading || finishedPicking) return;
                 if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
                   event.preventDefault();
                   setFocus((current) => moveToUnpickedPosition(current, event.key === 'ArrowRight' ? 1 : -1, selected));
