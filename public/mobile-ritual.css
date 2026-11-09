@@ -128,3 +128,181 @@
 @media(prefers-reduced-motion:reduce){
   .ritual-app *, .ritual-app *::before, .ritual-app *::after,.ritual-selected-back{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+
+/* Screenshot-led v2. A card table should behave as one mobile scene, not a
+   tall page underneath two fixed navigation bars. Scoped to immersive flows. */
+.ritual-exit{display:inline-flex;align-items:center;justify-content:center;justify-self:end;min-width:44px;min-height:44px;color:#c2cbd4;text-decoration:none;font-size:.78rem}
+.ritual-exit:hover,.ritual-exit:focus-visible{color:#f2eee6}
+.ritual-app .ritual-name{font-family:var(--sans);font-size:.88rem;letter-spacing:-.01em}
+.ritual-app .ritual-back{min-height:44px;font-size:.78rem}
+.ritual-app .ritual-primary{font-family:var(--sans);letter-spacing:0}
+.ritual-pick-scene{max-width:500px}
+.ritual-fan-card{--fan-step:43px;--fan-dip:11px;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(calc(var(--distance) * var(--fan-dip))) rotate(calc(var(--offset) * 7deg));}
+.ritual-pick-scene.is-extracting .ritual-fan-card{pointer-events:none}
+.ritual-pick-scene.is-extracting .ritual-fan-card:not(.is-focused){opacity:.2;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(35px) rotate(calc(var(--offset) * 7deg)) scale(.92)}
+.ritual-pick-scene.is-extracting .ritual-fan-card.is-focused{z-index:20!important;transform:translateY(-105px) scale(.7) rotateY(62deg);opacity:0;transition:transform .3s cubic-bezier(.2,.7,.25,1),opacity .3s ease}
+.ritual-fanning .ritual-fan-card{animation:ritual-unfurl .42s cubic-bezier(.12,.82,.26,1) both;animation-delay:calc(var(--distance) * 18ms)}
+@keyframes ritual-unfurl{
+  from{opacity:.25;transform:translateX(0) translateY(44px) scale(.8) rotate(0)}
+  to{opacity:1;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(calc(var(--distance) * var(--fan-dip))) rotate(calc(var(--offset) * 7deg))}
+}
+.ritual-deck-button.is-shuffling .ritual-deck-layer:nth-child(1){animation:ritual-cut-left .82s cubic-bezier(.22,.7,.28,1) both}
+.ritual-deck-button.is-shuffling .ritual-deck-layer:nth-child(2){animation:ritual-cut-right .82s cubic-bezier(.22,.7,.28,1) both}
+.ritual-deck-button.is-shuffling .ritual-deck-layer:nth-child(3){animation:ritual-cut-center .82s cubic-bezier(.22,.7,.28,1) both}
+@keyframes ritual-cut-left{
+  0%{transform:translate(-14px,6px) rotate(-9deg)}
+  28%{transform:translate(-68px,-13px) rotate(-22deg)}
+  58%{transform:translate(24px,-22px) rotate(12deg)}
+  100%{transform:translate(-14px,6px) rotate(-9deg)}
+}
+@keyframes ritual-cut-right{
+  0%{transform:translate(14px,6px) rotate(9deg)}
+  28%{transform:translate(66px,6px) rotate(22deg)}
+  58%{transform:translate(-24px,-12px) rotate(-12deg)}
+  100%{transform:translate(14px,6px) rotate(9deg)}
+}
+@keyframes ritual-cut-center{
+  0%,100%{transform:translateY(-6px) scale(1)}
+  30%{transform:translateY(-29px) scale(1.03)}
+  63%{transform:translateY(4px) scale(.99)}
+}
+.ritual-reveal-screen .ritual-selected-back{transform-style:preserve-3d;will-change:transform}
+.ritual-reveal-screen .ritual-selected-back.is-selected{transform:perspective(950px) translateY(-10px) rotateY(90deg) scale(1.08);opacity:.28;transition:transform .32s cubic-bezier(.55,.06,.68,.19),opacity .32s ease}
+.ritual-reveal-screen .table-turned-card{animation:ritual-flip-face .5s cubic-bezier(.16,.84,.3,1) both}
+@keyframes ritual-flip-face{
+  from{opacity:.18;transform:perspective(950px) rotateY(-89deg) translateY(-10px) scale(1.08)}
+  to{opacity:1;transform:perspective(950px) rotateY(0) translateY(0) scale(1)}
+}
+.ritual-reveal-screen .revealed-meaning{animation:ritual-meaning-in .42s .08s ease-out both}
+@keyframes ritual-meaning-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:760px){
+  /* Mobile browser chrome changes height as the address bar collapses: use
+     dvh and position the actual stage, never a sticky action over page text. */
+  body:has(.ritual-app),body:has(.ritual-reveal-screen),body:has(.ritual-summary-screen){overflow:hidden;touch-action:pan-y}
+  body:has(.ritual-app) .mobile-dock,
+  body:has(.ritual-reveal-screen) .mobile-dock,
+  body:has(.ritual-summary-screen) .mobile-dock{display:none}
+  .home-experience .ritual-app,.ritual-app,.reading-app.ritual-reveal-screen,.reading-app.ritual-summary-screen{
+    position:fixed;inset:0;z-index:100;box-sizing:border-box;
+    width:100%;max-width:none;height:100dvh;max-height:100dvh;
+    min-height:0;margin:0;border:0;border-radius:0;box-shadow:none;
+  }
+  .ritual-app{background:radial-gradient(ellipse at 50% 25%,#1b2637 0%,#101827 62%,#0c1420 100%)}
+  .ritual-topbar{height:auto;min-height:calc(56px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 1.05rem 0;box-sizing:border-box}
+  .ritual-scroll{width:100%;min-height:0;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+  .ritual-prepare,.ritual-deck-scene,.ritual-pick-scene{max-width:440px;padding:clamp(.75rem,2.4dvh,1.1rem) 1.1rem .8rem}
+  .ritual-heading{margin-bottom:.9rem}
+  .ritual-heading h2{font-size:clamp(1.5rem,6vw,1.9rem);line-height:1.16}
+  .ritual-heading p{font-size:.78rem;line-height:1.45}
+  .ritual-section{margin:1rem 0}
+  .ritual-spread{min-height:114px}
+  .ritual-actionbar{padding:.72rem 1.1rem calc(.6rem + max(env(safe-area-inset-bottom),10px));background:#101725;border-top-color:rgba(242,238,230,.08)}
+  .ritual-actionbar .ritual-primary{min-height:52px;border-radius:11px}
+  .ritual-actionbar>p{min-height:1rem;font-size:.69rem;color:#adb8c4}
+  .ritual-deck-scene{display:flex;min-height:100%;justify-content:center;gap:.5rem}
+  .ritual-deck-button{width:clamp(135px,25dvh,190px);height:clamp(205px,36dvh,280px)}
+  .ritual-deck-layer{width:87%;height:auto;aspect-ratio:2/3;left:6.5%;top:2%}
+  .ritual-pick-scene{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0}
+  .ritual-pick-heading{flex:none;margin:0 0 .7rem}
+  .ritual-fan-frame{width:100%;max-width:430px;flex:0 0 auto}
+  .ritual-fan{height:clamp(160px,29dvh,235px);overflow:visible}
+  .ritual-fan-card{--fan-step:clamp(31px,8.5vw,41px);--fan-dip:clamp(7px,1.9dvh,11px);width:clamp(74px,21.5vw,95px);height:auto;aspect-ratio:2/3;margin-left:calc(clamp(74px,21.5vw,95px) / -2);top:clamp(30px,5dvh,47px)}
+  .ritual-fan-card.is-focused{transform:translateY(-14px) scale(1.065)}
+  .ritual-fan-controls{margin:0 auto .7rem;gap:1.1rem}
+  .ritual-fan-controls button{width:46px;height:46px;border-radius:12px}
+  .ritual-fan-controls span{min-width:118px;text-align:center}
+  .ritual-focus-marker{bottom:4px}
+  .ritual-slots{width:100%;max-width:390px;flex:0 0 auto;min-height:70px;margin:.15rem auto .25rem;justify-content:safe center;gap:.5rem}
+  .ritual-slot{flex-basis:51px}
+  .ritual-slot-image{height:43px;width:29px}
+  .ritual-human-check{flex:0 0 auto;max-width:300px;margin:.3rem auto 0}
+  .ritual-error{flex:0 0 auto}
+  /* Dedicated reveal grid: only the reading body scrolls; the button sits
+     below it rather than painting over the last lines of interpretation. */
+  .reading-app.ritual-reveal-screen{
+    display:flex;flex-direction:column;align-items:stretch;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 18%,#1b2737 0%,#0e1624 80%);
+    text-align:center;
+  }
+  .ritual-reveal-screen .table-toolbar{
+    flex:0 0 auto;min-height:calc(54px + env(safe-area-inset-top));
+    box-sizing:border-box;padding:env(safe-area-inset-top) .85rem 0;gap:.4rem;
+    background:rgba(13,21,33,.86);border-color:rgba(255,255,255,.08);
+  }
+  .ritual-reveal-screen .table-toolbar>*{font-size:.72rem}
+  .ritual-reveal-screen .reveal-progress{flex:0 0 auto;width:calc(100% - 2.3rem);margin:.75rem auto .25rem;height:3px;accent-color:#dfc994}
+  .ritual-reveal-screen .reveal-progress::-webkit-progress-value{background:#dfc994}
+  .ritual-reveal-screen .flow-body.reveal-body{
+    width:100%;box-sizing:border-box;min-height:0;flex:1 1 auto;overflow-y:auto;
+    padding:.5rem 1.15rem .8rem;display:flex;align-items:center;flex-direction:column;
+    overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;
+  }
+  .ritual-reveal-screen .flow-body h2{font-size:clamp(1.38rem,6vw,1.9rem);margin:.4rem 0 .3rem;line-height:1.18}
+  .ritual-reveal-screen .flow-caption{font-size:.78rem;margin:.1rem auto .65rem;max-width:32ch}
+  .ritual-reveal-screen .reveal-stage{width:100%;min-height:0;height:auto;flex:0 0 auto;padding:.15rem 0;overflow:visible;display:flex;justify-content:center}
+  .ritual-reveal-screen .table-turned-card,.ritual-reveal-screen .ritual-selected-back{
+    display:block;flex:0 0 auto;box-sizing:border-box;
+    width:clamp(128px,25dvh,208px);height:auto;aspect-ratio:2/3;margin:0 auto;
+  }
+  .ritual-reveal-screen .table-turned-card .holo-card{width:100%!important;height:100%!important}
+  .ritual-reveal-screen .table-positions{width:100%;max-width:400px;flex:0 0 auto;min-height:70px;padding:.5rem 0;gap:.45rem}
+  .ritual-reveal-screen .table-positions>div{flex-basis:62px;min-height:70px}
+  .ritual-reveal-screen .flow-body .microcopy{margin:.1rem auto .4rem;font-size:.69rem;max-width:36ch}
+  .ritual-reveal-screen .revealed-meaning{width:100%;max-width:39ch;margin:.65rem auto .8rem;font-size:.88rem;line-height:1.6;text-align:center}
+  .ritual-reveal-screen .revealed-meaning h3{font-family:var(--font);font-size:clamp(1.55rem,7vw,2.05rem);line-height:1.1;font-weight:400;letter-spacing:-.02em;margin:0}
+  .ritual-reveal-screen .revealed-meaning .orientation-label{font-size:.68rem;color:#dfc994;margin:.42rem 0 .75rem}
+  .ritual-reveal-screen .revealed-meaning p:last-child{margin:0}
+  .ritual-reveal-screen>.quiet-button{
+    order:2;flex:0 0 auto;min-height:44px;padding:.55rem;margin:0 auto;
+    font-size:.73rem;color:#a6b2c0;text-decoration:underline;text-underline-offset:.2em;
+  }
+  .ritual-reveal-screen .flow-actions{
+    order:3;position:relative;bottom:auto;flex:0 0 auto;box-sizing:border-box;
+    max-width:none;width:100%;margin:0;padding:.55rem 1rem calc(.68rem + max(env(safe-area-inset-bottom),8px));
+    background:#111a28;border-top:1px solid rgba(255,255,255,.08);backdrop-filter:none;border-radius:0
+  }
+  .ritual-reveal-screen .flow-actions .btn{
+    background:#dfc994;color:#101723;border:0;border-radius:11px;
+    min-height:52px;display:flex;align-items:center;justify-content:space-between;
+    font-size:.92rem;font-weight:700;
+  }
+  .reading-app.ritual-summary-screen{
+    display:block;overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;
+    padding:0 1rem calc(1.3rem + max(env(safe-area-inset-bottom),12px));border:0;
+    -webkit-overflow-scrolling:touch;
+  }
+  .ritual-summary-screen>.table-toolbar{
+    position:sticky;top:0;z-index:10;min-height:calc(56px + env(safe-area-inset-top));
+    margin:0 -1rem 1rem;padding:env(safe-area-inset-top) 1rem 0;
+    background:#101827;border-bottom:1px solid rgba(255,255,255,.1);
+  }
+  .ritual-summary-screen>h2{font-size:clamp(1.8rem,7vw,2.5rem);line-height:1.08;margin:1rem 0}
+  .ritual-summary-screen .reading-strip{padding:.9rem 0}
+  .ritual-summary-screen .report-offer{padding-bottom:1.5rem}
+}
+@media(max-width:360px){
+  .ritual-fan-card{--fan-step:29px;top:28px}
+  .ritual-fan{height:160px}
+  .ritual-pick-heading{margin-bottom:.4rem}
+  .ritual-fan-controls{margin:.1rem auto .45rem}
+  .ritual-pick-scene{padding-inline:.7rem}
+  .ritual-reveal-screen .table-turned-card,.ritual-reveal-screen .ritual-selected-back{width:clamp(120px,23dvh,165px)}
+}
+@media(max-height:680px) and (max-width:760px){
+  .ritual-pick-heading h2{font-size:1.44rem}
+  .ritual-pick-heading p{font-size:.72rem}
+  .ritual-fan{height:165px}
+  .ritual-fan-card{top:27px}
+  .ritual-fan-controls{margin:0 auto .35rem}
+  .ritual-slots{margin:0 auto;min-height:60px}
+  .ritual-reveal-screen .flow-caption{margin-bottom:.3rem}
+  .ritual-reveal-screen .table-turned-card,.ritual-reveal-screen .ritual-selected-back{width:clamp(120px,23dvh,155px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .ritual-app .ritual-deck-layer,.ritual-app .ritual-fan-card,
+  .ritual-reveal-screen .ritual-selected-back,.ritual-reveal-screen .table-turned-card,
+  .ritual-reveal-screen .revealed-meaning{animation:none!important;transition:none!important}
+  .ritual-reveal-screen .ritual-selected-back.is-selected{opacity:0;transform:none}
+}
