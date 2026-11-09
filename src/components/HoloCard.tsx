@@ -133,7 +133,8 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
           () => renderer.forceContextLoss(),
           () => renderer.dispose(),
         );
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        // Non-interactive reveal cards are a small mobile surface: reduce GPU fill cost.
+        renderer.setPixelRatio(Math.min(devicePixelRatio, interactive ? 2 : 1.5));
         renderer.setSize(el.clientWidth || 1, el.clientHeight || 1);
         renderer.setClearColor(0x000000, 0);
         renderer.domElement.style.position = 'absolute';
@@ -222,9 +223,15 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
             fail();
           }
         };
+        let lastPresented = 0;
         const tick = (now: number) => {
           frame = null;
-          render(now);
+          // 30 fps is plenty for the ambient foil of a non-interactive revealed
+          // card; interactive 3D card pages still render at display refresh rate.
+          if (interactive || now - lastPresented >= 1000 / 30) {
+            render(now);
+            lastPresented = now;
+          }
           if (canRender() && !reduced.matches) frame = requestAnimationFrame(tick);
         };
         const resume = () => {
