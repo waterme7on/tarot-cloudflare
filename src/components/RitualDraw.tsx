@@ -337,9 +337,9 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
                 <div className="ritual-focus-marker" aria-hidden="true">↑</div>
               </div>
               <div className="ritual-fan-controls">
-                <button type="button" disabled={loading || finishedPicking} aria-label="Previous card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, -1, selected))}>←</button>
+                <button type="button" disabled={loading || extracting || finishedPicking || stage === 'fanning'} aria-label="Previous card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, -1, selected))}>←</button>
                 <span>{finishedPicking ? 'Selection complete' : 'Position ' + (focus + 1) + ' of 78'}</span>
-                <button type="button" disabled={loading || finishedPicking} aria-label="Next card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, 1, selected))}>→</button>
+                <button type="button" disabled={loading || extracting || finishedPicking || stage === 'fanning'} aria-label="Next card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, 1, selected))}>→</button>
               </div>
             </div>
             <div className="ritual-slots" ref={slotsRef} aria-label="Selected cards">
