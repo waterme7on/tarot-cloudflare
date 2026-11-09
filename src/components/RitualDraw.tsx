@@ -97,15 +97,38 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
 
   useEffect(() => {
     if (stage === 'prepare') return;
-    const onEscape = (event: KeyboardEvent) => {
+    const onGameKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && !loading) {
         event.preventDefault();
         reset();
+        return;
+      }
+      // The active fullscreen scene declares aria-modal, so keyboard focus
+      // must stay within the scene while it is open.
+      if (event.key !== 'Tab' || reading || !appRef.current) return;
+      const root = appRef.current;
+      const controls = Array.from(root.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
+      )).filter((el) => el.getClientRects().length > 0);
+      if (controls.length === 0) {
+        event.preventDefault();
+        root.focus({ preventScroll: true });
+        return;
+      }
+      const first = controls[0]!;
+      const last = controls[controls.length - 1]!;
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || !root.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !root.contains(active))) {
+        event.preventDefault();
+        first.focus();
       }
     };
-    window.addEventListener('keydown', onEscape);
-    return () => window.removeEventListener('keydown', onEscape);
-  }, [stage, loading]);
+    window.addEventListener('keydown', onGameKey);
+    return () => window.removeEventListener('keydown', onGameKey);
+  }, [stage, loading, reading]);
 
   useEffect(() => {
     if (slotsRef.current) slotsRef.current.scrollLeft = Math.max(0, (selected.length - 2) * 57);
