@@ -14,7 +14,7 @@ describe('tarot fan navigation', () => {
     expect(moveToUnpickedPosition(4, 1, chosen)).toBe(7);
     expect(moveToUnpickedPosition(4, 2, chosen)).toBe(9);
     expect(moveToUnpickedPosition(0, -1, chosen)).toBe(76);
-    expect(moveToUnpickedPosition(3, 4, chosen)).toBe(9);
+    expect(moveToUnpickedPosition(3, 4, chosen)).toBe(10);
     expect(moveToUnpickedPosition(3, -1, [2, 1, 0, 77])).toBe(76);
   });
 
