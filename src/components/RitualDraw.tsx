@@ -127,7 +127,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     // Shuffle, gather, then open the fan as a separate beat.
     deckTimer.current = setTimeout(() => {
       setStage('fanning');
-      fanTimer.current = setTimeout(() => setStage('choose'), 420);
+      fanTimer.current = setTimeout(() => setStage('choose'), 510);
     }, 820);
   }
 
