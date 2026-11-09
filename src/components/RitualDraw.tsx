@@ -4,7 +4,7 @@ import CardBack from './CardBack';
 import { CardResult } from './CardResult';
 import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
 
-type Stage = 'prepare' | 'deck' | 'shuffling' | 'choose';
+type Stage = 'prepare' | 'deck' | 'shuffling' | 'fanning' | 'choose';
 type Topic = { value: QuestionType; label: string };
 const TOPICS: Topic[] = [
   { value: 'general', label: 'Everyday' },
@@ -42,9 +42,12 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   const [selected, setSelected] = useState<number[]>([]);
   const [reading, setReading] = useState<DrawResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [siteKey, setSiteKey] = useState('');
   const deckTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const fanTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const extractTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const requestController = useRef<AbortController | null>(null);
   const requestPending = useRef(false);
   const idempotency = useRef<string | null>(null);
@@ -64,6 +67,8 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     setFocus(random % 78);
     return () => {
       clearTimeout(deckTimer.current);
+      clearTimeout(fanTimer.current);
+      clearTimeout(extractTimer.current);
       requestController.current?.abort();
     };
   }, []);
@@ -84,7 +89,11 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   }, [stage, siteKey, reading]);
 
   useEffect(() => {
-    if (stage !== 'prepare') appRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    // The mobile ritual is an inset viewport scene: scrolling its ancestor would
+    // move the document behind it and cause Safari's browser bars to jump.
+    if (stage !== 'prepare' && window.matchMedia('(min-width: 761px)').matches) {
+      appRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    }
   }, [stage]);
 
   useEffect(() => {
@@ -93,8 +102,11 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
 
   function reset() {
     clearTimeout(deckTimer.current);
+    clearTimeout(fanTimer.current);
+    clearTimeout(extractTimer.current);
     requestController.current?.abort();
     requestPending.current = false;
+    setExtracting(false);
     idempotency.current = null;
     setReading(null);
     setStage('prepare');
@@ -104,10 +116,19 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   }
 
   function shuffle() {
+    if (stage !== 'deck') return;
     setError(null);
-    setStage('shuffling');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    deckTimer.current = setTimeout(() => setStage('choose'), reducedMotion ? 0 : 850);
+    if (reducedMotion) {
+      setStage('choose');
+      return;
+    }
+    setStage('shuffling');
+    // Shuffle, gather, then open the fan as a separate beat.
+    deckTimer.current = setTimeout(() => {
+      setStage('fanning');
+      fanTimer.current = setTimeout(() => setStage('choose'), 510);
+    }, 820);
   }
 
   async function requestReading(slots: number[]) {
@@ -153,7 +174,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   }
 
   function choose() {
-    if (loading) return;
+    if (loading || extracting || stage !== 'choose') return;
     if (finishedPicking) {
       void requestReading(selected);
       return;
@@ -163,17 +184,23 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       return;
     }
     const next = [...selected, focus];
-    setSelected(next);
     setError(null);
-    if (next.length === count) {
-      void requestReading(next);
-    } else {
-      setFocus((current) => {
-        let candidate = wrapPosition(current + 7);
-        while (next.includes(candidate)) candidate = wrapPosition(candidate + 1);
-        return candidate;
-      });
-    }
+    setExtracting(true);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Let the chosen card visibly lift out of the fan before recording its slot.
+    extractTimer.current = setTimeout(() => {
+      setSelected(next);
+      setExtracting(false);
+      if (next.length === count) {
+        void requestReading(next);
+      } else {
+        setFocus((current) => {
+          let candidate = wrapPosition(current + 7);
+          while (next.includes(candidate)) candidate = wrapPosition(candidate + 1);
+          return candidate;
+        });
+      }
+    }, reducedMotion ? 0 : 320);
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
@@ -187,7 +214,8 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     if (Math.abs(distance) < 26) return;
     suppressTap.current = true;
     setFocus((current) => wrapPosition(current - Math.sign(distance) * Math.min(5, Math.max(1, Math.round(Math.abs(distance) / 48)))));
-    window.setTimeout(() => { suppressTap.current = false; }, 0);
+    // Browsers dispatch click after pointerup, so defer clearing the tap guard.
+    window.setTimeout(() => { suppressTap.current = false; }, 380);
   }
 
   if (reading) return <CardResult reading={reading} question={question} onReset={reset} immersive preselected />;
@@ -195,9 +223,9 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   return (
     <section className={'reading-app reading-table ritual-app ritual-' + stage} id="draw-tool" ref={appRef} aria-label="Interactive tarot reading" aria-busy={loading}>
       <div className="ritual-topbar">
-        <button type="button" className="ritual-back" disabled={loading || stage === 'prepare'} onClick={reset} aria-label="Start over">↶ <span>Start over</span></button>
-        <span className="ritual-name">Your reading</span>
-        <span className="ritual-counter">{stage === 'choose' ? String(Math.min(selected.length + 1, count)) + ' / ' + count : '78 cards'}</span>
+        <button type="button" className="ritual-back" disabled={loading || stage === 'prepare'} onClick={reset} aria-label="Start over">← <span>Restart</span></button>
+        <span className="ritual-name">Tarot Tools</span>
+        <a className="ritual-exit" href="/cards/" aria-label="Exit reading and browse the deck">Exit</a>
       </div>
       <div className="ritual-scroll">
         {stage === 'prepare' && (
@@ -248,12 +276,12 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
             <p className="ritual-deck-caption">{stage === 'shuffling' ? 'Finding your cards…' : 'Tap to shuffle'}</p>
           </div>
         )}
-        {stage === 'choose' && (
-          <div className="ritual-pick-scene">
+        {(stage === 'fanning' || stage === 'choose') && (
+          <div className={'ritual-pick-scene' + (extracting ? ' is-extracting' : '')}>
             <div className="ritual-heading ritual-pick-heading">
-              <span className="ritual-kicker">{finishedPicking ? 'Your selection is ready' : 'Choose ' + nextLabel}</span>
-              <h2>{finishedPicking ? 'Turn your cards.' : 'Follow your instinct.'}</h2>
-              <p>{finishedPicking ? 'Reveal the cards you selected.' : 'Swipe the deck to find your card.'}</p>
+              <span className="ritual-kicker">{stage === 'fanning' ? 'Opening the deck' : finishedPicking ? 'Selection complete' : 'Card ' + (selected.length + 1) + ' of ' + count + ' · ' + nextLabel}</span>
+              <h2>{stage === 'fanning' ? 'The cards are opening.' : finishedPicking ? 'Turn your cards.' : 'Find your card.'}</h2>
+              <p>{stage === 'fanning' ? '78 cards, shuffled for you.' : finishedPicking ? 'Your chosen cards are ready.' : 'Swipe to explore. Tap the center card to choose.'}</p>
             </div>
             <div className="ritual-fan-frame">
               <div className="ritual-fan" role="group" tabIndex={0} aria-label="Swipe card positions or use the arrow controls" onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={() => { startX.current = null; }} onKeyDown={(event) => {
@@ -266,12 +294,12 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
                   const position = wrapPosition(focus + offset);
                   const center = offset === 0;
                   return <button
-                    key={offset} type="button"
+                    key={position} type="button"
                     className={'ritual-fan-card' + (center ? ' is-focused' : '') + (selected.includes(position) ? ' is-used' : '')}
                     style={{ '--offset': offset, '--distance': Math.abs(offset), zIndex: 7 - Math.abs(offset) } as CSSProperties}
-                    disabled={loading || finishedPicking}
+                    disabled={loading || extracting || finishedPicking || stage === 'fanning'}
                     aria-label={center ? 'Choose focused card, position ' + (position + 1) : 'Focus card at position ' + (position + 1)}
-                    onClick={() => { if (suppressTap.current) return; if (center) choose(); else setFocus(position); }}
+                    onClick={() => { if (suppressTap.current) { suppressTap.current = false; return; } if (center) choose(); else setFocus(position); }}
                   ><CardBack /></button>;
                 })}
                 <div className="ritual-focus-marker" aria-hidden="true">↑</div>
@@ -295,12 +323,12 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
         <noscript><p className="ritual-error">Enable JavaScript to draw cards or browse the <a href="/cards/">card meanings</a>.</p></noscript>
       </div>
       <div className="ritual-actionbar">
-        <button className="ritual-primary" type="button" disabled={loading || stage === 'shuffling'} onClick={() => {
+        <button className="ritual-primary" type="button" disabled={loading || extracting || stage === 'shuffling' || stage === 'fanning'} onClick={() => {
           if (stage === 'prepare') { setStage('deck'); setError(null); }
           else if (stage === 'deck') shuffle();
           else if (stage === 'choose') choose();
         }}>
-          <span>{stage === 'prepare' ? 'Continue to the deck' : stage === 'deck' ? 'Shuffle cards' : stage === 'shuffling' ? 'Shuffling…' : loading ? 'Reading your cards…' : finishedPicking ? 'Reveal my cards' : 'Choose this card'}</span>
+          <span>{stage === 'prepare' ? 'Continue to the deck' : stage === 'deck' ? 'Shuffle cards' : stage === 'shuffling' ? 'Shuffling…' : stage === 'fanning' ? 'Spreading cards…' : extracting ? 'Choosing your card…' : loading ? 'Reading your cards…' : finishedPicking ? 'Reveal my cards' : 'Choose this card'}</span>
           <span aria-hidden="true">→</span>
         </button>
         <p>{stage === 'prepare' ? 'Your reading is always free' : stage === 'choose' ? selected.length + ' of ' + count + ' selected' : 'Every card has an equal chance'}</p>
