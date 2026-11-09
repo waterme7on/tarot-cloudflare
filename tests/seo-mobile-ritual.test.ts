@@ -1,0 +1,47 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+
+const source = (path: string) => readFileSync(new URL('../' + path, import.meta.url), 'utf8');
+
+describe('mobile-first SEO regression', () => {
+  it('keeps the initial reading page in normal mobile document flow', () => {
+    const css = source('public/mobile-ritual.css');
+    expect(css).toContain('body:has(.ritual-app:not(.ritual-prepare))');
+    expect(css).not.toContain('body:has(.ritual-app),');
+    expect(css).toContain('.ritual-app.ritual-prepare .ritual-scroll{overflow:visible');
+    expect(css).toContain('position:relative;inset:auto');
+    expect(css).toContain('.reading-app.ritual-reveal-screen');
+  });
+
+  it('preserves server-rendered page content and semantic headings', () => {
+    const home = source('src/pages/index.astro');
+    const free = source('src/pages/free-tarot-reading.astro');
+    expect(home).toContain('<h1>Tarot Card Generator</h1>');
+    expect(home).toContain('<section class="prose">');
+    expect(home).toContain('What is a tarot card generator?');
+    expect(home).toContain('webAppLd(site)');
+    expect(home).toContain('<Faq items={faq} />');
+    expect(home).toContain('<SeoLinks');
+    expect(free).toContain('<h1>Free Tarot Reading</h1>');
+    expect(free).toContain('<section class="prose">');
+    expect(free).toContain('breadcrumbLd(site');
+    expect(free).toContain('<Faq items={faq} />');
+  });
+
+  it('retains canonical, robots, structured data and sitemap paths', () => {
+    const base = source('src/layouts/Base.astro');
+    expect(base).toContain('<title>{title}</title>');
+    expect(base).toContain('<link rel="canonical" href={canonicalUrl} />');
+    expect(base).toContain('noindex, nofollow');
+    expect(base).toContain('application/ld+json');
+    expect(base).toContain('<meta name="description" content={description} />');
+    const sitemap = source('src/pages/sitemap-index.xml.ts');
+    expect(sitemap).toContain('sitemap-cards.xml');
+    expect(sitemap).toContain('sitemap-pages.xml');
+    expect(sitemap).toContain('sitemap-questions.xml');
+    const robots = source('public/robots.txt');
+    expect(robots).toContain('Allow: /');
+    expect(robots).toContain('Disallow: /reading/');
+    expect(robots).toContain('Sitemap: https://tarot-tools.waterme7on333.workers.dev/sitemap-index.xml');
+  });
+});
