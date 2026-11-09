@@ -324,3 +324,12 @@
   .ritual-reveal-screen .revealed-meaning{animation:none!important;transition:none!important}
   .ritual-reveal-screen .ritual-selected-back.is-selected{opacity:0;transform:none}
 }
+
+/* Low-intensity, event-driven feedback: only a newly filled slot settles in. */
+.ritual-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.ritual-slot.is-filled .ritual-slot-image{animation:ritual-slot-lock .27s cubic-bezier(.2,.75,.2,1) both}
+@keyframes ritual-slot-lock{
+  from{opacity:.5;transform:translateY(-9px) scale(1.09)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){.ritual-slot.is-filled .ritual-slot-image{animation:none!important}}
