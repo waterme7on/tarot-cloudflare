@@ -30,7 +30,8 @@ const faq = [
 >
   <div class="home-experience">
     <header class="reading-intro">
-      <h1>Tarot Card Generator<span>Make room for <br />a new thought.</span></h1>
+      <h1>Tarot Card Generator</h1>
+      <p class="hero-line">Make room for <br />a new thought.</p>
       <p class="intro-copy">Not a prediction. A moment to pause, turn a card, and find your next small step.</p>
       <div class="intro-deck" aria-label="Original tarot illustrations">
         {[['the-moon', 'The Moon'], ['the-sun', 'The Sun'], ['the-star', 'The Star']].map(([slug, name]) => (
@@ -52,10 +53,16 @@ const faq = [
   </aside>
 
   <section class="prose">
+    <h2>What is a tarot card generator?</h2>
+    <p>A tarot card generator is a browser tool that shuffles a full deck and draws cards for you, so you can get a reading without owning a physical deck. This one uses all 78 Rider-Waite cards and returns the card's keywords, a reading matched to your question type, and a suggested next step. You choose a focus, pick a spread from one to ten cards and can add a question; the result appears on the same page. It is free, needs no account and works on phone or desktop. Card meanings come from a fixed rules engine rather than an AI guess, so the same card keeps the same core meaning. Browse the <a href="/cards/">card meanings index</a> to read any card in depth, or open the <a href="/methodology/">methodology page</a> for the shuffle rules.</p>
     <h2>How this tarot card generator works</h2>
     <p>Pick a focus and a spread, optionally write a question that stays on your device, then shuffle the full deck. On the interactive table, swipe or use the arrow controls to choose card positions and turn your chosen cards over to read them. A Cloudflare Worker shuffles a full 78-card Rider-Waite deck with cryptographically secure randomness, chooses upright or reversed for each card, and returns the card's keywords, a reading matched to your question type, and a next action. The free interpretation comes from a consistent rules engine, so the same card always carries the same core meaning — no AI improvisation.</p>
     <h2>One card, three cards or the Celtic Cross</h2>
     <p>A single card is best for a daily pull or a yes-or-no lean. Three cards map past, present and future. The ten-card Celtic Cross goes deep on a complex situation. Read more on the <a href="/spreads/one-card/">one card</a>, <a href="/spreads/three-card/">three card</a> and <a href="/spreads/celtic-cross/">Celtic Cross</a> pages.</p>
+    <h2>Upright vs reversed tarot cards</h2>
+    <p>An upright card is read at face value: its energy moves outward and is available to you. A reversed card is not the opposite, and it is not bad luck. It usually means the same theme is blocked, delayed or turned inward — The Sun reversed still points to warmth and success, but they are harder to enjoy or partly hidden. Some readers treat a reversal as a signal to slow down; others read it as a prompt to look at the shadow side of the card. Every <a href="/cards/">card page</a> on this site covers both orientations, with separate upright and reversed sections for love, career and money. For a quick lean, choose the <a href="/questions/decision/">decision question type</a> and the reading returns a yes, no or maybe answer with its reasoning.</p>
+    <h2>What should I ask the tarot?</h2>
+    <p>The best questions are specific, current and about something you can act on this week. "What should I pay attention to in my relationship?" gives the cards more to work with than "Will they text me?". Questions about another person's private thoughts are hard to answer; questions about your own next step are not. Tarot is for reflection, so keep medical, legal and financial decisions with a qualified professional. Pick the focus that matches the question, because the same card reads differently in a love, career or money context. The <a href="/questions/">questions section</a> has phrasing guides for <a href="/questions/love/">love</a>, <a href="/questions/career/">career</a> and <a href="/questions/money/">money</a>, plus a dedicated guide to <a href="/questions/decision/">yes-or-no decisions</a>.</p>
     <h2>Major Arcana meanings</h2>
     <ul class="card-list">{MAJOR_ARCANA.map((c) => <li><a href={`/cards/${c.slug}/`}>{c.name}</a></li>)}</ul>
     <p><a href="/cards/">See all card meanings →</a></p>
