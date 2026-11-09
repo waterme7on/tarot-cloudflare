@@ -317,7 +317,8 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
                 <button type="button" disabled={loading || finishedPicking} aria-label="Next card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, 1, selected))}>→</button>
               </div>
             </div>
-            <div className="ritual-slots" ref={slotsRef} role="status" aria-live="polite">
+            <div className="ritual-slots" ref={slotsRef} aria-label="Selected cards">
+              <span className="ritual-sr-only" role="status" aria-live="polite">{selected.length} of {count} cards selected. {finishedPicking ? 'Ready to reveal.' : 'Choose ' + nextLabel + ' next.'}</span>
               {Array.from({ length: count }, (_, index) => <span key={index} className={'ritual-slot' + (index < selected.length ? ' is-filled' : '') + (index === selected.length ? ' is-next' : '')}>
                 <span className="ritual-slot-image" aria-hidden="true">{index < selected.length ? '✦' : index + 1}</span>
                 <small>{spread === 'one-card' ? 'You' : spread === 'three-card' ? ['Past', 'Present', 'Future'][index] : CROSS_POSITIONS[index]}</small>
