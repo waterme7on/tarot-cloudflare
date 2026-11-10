@@ -6,7 +6,7 @@ import FlipCard from './FlipCard';
 import HoloCard from './HoloCard';
 import { ShareCard } from './ShareCard';
 
-const FLIP_MS = 560;
+const FLIP_MS = 280;
 const FAN_PICK_MS = 300;
 
 export function CardResult({ reading, question, onReset, reveal = true, immersive = false, preselected = false }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean; immersive?: boolean; preselected?: boolean }) {

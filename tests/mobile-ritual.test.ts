@@ -39,7 +39,7 @@ describe('mobile-first tarot ritual', () => {
   });
   it('drives the 3D flip, the mist veil and the content settle from one timing source', () => {
     const source = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
-    expect(source).toContain('const FLIP_MS = 560');
+    expect(source).toContain('const FLIP_MS = 280');
     expect(source).toContain('flipDone');
     expect(source).toContain('FlipCard');
     expect(source).toContain('card-mist');
@@ -47,7 +47,7 @@ describe('mobile-first tarot ritual', () => {
     expect(flip).toContain('flip-card-inner');
     expect(flip).toContain('flip-front');
     const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
-    expect(css).toContain('.reveal-stage{--flip-ms:560ms}');
+    expect(css).toContain('.reveal-stage{--flip-ms:280ms}');
     expect(css).toContain('.flip-card.is-open .flip-card-inner{transform:rotateY(180deg)}');
     expect(css).toContain('transition:transform var(--flip-ms)');
     expect(css).toContain('.reveal-stage.is-open .card-mist');
