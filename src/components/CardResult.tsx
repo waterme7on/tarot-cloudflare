@@ -219,12 +219,12 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       <div className="report-offer">
         <h3 style={{ marginTop: 0 }}>Get the full reading — {price}</h3>
         <p className="muted small">
-          A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, three concrete next steps and a journaling prompt. Delivered in minutes to a private link. If it fails to generate within 10 minutes you are refunded automatically. Entertainment only.
+          A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, practical next steps and a journaling prompt. Delivered to a private link. If generation fails, we retry once and request a refund if it still cannot be delivered. Entertainment only.
         </p>
         <div className="report-preview" aria-label="Sample layout of the full reading report">
           <div className="report-preview-header"><strong>Report preview</strong><span>Example layout</span></div>
           <div className="report-preview-paper">
-            <p className="report-preview-label">YOUR PRIVATE DEEP READING</p>
+            <p className="report-preview-label">Deep reading · example</p>
             <h4>{reading.cards[0]!.name} — a closer look</h4>
             <p>Explore how this {reading.cards[0]!.orientation} card may relate to your {reading.questionType === 'general' ? 'everyday' : reading.questionType} focus and its place in your spread.</p>
             <div className="report-preview-rule" />
