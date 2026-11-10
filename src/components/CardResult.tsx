@@ -26,7 +26,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
     transitionTimer.current = setTimeout(() => {
       setOpened(true);
       setSelectedSlot(null);
-    }, motionDelay(280));
+    }, motionDelay(preselected ? 330 : 300));
   }
   function advanceReading() {
     if (advancing) return;
@@ -46,11 +46,13 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   }
   const [showSummary, setShowSummary] = useState(!reveal);
   const [actionChosen, setActionChosen] = useState(false);
+  const [clientReady, setClientReady] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const readingBodyRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const currentCard = reading.cards[activeCard]!;
   useEffect(() => () => clearTimeout(transitionTimer.current), []);
+  useEffect(() => { setClientReady(true); }, []);
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
     if (immersive && preselected && window.matchMedia('(max-width: 760px)').matches) {
@@ -90,11 +92,15 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       <div className="flow-body reveal-body" ref={readingBodyRef}>
         <h2 id={`${id}-reveal-heading`} ref={headingRef} tabIndex={-1}>{currentCard.positionLabel}</h2>
         <p className="flow-caption">{opened ? 'Notice what resonates. Leave what doesn’t.' : preselected ? 'Tap the card you chose to turn it over.' : immersive ? 'Tap a card back to reveal your next card.' : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
-        <div className="reveal-stage">
-          {opened ? <div className={`table-turned-card ${advancing ? 'is-leaving' : ''}`} key={activeCard}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} /></div> : preselected ?
+        <div className={`reveal-stage${opened ? ' is-open' : ''}`}>
+          {/* Keep the WebGL card warm behind the back; the flip must not initialize it. */}
+          <div className="turned-card-layer" aria-hidden={!opened}>
+            {clientReady && <div className={`table-turned-card${advancing ? ' is-leaving' : ''}`}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} /></div>}
+          </div>
+          {!opened && (preselected ?
             <button type="button" className={'ritual-selected-back' + (selectedSlot !== null ? ' is-selected' : '')} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={'Turn over your selected card ' + (activeCard + 1)}><CardBack /><span>Tap to turn over</span></button> : immersive ?
             <div className={`table-fan ${selectedSlot !== null ? 'has-selection' : ''}`} key={`fan-${activeCard}`} role="group" aria-label="Deck card backs">{Array.from({ length: fanSize }, (_, i) => <button type="button" key={i} className={`fan-card ${selectedSlot === i ? 'is-selected' : ''}`} style={{ '--slot': i / (fanSize - 1), '--dip': Math.abs(i / (fanSize - 1) - .5) } as CSSProperties} disabled={pickedSlots.includes(i) || selectedSlot !== null} onClick={() => revealNext(i)} aria-label={`Reveal card ${activeCard + 1} from position ${i + 1}`}><CardBack /></button>)}</div> :
-            <button type="button" className={`deck-back reveal-card ${selectedSlot !== null ? 'is-selected' : ''}`} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>}
+            <button type="button" className={`deck-back reveal-card ${selectedSlot !== null ? 'is-selected' : ''}`} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>)}
         </div>
         {immersive && !opened && <>
           <div className="table-positions" aria-label="Spread positions">{reading.cards.map((card, i) => <div key={card.position} className={i < activeCard ? 'filled' : i === activeCard ? 'current' : ''} aria-current={i === activeCard ? 'step' : undefined}>{i < activeCard ? <img src={`/cards/thumbs/${card.slug}.webp`} alt={`${card.name}, ${card.orientation}`} className={card.orientation} width="48" height="72" /> : <span aria-hidden="true">{i + 1}</span>}<small>{card.positionLabel}</small></div>)}</div>

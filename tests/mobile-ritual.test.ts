@@ -37,6 +37,16 @@ describe('mobile-first tarot ritual', () => {
     expect(html).toContain('1 / 3');
     expect(html).not.toContain('the-star.webp');
   });
+  it('prewarms the reveal card so the flip never mounts WebGL mid-turn', () => {
+    const source = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
+    expect(source).toContain('turned-card-layer');
+    expect(source).toContain('clientReady');
+    expect(source).toContain('motionDelay(preselected ? 330 : 300)');
+    const css = readFileSync(new URL('../public/mobile-ritual.css', import.meta.url), 'utf8');
+    expect(css).toContain('.ritual-reveal-screen .reveal-stage.is-open .turned-card-layer');
+    const baseCss = readFileSync(new URL('../public/styles.css', import.meta.url), 'utf8');
+    expect(baseCss).toMatch(/\.holo-card img\{[^}]*transition:opacity \.22s ease/s);
+  });
   it('preserves the static shared-reading layout', () => {
     const html = renderToStaticMarkup(createElement(CardResult, { reading, reveal: false }));
     expect(html).toContain('alt="The Star, reversed"');
