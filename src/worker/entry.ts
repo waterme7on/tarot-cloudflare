@@ -88,7 +88,7 @@ async function handleScheduled(event: ScheduledController, env: Env): Promise<vo
         `SELECT id, waffo_payment_id, amount_cents, currency, reading_id, error, status FROM reports WHERE status IN ('paid','generating','failed') AND paid_at IS NOT NULL AND paid_at < datetime('now','-10 minutes') LIMIT 50`,
       ).all<StaleReport>()).results,
       markRetried: (id) => updateReportIfStatus(env.DB, id, GENERATION_STATUSES, { error: 'retried' }),
-      enqueueRetry: (id) => env.REPORT_QUEUE.send({ type: 'retry-report', reportId: id }),
+      enqueueRetry: async (id) => { await env.REPORT_QUEUE.send({ type: 'retry-report', reportId: id }); },
       canRefund: (r) => Boolean(env.WAFFO_MERCHANT_ID && env.WAFFO_PRIVATE_KEY && r.waffo_payment_id && r.amount_cents),
       claimRefund: (id) => updateReportIfStatus(env.DB, id, GENERATION_STATUSES, { status: 'refund_pending', error: 'auto_refund_claiming' }),
       createRefundTicket: (r) => createRefundTicket(

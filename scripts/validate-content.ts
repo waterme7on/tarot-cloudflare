@@ -74,7 +74,7 @@ for (const file of cardFiles) {
 }
 
 const pageSlugs = new Set(cardFiles.map((file) => file.split('/').pop()!.replace(/\.md$/, '')));
-const linkedSlugs = new Set(PUBLISHED_CARD_SLUGS);
+const linkedSlugs = new Set<string>(PUBLISHED_CARD_SLUGS);
 if (linkedSlugs.size !== PUBLISHED_CARD_SLUGS.length) errors.push('card-pages list has duplicate slugs');
 for (const slug of pageSlugs) if (!linkedSlugs.has(slug)) errors.push(`card-pages list is missing published page ${slug}`);
 for (const slug of linkedSlugs) if (!pageSlugs.has(slug)) errors.push(`card-pages list links to unpublished page ${slug}`);
