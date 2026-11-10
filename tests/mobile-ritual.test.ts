@@ -57,6 +57,27 @@ describe('mobile-first tarot ritual', () => {
     const baseCss = readFileSync(new URL('../public/styles.css', import.meta.url), 'utf8');
     expect(baseCss).toMatch(/\.holo-card img\{[^}]*transition:opacity \.22s ease/s);
   });
+  it('keeps the fan away from its controls at narrow and short heights', () => {
+    const css = readFileSync(new URL('../public/mobile-ritual.css', import.meta.url), 'utf8');
+    expect(css).toContain('--fan-step:clamp(23px,7.2vw,35px)');
+    expect(css).toContain('translateX(calc(var(--offset) * var(--fan-step');
+    expect(css).toContain('.ritual-fan{height:190px}');
+    expect(css).toContain('scroll-padding-bottom:1rem');
+    expect(css).toContain('ritual-fan-settle');
+    expect(css).toContain('ritual-card-lift');
+    expect(css).toContain('animation:none!important');
+    expect(css).not.toContain('translateX(calc(var(--offset) * 37px))');
+  });
+  it('renders an honest paid report preview and a dedicated checkout verification hook', () => {
+    const html = renderToStaticMarkup(createElement(CardResult, { reading, reveal: false }));
+    expect(html).toContain('Report preview');
+    expect(html).toContain('Example layout');
+    expect(html).toContain('not your generated report');
+    expect(html).toContain('The Star');
+    const source = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
+    expect(source).toContain('checkoutWidgetRef');
+    expect(source).toContain('getResponse(checkoutWidgetId.current');
+  });
   it('preserves the static shared-reading layout', () => {
     const html = renderToStaticMarkup(createElement(CardResult, { reading, reveal: false }));
     expect(html).toContain('alt="The Star, reversed"');
