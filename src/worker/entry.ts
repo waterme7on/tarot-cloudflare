@@ -5,8 +5,10 @@ import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from 'cloud
 import { ALL_CARDS, getCard } from '../data/cards';
 import { generateReportWithFallback } from '../lib/ai';
 import { buildRulesReport } from '../lib/interpretation';
-import { getReadingById, getReadingByToken, getReportById, updateReport, REPORT_FILE_TTL_DAYS } from '../lib/db';
+import { getReadingById, getReadingByToken, getReportById, updateReport, updateReportIfStatus, REPORT_FILE_TTL_DAYS } from '../lib/db';
 import { track } from '../lib/events';
+import { runRefundSweep, type StaleReport } from '../lib/refund-sweep';
+import { GENERATION_STATUSES } from '../lib/report-state';
 import { createRefundTicket, toDisplay } from '../lib/waffo';
 import { renderShareSvg } from '../lib/share-image';
 import type { DrawnCard, ReportQueueMessage } from '../lib/schema';
@@ -23,11 +25,11 @@ export class ReportWorkflow extends WorkflowEntrypoint<Env, ReportWorkflowParams
     const order = await step.do('verify-order', async () => {
       const report = await getReportById(env.DB, reportId);
       if (!report) throw new Error(`report ${reportId} missing`);
-      if (report.status === 'ready' || report.status === 'refunded') return { skip: true as const, report };
-      if (report.status !== 'paid' && report.status !== 'generating' && report.status !== 'failed') throw new Error(`report ${reportId} not paid (${report.status})`);
+      if (!GENERATION_STATUSES.includes(report.status)) return { skip: true as const, report };
       const reading = await getReadingById(env.DB, report.reading_id);
       if (!reading) throw new Error(`reading ${report.reading_id} missing`);
-      await updateReport(env.DB, reportId, { status: 'generating', workflow_id: event.instanceId });
+      const claimed = await updateReportIfStatus(env.DB, reportId, GENERATION_STATUSES, { status: 'generating', workflow_id: event.instanceId });
+      if (!claimed) return { skip: true as const, report };
       return { skip: false as const, report, reading };
     });
     if (order.skip) return { status: 'skipped' };
@@ -45,11 +47,12 @@ export class ReportWorkflow extends WorkflowEntrypoint<Env, ReportWorkflowParams
       return key;
     });
 
-    await step.do('mark-ready', async () => {
-      await updateReport(env.DB, reportId, { status: 'ready', r2_key: r2Key, delivered_at: new Date().toISOString(), error: null });
-      track(env, { name: 'report_ready', readingId: order.report.reading_id, meta: { generator: content.generator, product: order.report.product } });
+    const markedReady = await step.do('mark-ready', async () => {
+      const changed = await updateReportIfStatus(env.DB, reportId, GENERATION_STATUSES, { status: 'ready', r2_key: r2Key, delivered_at: new Date().toISOString(), error: null });
+      if (changed) track(env, { name: 'report_ready', readingId: order.report.reading_id, meta: { generator: content.generator, product: order.report.product } });
+      return changed;
     });
-    return { status: 'ready', generator: content.generator };
+    return markedReady ? { status: 'ready', generator: content.generator } : { status: 'skipped' };
   }
 }
 
@@ -80,32 +83,25 @@ async function handleScheduled(event: ScheduledController, env: Env): Promise<vo
   const now = new Date().toISOString();
   if (event.cron === '*/10 * * * *') {
     // Reports paid more than 10 minutes ago and still not ready: retry once, then refund.
-    const stale = await env.DB.prepare(
-      `SELECT id, waffo_payment_id, amount_cents, currency, reading_id, error, status FROM reports WHERE status IN ('paid','generating','failed') AND paid_at IS NOT NULL AND paid_at < datetime('now','-10 minutes') LIMIT 50`,
-    ).all<{ id: string; waffo_payment_id: string | null; amount_cents: number | null; currency: string | null; reading_id: string; error: string | null; status: string }>();
-    for (const r of stale.results) {
-      if (r.error !== 'retried') {
-        await updateReport(env.DB, r.id, { error: 'retried' });
-        await env.REPORT_QUEUE.send({ type: 'retry-report', reportId: r.id });
-        continue;
-      }
-      let refunded = false;
-      let ticketId: string | null = null;
-      if (env.WAFFO_MERCHANT_ID && env.WAFFO_PRIVATE_KEY && r.waffo_payment_id && r.amount_cents) {
-        try {
-          const ticket = await createRefundTicket(
-            { merchantId: env.WAFFO_MERCHANT_ID, privateKeyPem: env.WAFFO_PRIVATE_KEY },
-            { paymentId: r.waffo_payment_id, amount: toDisplay(r.amount_cents), currency: (r.currency ?? 'usd').toUpperCase(), reason: 'Report was not generated within 10 minutes', reportId: r.id },
-          );
-          refunded = true;
-          ticketId = ticket.id;
-        } catch (err) {
-          console.error('waffo refund failed', r.id, String(err));
-        }
-      }
-      await updateReport(env.DB, r.id, { status: refunded ? 'refunded' : 'failed', error: refunded ? 'auto_refunded_timeout' : 'timeout_refund_failed', waffo_refund_ticket_id: ticketId });
-      track(env, { name: 'report_failed', readingId: r.reading_id, meta: { reason: 'timeout', refunded } });
-    }
+    await runRefundSweep({
+      listStale: async () => (await env.DB.prepare(
+        `SELECT id, waffo_payment_id, amount_cents, currency, reading_id, error, status FROM reports WHERE status IN ('paid','generating','failed') AND paid_at IS NOT NULL AND paid_at < datetime('now','-10 minutes') LIMIT 50`,
+      ).all<StaleReport>()).results,
+      markRetried: (id) => updateReportIfStatus(env.DB, id, GENERATION_STATUSES, { error: 'retried' }),
+      enqueueRetry: (id) => env.REPORT_QUEUE.send({ type: 'retry-report', reportId: id }),
+      canRefund: (r) => Boolean(env.WAFFO_MERCHANT_ID && env.WAFFO_PRIVATE_KEY && r.waffo_payment_id && r.amount_cents),
+      claimRefund: (id) => updateReportIfStatus(env.DB, id, GENERATION_STATUSES, { status: 'refund_pending', error: 'auto_refund_claiming' }),
+      createRefundTicket: (r) => createRefundTicket(
+        { merchantId: env.WAFFO_MERCHANT_ID!, privateKeyPem: env.WAFFO_PRIVATE_KEY! },
+        { paymentId: r.waffo_payment_id!, amount: toDisplay(r.amount_cents!), currency: (r.currency ?? 'usd').toUpperCase(), reason: 'Report was not generated within 10 minutes', reportId: r.id },
+      ),
+      recordRefundTicket: (id, ticketId) => updateReportIfStatus(env.DB, id, ['refund_pending'], { error: 'auto_refund_pending', waffo_refund_ticket_id: ticketId }),
+      recordRefundFailure: (id, claimed) => updateReportIfStatus(env.DB, id, claimed ? ['refund_pending'] : GENERATION_STATUSES, { status: 'refund_failed', error: 'timeout_refund_failed' }),
+      track: (r, outcome) => {
+        if (outcome === 'retry') return;
+        track(env, { name: 'report_failed', readingId: r.reading_id, meta: { reason: 'timeout', refund: outcome } });
+      },
+    });
     return;
   }
 

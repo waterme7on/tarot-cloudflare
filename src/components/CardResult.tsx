@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import type { DrawResponse } from '../lib/schema';
+import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
+import { hasCardPage } from '../data/card-pages';
 import CardBack from './CardBack';
 import FlipCard from './FlipCard';
 import HoloCard from './HoloCard';
@@ -8,6 +9,8 @@ import { ShareCard } from './ShareCard';
 
 const FLIP_MS = 280;
 const FAN_PICK_MS = 300;
+const SPREAD_PAGE_LABEL: Record<Spread, string> = { 'one-card': 'the one-card spread', 'three-card': 'the three-card spread', 'celtic-cross': 'the Celtic Cross spread' };
+const QUESTION_PAGE: Record<QuestionType, string | null> = { general: null, love: '/questions/love/', career: '/questions/career/', money: '/questions/money/', decision: '/questions/decision/' };
 
 export function CardResult({ reading, question, onReset, reveal = true, immersive = false, preselected = false }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean; immersive?: boolean; preselected?: boolean }) {
   const [checkout, setCheckout] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
@@ -86,7 +89,11 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
     if (!showSummary || !checkoutSiteKey) return;
     const mount = () => {
       if (!window.turnstile || !checkoutWidgetRef.current || checkoutWidgetId.current) return;
-      checkoutWidgetId.current = window.turnstile.render(checkoutWidgetRef.current, { sitekey: checkoutSiteKey, theme: 'dark', size: 'flexible' });
+      try {
+        checkoutWidgetId.current = window.turnstile.render(checkoutWidgetRef.current, { sitekey: checkoutSiteKey, theme: 'dark', size: 'flexible', 'refresh-expired': 'auto' });
+      } catch {
+        // The retry interval keeps trying until the Turnstile script is ready.
+      }
     };
     mount();
     const timer = window.setInterval(mount, 300);
@@ -110,6 +117,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   }, [activeCard, showSummary, immersive, preselected]);
   const product = reading.spread === 'one-card' ? 'single' : 'three';
   const price = product === 'single' ? '$4.99' : '$9.99';
+  const questionPage = QUESTION_PAGE[reading.questionType];
 
   const startCheckout = async () => {
     const turnstileToken = checkoutSiteKey ? window.turnstile?.getResponse(checkoutWidgetId.current ?? undefined) : undefined;
@@ -126,13 +134,14 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       });
       const data = (await res.json()) as { checkoutUrl?: string; error?: { message: string } };
       if (!res.ok || !data.checkoutUrl) {
-        setCheckout({ loading: false, error: data.error?.message ?? 'Checkout unavailable right now.' });
         if (checkoutSiteKey) window.turnstile?.reset(checkoutWidgetId.current ?? undefined);
+        setCheckout({ loading: false, error: data.error?.message ?? 'Checkout unavailable right now.' });
         return;
       }
       location.href = data.checkoutUrl;
     } catch {
-      setCheckout({ loading: false, error: 'Network error.' });
+      if (checkoutSiteKey) window.turnstile?.reset(checkoutWidgetId.current ?? undefined);
+      setCheckout({ loading: false, error: 'Network error. Complete the verification again and retry.' });
     }
   };
 
@@ -194,8 +203,12 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
         {reading.cards.map((c) => <figure key={c.position}><img src={`/cards/thumbs/${c.slug}.webp`} width={120} height={180} className={c.orientation} alt={`${c.name}, ${c.orientation}`} /><figcaption>{c.positionLabel}<strong>{c.name}</strong></figcaption></figure>)}
       </div>
       <details className="meaning-details"><summary>Explore each card’s meaning</summary>
-        {reading.cards.map((c) => <div key={c.position}><h3>{c.name} <small>({c.orientation})</small></h3>{reading.cards.length > 1 && <p className="microcopy">{c.positionLabel}</p>}<p>{c.summary}</p><p className="microcopy">{c.keywords.join(' · ')}</p></div>)}
+        {reading.cards.map((c) => <div key={c.position}><h3>{hasCardPage(c.slug) ? <a href={`/cards/${c.slug}/`}>{c.name}</a> : c.name} <small>({c.orientation})</small></h3>{reading.cards.length > 1 && <p className="microcopy">{c.positionLabel}</p>}<p>{c.summary}</p><p className="microcopy">{c.keywords.join(' · ')}</p></div>)}
       </details>
+      <p className="microcopy result-next-links">
+        Keep exploring: <a href={`/spreads/${reading.spread}/`}>{SPREAD_PAGE_LABEL[reading.spread]}</a> · <a href="/cards/">all 78 card meanings</a>
+        {questionPage && <> · <a href={questionPage}>{reading.questionType} questions</a></>}
+      </p>
       <div className="callout">
         {reading.spread !== 'celtic-cross' && <p><strong>Reading:</strong> {reading.summary}</p>}
         <p>
@@ -219,7 +232,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       <div className="report-offer">
         <h3 style={{ marginTop: 0 }}>Get the full reading — {price}</h3>
         <p className="muted small">
-          A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, practical next steps and a journaling prompt. Delivered to a private link. If generation fails, we retry once and request a refund if it still cannot be delivered. Entertainment only.
+          A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, practical next steps and a journaling prompt. Delivered to a private link. If generation fails, we retry once and automatically request a refund if it still cannot be delivered; refund confirmation can take several business days. Entertainment only.
         </p>
         <div className="report-preview" aria-label="Sample layout of the full reading report">
           <div className="report-preview-header"><strong>Report preview</strong><span>Example layout</span></div>
