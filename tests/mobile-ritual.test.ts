@@ -37,6 +37,26 @@ describe('mobile-first tarot ritual', () => {
     expect(html).toContain('1 / 3');
     expect(html).not.toContain('the-star.webp');
   });
+  it('drives the 3D flip, the mist veil and the content settle from one timing source', () => {
+    const source = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
+    expect(source).toContain('const FLIP_MS = 280');
+    expect(source).toContain('flipDone');
+    expect(source).toContain('FlipCard');
+    expect(source).toContain('card-mist');
+    const flip = readFileSync(new URL('../src/components/FlipCard.tsx', import.meta.url), 'utf8');
+    expect(flip).toContain('flip-card-inner');
+    expect(flip).toContain('flip-front');
+    const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
+    expect(css).toContain('.reveal-stage{--flip-ms:280ms}');
+    expect(css).toContain('.flip-card.is-open .flip-card-inner{transform:rotateY(180deg)}');
+    expect(css).toContain('transition:transform var(--flip-ms)');
+    expect(css).toContain('.reveal-stage.is-open .card-mist');
+    expect(css).toContain('@keyframes mist-veil');
+    const mobile = readFileSync(new URL('../public/mobile-ritual.css', import.meta.url), 'utf8');
+    expect(mobile).toContain('.ritual-reveal-screen .reveal-stage.is-open .turned-card-layer');
+    const baseCss = readFileSync(new URL('../public/styles.css', import.meta.url), 'utf8');
+    expect(baseCss).toMatch(/\.holo-card img\{[^}]*transition:opacity \.22s ease/s);
+  });
   it('preserves the static shared-reading layout', () => {
     const html = renderToStaticMarkup(createElement(CardResult, { reading, reveal: false }));
     expect(html).toContain('alt="The Star, reversed"');
