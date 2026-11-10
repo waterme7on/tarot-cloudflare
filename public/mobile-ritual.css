@@ -138,7 +138,7 @@
 .ritual-app .ritual-back{min-height:44px;font-size:.78rem}
 .ritual-app .ritual-primary{font-family:var(--sans);letter-spacing:0}
 .ritual-pick-scene{max-width:500px}
-.ritual-fan-card{--fan-step:43px;--fan-dip:11px;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(calc(var(--distance) * var(--fan-dip))) rotate(calc(var(--offset) * 7deg));}
+.ritual-fan-card{--fan-step:43px;--fan-dip:11px;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(calc(var(--distance) * var(--fan-dip))) rotate(calc(var(--offset) * var(--fan-rotate,7deg)));}
 .ritual-pick-scene.is-extracting .ritual-fan-card{pointer-events:none}
 .ritual-pick-scene.is-extracting .ritual-fan-card:not(.is-focused){opacity:.2;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(35px) rotate(calc(var(--offset) * 7deg)) scale(.92)}
 .ritual-pick-scene.is-extracting .ritual-fan-card.is-focused{z-index:20!important;transform:translateY(-105px) scale(.7) rotateY(62deg);opacity:0;transition:transform .3s cubic-bezier(.2,.7,.25,1),opacity .3s ease}
@@ -222,16 +222,18 @@
   .ritual-deck-scene{display:flex;min-height:100%;justify-content:center;gap:.5rem}
   .ritual-deck-button{width:clamp(135px,25dvh,190px);height:clamp(205px,36dvh,280px)}
   .ritual-deck-layer{width:87%;height:auto;aspect-ratio:2/3;left:6.5%;top:2%}
-  .ritual-pick-scene{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;padding-bottom:1.2rem}
+  .ritual-pick-scene{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:0;padding-bottom:1.2rem}
   .ritual-pick-heading{flex:none;margin:0 0 .7rem}
   .ritual-fan-frame{width:100%;max-width:430px;flex:0 0 auto}
-  .ritual-fan{height:clamp(190px,27dvh,226px);overflow:visible}
+  /* The rotated outer cards extend below their unrotated boxes. Reserve that
+     footprint before navigation, rather than letting the fan paint over it. */
+  .ritual-fan{height:clamp(215px,31dvh,252px);overflow:visible}
   .ritual-fan-card{--fan-step:clamp(23px,7.2vw,35px);--fan-dip:clamp(3px,.75dvh,6px);--fan-rotate:5deg;width:clamp(74px,21.5vw,95px);height:auto;aspect-ratio:2/3;margin-left:calc(clamp(74px,21.5vw,95px) / -2);top:clamp(15px,2.6dvh,26px)}
   .ritual-fan-card.is-focused{transform:translateY(-14px) scale(1.065)}
-  .ritual-fan-controls{margin:0 auto .7rem;gap:1.1rem}
+  .ritual-fan-controls{position:relative;z-index:9;margin:0 auto .7rem;gap:1.1rem}
   .ritual-fan-controls button{width:46px;height:46px;border-radius:12px}
   .ritual-fan-controls span{min-width:118px;text-align:center}
-  .ritual-focus-marker{bottom:4px}
+  .ritual-focus-marker{display:none}
   .ritual-slots{width:100%;max-width:390px;flex:0 0 auto;min-height:70px;margin:.15rem auto .25rem;justify-content:safe center;gap:.5rem}
   .ritual-slot{flex-basis:51px}
   .ritual-slot-image{height:43px;width:29px}
@@ -302,7 +304,7 @@
 }
 @media(max-width:360px){
   .ritual-fan-card{--fan-step:clamp(22px,7vw,25px);top:17px}
-  .ritual-fan{height:160px}
+  .ritual-fan{height:210px}
   .ritual-pick-heading{margin-bottom:.4rem}
   .ritual-fan-controls{margin:.1rem auto .45rem}
   .ritual-pick-scene{padding-inline:.7rem}
@@ -311,7 +313,7 @@
 @media(max-height:680px) and (max-width:760px){
   .ritual-pick-heading h2{font-size:1.44rem}
   .ritual-pick-heading p{font-size:.72rem}
-  .ritual-fan{height:190px}
+  .ritual-fan{height:210px}
   .ritual-fan-card{top:15px}
   .ritual-fan-controls{margin:0 auto .35rem}
   .ritual-slots{margin:0 auto;min-height:60px}
