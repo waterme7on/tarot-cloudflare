@@ -2,36 +2,52 @@ import { useEffect, useId, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { DrawResponse } from '../lib/schema';
 import CardBack from './CardBack';
+import FlipCard from './FlipCard';
 import HoloCard from './HoloCard';
 import { ShareCard } from './ShareCard';
+
+const FLIP_MS = 560;
+const FAN_PICK_MS = 300;
 
 export function CardResult({ reading, question, onReset, reveal = true, immersive = false, preselected = false }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean; immersive?: boolean; preselected?: boolean }) {
   const [checkout, setCheckout] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [consent, setConsent] = useState(false);
   const [activeCard, setActiveCard] = useState(0);
   const [opened, setOpened] = useState(false);
+  const [flipDone, setFlipDone] = useState(false);
+  const [instantReset, setInstantReset] = useState(false);
   const [pickedSlots, setPickedSlots] = useState<number[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [advancing, setAdvancing] = useState(false);
   const pickLock = useRef(false);
   const transitionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const startTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fanSize = Math.max(7, reading.cards.length);
+  const usesFan = immersive && !preselected;
   const motionDelay = (ms: number) => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : ms;
   function revealNext(slot: number) {
     if (pickLock.current || pickedSlots.includes(slot)) return;
     pickLock.current = true;
     clearTimeout(transitionTimer.current);
+    clearTimeout(startTimer.current);
     setSelectedSlot(slot);
     setPickedSlots((slots) => [...slots, slot]);
-    transitionTimer.current = setTimeout(() => {
+    const begin = () => {
       setOpened(true);
-      setSelectedSlot(null);
-    }, motionDelay(preselected ? 330 : 300));
+      transitionTimer.current = setTimeout(() => {
+        setFlipDone(true);
+        setSelectedSlot(null);
+      }, motionDelay(FLIP_MS));
+    };
+    // The fan's chosen back has to reach edge-on before the front takes over.
+    if (usesFan) startTimer.current = setTimeout(begin, motionDelay(FAN_PICK_MS));
+    else begin();
   }
   function advanceReading() {
     if (advancing) return;
     setAdvancing(true);
     clearTimeout(transitionTimer.current);
+    clearTimeout(startTimer.current);
     transitionTimer.current = setTimeout(() => {
       if (activeCard === reading.cards.length - 1) {
         setShowSummary(true);
@@ -39,9 +55,12 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       }
       pickLock.current = false;
       setOpened(false);
+      setFlipDone(false);
       setSelectedSlot(null);
       setActiveCard((index) => index + 1);
       setAdvancing(false);
+      setInstantReset(true);
+      requestAnimationFrame(() => { requestAnimationFrame(() => setInstantReset(false)); });
     }, motionDelay(180));
   }
   const [showSummary, setShowSummary] = useState(!reveal);
@@ -51,8 +70,14 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   const readingBodyRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const currentCard = reading.cards[activeCard]!;
-  useEffect(() => () => clearTimeout(transitionTimer.current), []);
+  useEffect(() => () => {
+    clearTimeout(transitionTimer.current);
+    clearTimeout(startTimer.current);
+  }, []);
   useEffect(() => { setClientReady(true); }, []);
+  useEffect(() => {
+    if (flipDone) headingRef.current?.focus({ preventScroll: true });
+  }, [flipDone]);
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
     if (immersive && preselected && window.matchMedia('(max-width: 760px)').matches) {
@@ -88,31 +113,45 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   if (!showSummary) return (
     <section className={`reading-app reveal-app ${immersive ? 'reading-table table-reveal' : ''} ${immersive && preselected ? 'ritual-reveal-screen' : ''}`} id="draw-tool" data-active={immersive ? 'true' : undefined} data-opened={opened} data-advancing={advancing || undefined} aria-labelledby={`${id}-reveal-heading`}>
       {immersive ? <div className="table-toolbar"><span>Your reading</span><span>{activeCard + 1} / {reading.cards.length}</span><a href={`/reading/${reading.publicToken}/`}>Save &amp; close</a></div> : <div className="flow-topline"><span>Your cards are ready</span><span>{activeCard + 1} / {reading.cards.length}</span></div>}
-      <progress className="reveal-progress" aria-label="Cards revealed" value={activeCard + (opened ? 1 : 0)} max={reading.cards.length} />
+      <progress className="reveal-progress" aria-label="Cards revealed" value={activeCard + (flipDone ? 1 : 0)} max={reading.cards.length} />
       <div className="flow-body reveal-body" ref={readingBodyRef}>
         <h2 id={`${id}-reveal-heading`} ref={headingRef} tabIndex={-1}>{currentCard.positionLabel}</h2>
-        <p className="flow-caption">{opened ? 'Notice what resonates. Leave what doesn’t.' : preselected ? 'Tap the card you chose to turn it over.' : immersive ? 'Tap a card back to reveal your next card.' : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
+        <p className="flow-caption">{flipDone ? 'Notice what resonates. Leave what doesn’t.' : opened ? 'Turning your card…' : preselected ? 'Tap the card you chose to turn it over.' : immersive ? 'Tap a card back to reveal your next card.' : 'A new perspective is waiting. Turn it over when you’re ready.'}</p>
         <div className={`reveal-stage${opened ? ' is-open' : ''}`}>
-          {/* Keep the WebGL card warm behind the back; the flip must not initialize it. */}
-          <div className="turned-card-layer" aria-hidden={!opened}>
-            {clientReady && <div className={`table-turned-card${advancing ? ' is-leaving' : ''}`}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} /></div>}
-          </div>
-          {!opened && (preselected ?
-            <button type="button" className={'ritual-selected-back' + (selectedSlot !== null ? ' is-selected' : '')} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={'Turn over your selected card ' + (activeCard + 1)}><CardBack /><span>Tap to turn over</span></button> : immersive ?
-            <div className={`table-fan ${selectedSlot !== null ? 'has-selection' : ''}`} key={`fan-${activeCard}`} role="group" aria-label="Deck card backs">{Array.from({ length: fanSize }, (_, i) => <button type="button" key={i} className={`fan-card ${selectedSlot === i ? 'is-selected' : ''}`} style={{ '--slot': i / (fanSize - 1), '--dip': Math.abs(i / (fanSize - 1) - .5) } as CSSProperties} disabled={pickedSlots.includes(i) || selectedSlot !== null} onClick={() => revealNext(i)} aria-label={`Reveal card ${activeCard + 1} from position ${i + 1}`}><CardBack /></button>)}</div> :
-            <button type="button" className={`deck-back reveal-card ${selectedSlot !== null ? 'is-selected' : ''}`} disabled={selectedSlot !== null} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>)}
+          {usesFan ? <>
+            {/* The chosen fan card reaches edge-on before the prewarmed front takes over. */}
+            <div className="turned-card-layer" aria-hidden={!opened}>
+              {clientReady && <div className={`table-turned-card${advancing ? ' is-leaving' : ''}`}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive /></div>}
+            </div>
+            {!opened && (
+              <div className={`table-fan ${selectedSlot !== null ? 'has-selection' : ''}`} key={`fan-${activeCard}`} role="group" aria-label="Deck card backs">
+                {Array.from({ length: fanSize }, (_, i) => <button type="button" key={i} className={`fan-card ${selectedSlot === i ? 'is-selected' : ''}`} style={{ '--slot': i / (fanSize - 1), '--dip': Math.abs(i / (fanSize - 1) - .5) } as CSSProperties} disabled={pickedSlots.includes(i) || selectedSlot !== null || instantReset || !clientReady} onClick={() => revealNext(i)} aria-label={`Reveal card ${activeCard + 1} from position ${i + 1}`}><CardBack /></button>)}
+              </div>
+            )}
+          </> : (
+            <FlipCard
+              open={opened}
+              leaving={advancing}
+              instant={instantReset}
+              back={preselected ?
+                <button type="button" className="ritual-selected-back" disabled={opened || instantReset || !clientReady} onClick={() => revealNext(activeCard)} aria-label={'Turn over your selected card ' + (activeCard + 1)}><CardBack /><span>Tap to turn over</span></button> :
+                <button type="button" className="deck-back reveal-card" disabled={opened || instantReset || !clientReady} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>}
+              front={clientReady && <HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} />}
+            />
+          )}
+          <div className="card-mist" aria-hidden="true" />
         </div>
-        {immersive && !opened && <>
+        {immersive && !flipDone && <>
           <div className="table-positions" aria-label="Spread positions">{reading.cards.map((card, i) => <div key={card.position} className={i < activeCard ? 'filled' : i === activeCard ? 'current' : ''} aria-current={i === activeCard ? 'step' : undefined}>{i < activeCard ? <img src={`/cards/thumbs/${card.slug}.webp`} alt={`${card.name}, ${card.orientation}`} className={card.orientation} width="48" height="72" /> : <span aria-hidden="true">{i + 1}</span>}<small>{card.positionLabel}</small></div>)}</div>
           <p className="microcopy">{preselected ? 'These are the positions you chose. Reveal each card in order.' : 'Your draw is already set by a random shuffle. Taps reveal the cards in order.'}</p>
         </>}
-        {opened && <div className="revealed-meaning" role="status"><h3>{currentCard.name}</h3><p className="orientation-label">{currentCard.orientation === 'reversed' ? 'Reversed card' : 'Upright card'}</p><p>{currentCard.summary}</p></div>}
+        {flipDone && <div className="revealed-meaning" role="status"><h3>{currentCard.name}</h3><p className="orientation-label">{currentCard.orientation === 'reversed' ? 'Reversed card' : 'Upright card'}</p><p>{currentCard.summary}</p></div>}
       </div>
       <div className="flow-actions">
-        {opened ? <button className="btn flow-primary" type="button" disabled={advancing} onClick={advanceReading}>{activeCard === reading.cards.length - 1 ? 'Bring it together' : 'Meet the next card'}<span aria-hidden="true">→</span></button> :
-          <button className="btn flow-primary" type="button" disabled={selectedSlot !== null} onClick={() => revealNext(preselected ? activeCard : Array.from({ length: fanSize }, (_, i) => i).find((i) => !pickedSlots.includes(i))!)}>{selectedSlot !== null ? 'Turning your card…' : 'Reveal my card'}<span aria-hidden="true">→</span></button>}
+        {flipDone ? <button className="btn flow-primary" type="button" disabled={advancing} onClick={advanceReading}>{activeCard === reading.cards.length - 1 ? 'Bring it together' : 'Meet the next card'}<span aria-hidden="true">→</span></button> :
+          <button className="btn flow-primary" type="button" disabled={selectedSlot !== null || opened || instantReset || !clientReady} onClick={() => revealNext(preselected ? activeCard : Array.from({ length: fanSize }, (_, i) => i).find((i) => !pickedSlots.includes(i))!)}>{opened || selectedSlot !== null ? 'Turning your card…' : 'Reveal my card'}<span aria-hidden="true">→</span></button>}
       </div>
-      <button type="button" className="quiet-button" onClick={() => { clearTimeout(transitionTimer.current); setShowSummary(true); }}>Skip to the full reading</button>
+      <button type="button" className="quiet-button" onClick={() => { clearTimeout(transitionTimer.current); clearTimeout(startTimer.current); setShowSummary(true); }}>Skip to the full reading</button>
     </section>
   );
 

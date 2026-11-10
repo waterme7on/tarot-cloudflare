@@ -169,7 +169,7 @@
 }
 .ritual-reveal-screen .ritual-selected-back{transform-style:preserve-3d;will-change:transform}
 .ritual-reveal-screen .ritual-selected-back.is-selected{transform:perspective(950px) translateY(-10px) rotateY(90deg) scale(1.08);opacity:.28;transition:transform .32s cubic-bezier(.55,.06,.68,.19),opacity .32s ease}
-.ritual-reveal-screen .reveal-stage.is-open .turned-card-layer{animation:ritual-flip-face .5s cubic-bezier(.16,.84,.3,1) both}
+.ritual-reveal-screen .reveal-stage.is-open .turned-card-layer{animation:ritual-flip-face var(--flip-ms) cubic-bezier(.16,.84,.3,1) both}
 @keyframes ritual-flip-face{
   from{opacity:.18;transform:perspective(950px) rotateY(-89deg) translateY(-10px) scale(1.08)}
   to{opacity:1;transform:perspective(950px) rotateY(0) translateY(0) scale(1)}
@@ -333,3 +333,6 @@
   to{opacity:1;transform:translateY(0) scale(1)}
 }
 @media(prefers-reduced-motion:reduce){.ritual-slot.is-filled .ritual-slot-image{animation:none!important}}
+@media(max-width:760px){.ritual-reveal-screen .reveal-stage .flip-card{width:clamp(128px,25dvh,208px);height:auto;aspect-ratio:2/3}}
+@media(max-width:360px){.ritual-reveal-screen .reveal-stage .flip-card{width:clamp(120px,23dvh,165px)}}
+@media(max-height:680px) and (max-width:760px){.ritual-reveal-screen .reveal-stage .flip-card{width:clamp(120px,23dvh,155px)}}
