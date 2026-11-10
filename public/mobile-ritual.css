@@ -60,7 +60,7 @@
 .ritual-fan-frame{width:100%;max-width:430px;flex:none}
 .ritual-fan{position:relative;width:100%;height:240px;outline:0;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
 .ritual-fan:active{cursor:grabbing}
-.ritual-fan-card{position:absolute;top:48px;left:50%;margin-left:-51px;width:102px;height:153px;padding:0;background:transparent;border:0;transform:translateX(calc(var(--offset) * 43px)) translateY(calc(var(--distance) * 11px)) rotate(calc(var(--offset) * 7deg));transition:transform .22s ease,filter .22s ease,opacity .2s ease;cursor:pointer;transform-origin:50% 110%;filter:drop-shadow(0 6px 12px rgba(0,0,0,.3));-webkit-tap-highlight-color:transparent}
+.ritual-fan-card{position:absolute;top:48px;left:50%;margin-left:-51px;width:102px;height:153px;padding:0;background:transparent;border:0;transform:translateX(calc(var(--offset) * var(--fan-step, 43px))) translateY(calc(var(--distance) * var(--fan-dip, 11px))) rotate(calc(var(--offset) * var(--fan-rotate, 7deg)));transition:transform .22s ease,filter .22s ease,opacity .2s ease;cursor:pointer;transform-origin:50% 110%;filter:drop-shadow(0 6px 12px rgba(0,0,0,.3));-webkit-tap-highlight-color:transparent}
 .ritual-fan-card.is-focused{transform:translateY(-19px) scale(1.07);filter:drop-shadow(0 15px 18px rgba(0,0,0,.46)) brightness(1.08)}
 .ritual-fan-card.is-used{opacity:.26;filter:grayscale(1)}
 .ritual-fan-card:disabled{cursor:default}
@@ -107,7 +107,7 @@
   .ritual-deck-button{width:160px;height:234px}
   .ritual-deck-layer{width:142px;height:213px;left:9px;top:8px}
   .ritual-fan{height:215px}
-  .ritual-fan-card{width:88px;height:132px;margin-left:-44px;top:49px;transform:translateX(calc(var(--offset) * 37px)) translateY(calc(var(--distance) * 9px)) rotate(calc(var(--offset) * 7deg))}
+  .ritual-fan-card{width:88px;height:132px;margin-left:-44px;top:49px;--fan-step:clamp(23px,7.2vw,35px);--fan-dip:clamp(3px,.75dvh,6px);--fan-rotate:5deg}
   .ritual-pick-heading{margin-bottom:0}
   .ritual-pick-heading h2{font-size:1.55rem}
   .ritual-fan-controls{margin:-5px 0 .65rem}
@@ -121,7 +121,7 @@
 @media(max-width:360px){
   .ritual-app{min-height:min(450px,calc(100dvh - 205px))}
   .ritual-prepare,.ritual-pick-scene,.ritual-deck-scene{padding-inline:.7rem}
-  .ritual-fan-card{transform:translateX(calc(var(--offset) * 33px)) translateY(calc(var(--distance) * 9px)) rotate(calc(var(--offset) * 7deg))}
+  .ritual-fan-card{--fan-step:clamp(22px,7vw,25px)}
   .ritual-topics{gap:.3rem}
   .ritual-chip{padding-inline:.66rem}
 }
@@ -209,7 +209,7 @@
   .ritual-app.ritual-prepare .ritual-topbar{min-height:48px;padding:0 .85rem}
   .ritual-app{background:radial-gradient(ellipse at 50% 25%,#1b2637 0%,#101827 62%,#0c1420 100%)}
   .ritual-topbar{height:auto;min-height:calc(56px + env(safe-area-inset-top));padding:env(safe-area-inset-top) 1.05rem 0;box-sizing:border-box}
-  .ritual-scroll{width:100%;min-height:0;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch}
+  .ritual-scroll{width:100%;min-height:0;overscroll-behavior-y:contain;scroll-padding-bottom:1rem;-webkit-overflow-scrolling:touch}
   .ritual-prepare,.ritual-deck-scene,.ritual-pick-scene{max-width:440px;padding:clamp(.75rem,2.4dvh,1.1rem) 1.1rem .8rem}
   .ritual-heading{margin-bottom:.9rem}
   .ritual-heading h2{font-size:clamp(1.5rem,6vw,1.9rem);line-height:1.16}
@@ -222,11 +222,11 @@
   .ritual-deck-scene{display:flex;min-height:100%;justify-content:center;gap:.5rem}
   .ritual-deck-button{width:clamp(135px,25dvh,190px);height:clamp(205px,36dvh,280px)}
   .ritual-deck-layer{width:87%;height:auto;aspect-ratio:2/3;left:6.5%;top:2%}
-  .ritual-pick-scene{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0}
+  .ritual-pick-scene{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;padding-bottom:1.2rem}
   .ritual-pick-heading{flex:none;margin:0 0 .7rem}
   .ritual-fan-frame{width:100%;max-width:430px;flex:0 0 auto}
-  .ritual-fan{height:clamp(160px,29dvh,235px);overflow:visible}
-  .ritual-fan-card{--fan-step:clamp(31px,8.5vw,41px);--fan-dip:clamp(7px,1.9dvh,11px);width:clamp(74px,21.5vw,95px);height:auto;aspect-ratio:2/3;margin-left:calc(clamp(74px,21.5vw,95px) / -2);top:clamp(30px,5dvh,47px)}
+  .ritual-fan{height:clamp(190px,27dvh,226px);overflow:visible}
+  .ritual-fan-card{--fan-step:clamp(23px,7.2vw,35px);--fan-dip:clamp(3px,.75dvh,6px);--fan-rotate:5deg;width:clamp(74px,21.5vw,95px);height:auto;aspect-ratio:2/3;margin-left:calc(clamp(74px,21.5vw,95px) / -2);top:clamp(15px,2.6dvh,26px)}
   .ritual-fan-card.is-focused{transform:translateY(-14px) scale(1.065)}
   .ritual-fan-controls{margin:0 auto .7rem;gap:1.1rem}
   .ritual-fan-controls button{width:46px;height:46px;border-radius:12px}
@@ -301,7 +301,7 @@
   .ritual-summary-screen .report-offer{padding-bottom:1.5rem}
 }
 @media(max-width:360px){
-  .ritual-fan-card{--fan-step:29px;top:28px}
+  .ritual-fan-card{--fan-step:clamp(22px,7vw,25px);top:17px}
   .ritual-fan{height:160px}
   .ritual-pick-heading{margin-bottom:.4rem}
   .ritual-fan-controls{margin:.1rem auto .45rem}
@@ -311,8 +311,8 @@
 @media(max-height:680px) and (max-width:760px){
   .ritual-pick-heading h2{font-size:1.44rem}
   .ritual-pick-heading p{font-size:.72rem}
-  .ritual-fan{height:165px}
-  .ritual-fan-card{top:27px}
+  .ritual-fan{height:190px}
+  .ritual-fan-card{top:15px}
   .ritual-fan-controls{margin:0 auto .35rem}
   .ritual-slots{margin:0 auto;min-height:60px}
   .ritual-reveal-screen .flow-caption{margin-bottom:.3rem}
@@ -336,3 +336,20 @@
 @media(max-width:760px){.ritual-reveal-screen .reveal-stage .flip-card{width:clamp(128px,25dvh,208px);height:auto;aspect-ratio:2/3}}
 @media(max-width:360px){.ritual-reveal-screen .reveal-stage .flip-card{width:clamp(120px,23dvh,165px)}}
 @media(max-height:680px) and (max-width:760px){.ritual-reveal-screen .reveal-stage .flip-card{width:clamp(120px,23dvh,155px)}}
+
+/* Responsive fan: the cards, arrows and human check occupy separate scrollable tracks.
+   Motion uses transform/opacity only; no layout or filter animation. */
+.ritual-fanning .ritual-fan-card{animation:ritual-fan-settle .38s cubic-bezier(.18,.72,.24,1) backwards;animation-delay:calc(var(--distance) * 35ms)}
+@keyframes ritual-fan-settle{
+  from{opacity:.38;transform:translateY(16px) scale(.94)}
+  to{opacity:1;transform:translateX(calc(var(--offset) * var(--fan-step,43px))) translateY(calc(var(--distance) * var(--fan-dip,11px))) rotate(calc(var(--offset) * var(--fan-rotate,7deg)))}
+}
+.ritual-pick-scene.is-extracting .ritual-fan-card.is-focused{animation:ritual-card-lift .32s cubic-bezier(.2,.72,.15,1) both;pointer-events:none}
+@keyframes ritual-card-lift{
+  0%{opacity:1;transform:translateY(-14px) scale(1.065)}
+  58%{opacity:1;transform:translateY(-27px) scale(1.08)}
+  100%{opacity:0;transform:translateY(-45px) scale(.96)}
+}
+@media(prefers-reduced-motion:reduce){
+  .ritual-fanning .ritual-fan-card,.ritual-pick-scene.is-extracting .ritual-fan-card.is-focused{animation:none!important}
+}
