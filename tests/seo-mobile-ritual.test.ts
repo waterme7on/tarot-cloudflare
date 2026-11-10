@@ -28,6 +28,17 @@ describe('mobile-first SEO regression', () => {
     expect(free).toContain('<Faq items={faq} />');
   });
 
+  it('keeps the production host aligned across build, runtime and robots', () => {
+    const host = 'https://tarot-tools.me7o.workers.dev';
+    const astro = source('astro.config.mjs');
+    const wrangler = source('wrangler.jsonc');
+    const robots = source('public/robots.txt');
+    expect(astro).toContain(host);
+    expect(wrangler).toContain(`"SITE_URL": "${host}"`);
+    expect(robots).toContain(`Sitemap: ${host}/sitemap-index.xml`);
+    for (const file of [astro, wrangler, robots]) expect(file).not.toContain('waterme7on333');
+  });
+
   it('retains canonical, robots, structured data and sitemap paths', () => {
     const base = source('src/layouts/Base.astro');
     expect(base).toContain('<title>{title}</title>');
@@ -42,6 +53,6 @@ describe('mobile-first SEO regression', () => {
     const robots = source('public/robots.txt');
     expect(robots).toContain('Allow: /');
     expect(robots).toContain('Disallow: /reading/');
-    expect(robots).toContain('Sitemap: https://tarot-tools.waterme7on333.workers.dev/sitemap-index.xml');
+    expect(robots).toContain('Sitemap: https://tarot-tools.me7o.workers.dev/sitemap-index.xml');
   });
 });
