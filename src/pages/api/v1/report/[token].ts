@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { signR2Path } from '@/lib/auth';
 import { getReportByToken, updateReport } from '@/lib/db';
 import { error, json } from '@/lib/http';
+import { reportPublicError } from '@/lib/report-state';
 
 export const prerender = false;
 
@@ -30,7 +31,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       paidAt: report.paid_at,
       deliveredAt: report.delivered_at,
       fileUrl,
-      error: report.status === 'failed' ? 'We could not generate your report. A refund has been issued or is in progress.' : null,
+      error: reportPublicError(report.status),
     },
     { headers: { 'Cache-Control': 'no-store' } },
   );

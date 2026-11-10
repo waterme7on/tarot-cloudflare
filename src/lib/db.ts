@@ -23,7 +23,7 @@ export interface ReportRow {
   waffo_order_id: string | null;
   waffo_payment_id: string | null;
   waffo_refund_ticket_id: string | null;
-  status: 'pending_payment' | 'paid' | 'generating' | 'ready' | 'failed' | 'refunded';
+  status: 'pending_payment' | 'paid' | 'generating' | 'ready' | 'failed' | 'refund_pending' | 'refunded' | 'refund_failed';
   r2_key: string | null;
   workflow_id: string | null;
   amount_cents: number | null;
@@ -127,6 +127,24 @@ export async function updateReport(db: D1Database, id: string, patch: Partial<Om
     .prepare(`UPDATE reports SET ${sets}, updated_at = ?1 WHERE id = ?${entries.length + 2}`)
     .bind(nowIso(), ...entries.map(([, v]) => v), id)
     .run();
+}
+
+/** Apply a patch only while the row is still in one of the expected states. */
+export async function updateReportIfStatus(
+  db: D1Database,
+  id: string,
+  expected: ReportRow['status'][],
+  patch: Partial<Omit<ReportRow, 'id'>>,
+): Promise<boolean> {
+  const entries = Object.entries(patch).filter(([, v]) => v !== undefined);
+  if (entries.length === 0 || expected.length === 0) return false;
+  const sets = entries.map(([k], i) => `${k} = ?${i + 2}`).join(', ');
+  const statuses = expected.map((_, i) => `?${entries.length + i + 3}`).join(', ');
+  const result = await db
+    .prepare(`UPDATE reports SET ${sets}, updated_at = ?1 WHERE id = ?${entries.length + 2} AND status IN (${statuses})`)
+    .bind(nowIso(), ...entries.map(([, v]) => v), id, ...expected)
+    .run();
+  return (result.meta?.changes ?? 0) > 0;
 }
 
 export async function insertEvent(

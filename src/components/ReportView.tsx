@@ -31,7 +31,7 @@ export default function ReportView({ token }: { token: string }) {
           if (r.ok) setReport((await r.json()) as ReportContent);
           return;
         }
-        if (['failed', 'refunded'].includes(s.status)) return;
+        if (['refunded', 'refund_pending', 'refund_failed'].includes(s.status)) return;
         if (attempts++ < 120) setTimeout(poll, 5000);
       } catch {
         if (!stopped) setErr('Network error. Reload to try again.');
@@ -51,14 +51,34 @@ export default function ReportView({ token }: { token: string }) {
     return (
       <div className="card" aria-live="polite">
         <p><strong>Payment received.</strong> Your report is being written now — this usually takes under a minute.</p>
-        <p className="muted small">If it is not ready within 10 minutes, it is refunded automatically. You can close this tab and come back to this link later.</p>
+        <p className="muted small">If it is still not ready after 10 minutes, we retry once and then request a refund automatically. Refund confirmation from the payment provider can take several business days. You can close this tab and come back to this link later.</p>
       </div>
     );
-  if (status.status === 'failed' || status.status === 'refunded')
+  if (status.status === 'refund_pending')
     return (
       <div className="card">
-        <p className="error">{status.error ?? 'This order was refunded.'}</p>
-        <p className="muted small">Contact support@tarot-tools.example.com with this link if you need help.</p>
+        <p>{status.error ?? 'Your report could not be generated. A refund has been requested from the payment provider and is awaiting confirmation.'}</p>
+        <p className="muted small">Refund confirmation can take several business days. Keep this order link for your records.</p>
+      </div>
+    );
+  if (status.status === 'refund_failed')
+    return (
+      <div className="card">
+        <p className="error">{status.error ?? 'Your report could not be generated and the automatic refund could not be completed.'}</p>
+        <p className="muted small">Keep this order link for your records.</p>
+      </div>
+    );
+  if (status.status === 'refunded')
+    return (
+      <div className="card">
+        <p>This order was refunded in full.</p>
+        <p className="muted small">Your payment provider may take several business days to show the refund.</p>
+      </div>
+    );
+  if (status.status === 'failed')
+    return (
+      <div className="card">
+        <p className="error">{status.error ?? 'We could not generate your report. A retry is scheduled.'}</p>
       </div>
     );
   if (!report) return <p className="muted">Opening your report…</p>;

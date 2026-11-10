@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
-import { getReportById, updateReport } from '@/lib/db';
+import { getReportById, updateReport, updateReportIfStatus } from '@/lib/db';
 import { track } from '@/lib/events';
 import { error, json } from '@/lib/http';
+import { refundFailureStatus } from '@/lib/report-state';
 import { toCents, verifyWaffoSignature, type WaffoWebhookEvent } from '@/lib/waffo';
 
 export const prerender = false;
@@ -39,11 +40,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
       track(env, { name: 'checkout_completed', readingId: report.reading_id, route: '/api/v1/webhooks/waffo', meta: { product: report.product, amountCents: toCents(event.data.chargedAmount) ?? 0 } });
     }
   } else if (event.eventType === 'refund.succeeded' && reportId) {
-    await updateReport(env.DB, reportId, { status: 'refunded' });
+    // The provider has confirmed the refund; this is the only success transition.
+    await updateReport(env.DB, reportId, { status: 'refunded', error: null });
     track(env, { name: 'refund_requested', route: '/api/v1/webhooks/waffo', meta: { reportId, outcome: 'succeeded' } });
   } else if (event.eventType === 'refund.failed' && reportId) {
-    await updateReport(env.DB, reportId, { error: 'refund_failed' });
-    track(env, { name: 'refund_requested', route: '/api/v1/webhooks/waffo', meta: { reportId, outcome: 'failed' } });
+    const report = await getReportById(env.DB, reportId);
+    const status = report ? refundFailureStatus(report.status) : null;
+    if (report && status) await updateReportIfStatus(env.DB, reportId, [report.status], { status, error: 'refund_failed' });
+    track(env, { name: 'refund_requested', route: '/api/v1/webhooks/waffo', meta: { reportId, outcome: 'failed', previousStatus: report?.status ?? null } });
   }
 
   await env.CACHE.put(dedupeKey, '1', { expirationTtl: 86400 * 3 });

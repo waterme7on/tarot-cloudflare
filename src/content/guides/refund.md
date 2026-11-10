@@ -1,6 +1,6 @@
 ---
 title: "Refund Policy"
-description: "Refunds for paid tarot deep reports: automatic if not generated in 10 minutes, full within 7 days if unopened, case by case if opened, and how to request one."
+description: "Refunds for paid tarot reports: automatic refund request if not generated in 10 minutes, full within 7 days if unopened, case by case if opened, and how to request one."
 updatedAt: "2026-11-06"
 author: "Tarot Tools Editorial"
 noindex: false
@@ -10,9 +10,9 @@ This policy covers refunds for paid deep reports purchased on Tarot Tools. Deep 
 
 Last updated: 6 November 2026.
 
-## 1. Report not generated: automatic refund
+## 1. Report not generated: automatic refund request
 
-If your report has not been generated within **10 minutes** of successful payment, the order is automatically refunded in full to your original payment method. You do not need to contact us. Waffo typically returns the funds within 5 to 10 business days, depending on your bank. If you believe a refund should have been triggered but has not appeared, email us with your order token.
+If your report has not been generated within **10 minutes** of successful payment, we retry generation once and then automatically request a full refund. This is a refund request rather than an instant refund: once the payment provider confirms it, the money returns to your original payment method. Waffo typically takes 5 to 10 business days after confirmation, depending on your bank. You do not need to contact us to start this process. If you believe a refund request should have been triggered but has not appeared, email us with your order token.
 
 ## 2. Report generated but not opened: full refund within 7 days
 
