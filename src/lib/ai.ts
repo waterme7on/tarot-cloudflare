@@ -71,7 +71,7 @@ export async function generateAiReport(
   const gateway = env.AI_GATEWAY_ID ? { gateway: { id: env.AI_GATEWAY_ID, skipCache: false, cacheTtl: 0 } } : {};
   const result = (await env.AI.run(
     env.AI_MODEL as Parameters<Ai['run']>[0],
-    { messages: [{ role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: userPrompt }], max_tokens: 2048, temperature: 0.6 } as never,
+    { messages: [{ role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: userPrompt }], max_tokens: input.spread === 'celtic-cross' ? 4096 : input.spread === 'three-card' ? 3000 : 2048, temperature: 0.6 } as never,
     gateway as never,
   )) as { response?: string } | string;
 

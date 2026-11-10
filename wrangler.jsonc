@@ -29,7 +29,7 @@
     "ENVIRONMENT": "production",
     "SITE_URL": "https://tarot-tools.waterme7on333.workers.dev",
     "AI_GATEWAY_ID": "tarot-gateway",
-    "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct",
+    "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
     "REPORT_PRICE_SINGLE_CENTS": "499",
     "REPORT_PRICE_THREE_CENTS": "999",
     "WAFFO_PRODUCT_SINGLE": "PROD_214CNkqnBu0hykZy0SSnaB",
@@ -46,7 +46,7 @@
         "not_found_handling": "none",
         "run_worker_first": true
       },
-      "vars": { "ENVIRONMENT": "preview", "SITE_URL": "https://tarot-tools-preview.waterme7on333.workers.dev", "AI_GATEWAY_ID": "tarot-gateway", "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct", "REPORT_PRICE_SINGLE_CENTS": "499", "REPORT_PRICE_THREE_CENTS": "999" },
+      "vars": { "ENVIRONMENT": "preview", "SITE_URL": "https://tarot-tools-preview.waterme7on333.workers.dev", "AI_GATEWAY_ID": "tarot-gateway", "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast", "REPORT_PRICE_SINGLE_CENTS": "499", "REPORT_PRICE_THREE_CENTS": "999" },
       "d1_databases": [{ "binding": "DB", "database_name": "tarot-db-preview", "database_id": "463399d8-55ab-49d8-819d-2ba8b1eaa299", "migrations_dir": "migrations" }],
       "kv_namespaces": [{ "binding": "CACHE", "id": "84029e0f7cb24b1097b67842179c2cbc" }],
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "tarot-media-preview" }],

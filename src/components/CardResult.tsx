@@ -12,6 +12,9 @@ const FAN_PICK_MS = 300;
 export function CardResult({ reading, question, onReset, reveal = true, immersive = false, preselected = false }: { reading: DrawResponse; question?: string; onReset?: () => void; reveal?: boolean; immersive?: boolean; preselected?: boolean }) {
   const [checkout, setCheckout] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const [consent, setConsent] = useState(false);
+  const [checkoutSiteKey, setCheckoutSiteKey] = useState('');
+  const checkoutWidgetRef = useRef<HTMLDivElement>(null);
+  const checkoutWidgetId = useRef<string | null>(null);
   const [activeCard, setActiveCard] = useState(0);
   const [opened, setOpened] = useState(false);
   const [flipDone, setFlipDone] = useState(false);
@@ -76,6 +79,24 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   }, []);
   useEffect(() => { setClientReady(true); }, []);
   useEffect(() => {
+    if (!showSummary) return;
+    setCheckoutSiteKey(document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content ?? '');
+  }, [showSummary]);
+  useEffect(() => {
+    if (!showSummary || !checkoutSiteKey) return;
+    const mount = () => {
+      if (!window.turnstile || !checkoutWidgetRef.current || checkoutWidgetId.current) return;
+      checkoutWidgetId.current = window.turnstile.render(checkoutWidgetRef.current, { sitekey: checkoutSiteKey, theme: 'dark', size: 'flexible' });
+    };
+    mount();
+    const timer = window.setInterval(mount, 300);
+    return () => {
+      window.clearInterval(timer);
+      if (checkoutWidgetId.current) window.turnstile?.remove(checkoutWidgetId.current);
+      checkoutWidgetId.current = null;
+    };
+  }, [showSummary, checkoutSiteKey]);
+  useEffect(() => {
     if (flipDone) headingRef.current?.focus({ preventScroll: true });
   }, [flipDone]);
   useEffect(() => {
@@ -91,9 +112,13 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   const price = product === 'single' ? '$4.99' : '$9.99';
 
   const startCheckout = async () => {
+    const turnstileToken = checkoutSiteKey ? window.turnstile?.getResponse(checkoutWidgetId.current ?? undefined) : undefined;
+    if (checkoutSiteKey && !turnstileToken) {
+      setCheckout({ loading: false, error: 'Complete the verification below to continue to secure checkout.' });
+      return;
+    }
     setCheckout({ loading: true, error: null });
     try {
-      const turnstileToken = window.turnstile?.getResponse();
       const res = await fetch('/api/v1/report/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -102,6 +127,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       const data = (await res.json()) as { checkoutUrl?: string; error?: { message: string } };
       if (!res.ok || !data.checkoutUrl) {
         setCheckout({ loading: false, error: data.error?.message ?? 'Checkout unavailable right now.' });
+        if (checkoutSiteKey) window.turnstile?.reset(checkoutWidgetId.current ?? undefined);
         return;
       }
       location.href = data.checkoutUrl;
@@ -193,15 +219,28 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
       <div className="report-offer">
         <h3 style={{ marginTop: 0 }}>Get the full reading — {price}</h3>
         <p className="muted small">
-          A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, three concrete next steps and a journaling prompt. Delivered in minutes to a private link. If it fails to generate within 10 minutes you are refunded automatically. Entertainment only.
+          A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, practical next steps and a journaling prompt. Delivered to a private link. If generation fails, we retry once and request a refund if it still cannot be delivered. Entertainment only.
         </p>
+        <div className="report-preview" aria-label="Sample layout of the full reading report">
+          <div className="report-preview-header"><strong>Report preview</strong><span>Example layout</span></div>
+          <div className="report-preview-paper">
+            <p className="report-preview-label">Deep reading · example</p>
+            <h4>{reading.cards[0]!.name} — a closer look</h4>
+            <p>Explore how this {reading.cards[0]!.orientation} card may relate to your {reading.questionType === 'general' ? 'everyday' : reading.questionType} focus and its place in your spread.</p>
+            <div className="report-preview-rule" />
+            <h5>Bringing it together</h5>
+            <p>A connected interpretation, practical next steps, and a prompt for reflection.</p>
+          </div>
+          <p className="report-preview-note">Example of the format, not your generated report. Your private report is written after checkout; a rules-based edition is used if AI is unavailable.</p>
+        </div>
         {question && (
           <label style={{ display: 'flex', gap: '.5rem', alignItems: 'flex-start' }}>
             <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ width: 'auto', marginTop: '.3rem' }} />
             <span>Include my question ("{question.slice(0, 80)}") in the report. It will be sent to Cloudflare Workers AI and stored with the order.</span>
           </label>
         )}
-        {checkout.error && <p className="error">{checkout.error}</p>}
+        {checkoutSiteKey && <div className="report-check" ref={checkoutWidgetRef} aria-label="Human verification for checkout" />}
+        {checkout.error && <p className="error" role="alert">{checkout.error}</p>}
         <div className="btn-row">
           <button type="button" className="btn" onClick={startCheckout} disabled={checkout.loading}>
             {checkout.loading ? 'Opening checkout…' : 'Get the full reading'}
