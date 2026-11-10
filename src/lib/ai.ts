@@ -27,6 +27,31 @@ export function validateReport(content: unknown, expected: DrawnCard[]): content
   return true;
 }
 
+// Workers AI model generations do not all use the legacy `{ response: string }` shape.
+// DeepSeek V4.1 Flash returns OpenAI-compatible `choices[].message.content`.
+export function extractModelText(result: unknown): string {
+  if (typeof result === 'string') return result;
+  if (!result || typeof result !== 'object') throw new Error('AI response was empty');
+
+  const output = result as {
+    response?: unknown;
+    choices?: Array<{ message?: { content?: unknown } }>;
+  };
+  const content = output.choices?.[0]?.message?.content;
+  if (typeof content === 'string' && content.trim()) return content;
+  if (Array.isArray(content)) {
+    const pieces = content
+      .filter((part): part is { type: 'text'; text: string } =>
+        !!part && typeof part === 'object' && part.type === 'text' && typeof part.text === 'string')
+      .map((part) => part.text).join('');
+    if (pieces.trim()) return pieces;
+  }
+
+  if (typeof output.response === 'string' && output.response.trim()) return output.response;
+  if (output.response && typeof output.response === 'object') return JSON.stringify(output.response);
+  throw new Error('AI response did not include generated text');
+}
+
 function extractJson(text: string): unknown {
   const start = text.indexOf('{');
   const end = text.lastIndexOf('}');
@@ -71,11 +96,17 @@ export async function generateAiReport(
   const gateway = env.AI_GATEWAY_ID ? { gateway: { id: env.AI_GATEWAY_ID, skipCache: false, cacheTtl: 0 } } : {};
   const result = (await env.AI.run(
     env.AI_MODEL as Parameters<Ai['run']>[0],
-    { messages: [{ role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: userPrompt }], max_tokens: input.spread === 'celtic-cross' ? 4096 : input.spread === 'three-card' ? 3000 : 2048, temperature: 0.6 } as never,
+    {
+      messages: [{ role: 'system', content: SYSTEM_PROMPT }, { role: 'user', content: userPrompt }],
+      // We need a complete JSON report, not reasoning tokens.
+      reasoning_effort: 'none',
+      max_completion_tokens: input.spread === 'celtic-cross' ? 8192 : input.spread === 'three-card' ? 4096 : 2048,
+      temperature: 0.6,
+    } as never,
     gateway as never,
-  )) as { response?: string } | string;
+  )) as unknown;
 
-  const text = typeof result === 'string' ? result : (result.response ?? '');
+  const text = extractModelText(result);
   const parsed = extractJson(text) as Record<string, unknown>;
   parsed.generator = 'ai';
   parsed.model = env.AI_MODEL;
