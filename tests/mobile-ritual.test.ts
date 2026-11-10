@@ -61,7 +61,14 @@ describe('mobile-first tarot ritual', () => {
     const css = readFileSync(new URL('../public/mobile-ritual.css', import.meta.url), 'utf8');
     expect(css).toContain('--fan-step:clamp(23px,7.2vw,35px)');
     expect(css).toContain('translateX(calc(var(--offset) * var(--fan-step');
-    expect(css).toContain('.ritual-fan{height:190px}');
+    // The actual mobile fan uses a clamped reserve; narrow/short screens get
+    // a 210px fallback. Assert the usable footprint, not a stale 190px value.
+    const responsiveReserve = css.match(/\.ritual-fan\{height:clamp\((\d+)px,31dvh,(\d+)px\);overflow:visible\}/);
+    expect(responsiveReserve).not.toBeNull();
+    expect(Number(responsiveReserve![1])).toBeGreaterThanOrEqual(200);
+    const shortViewportReserve = css.match(/@media\(max-height:680px\) and \(max-width:760px\)\{[\s\S]*?\.ritual-fan\{height:(\d+)px\}/);
+    expect(shortViewportReserve).not.toBeNull();
+    expect(Number(shortViewportReserve![1])).toBeGreaterThanOrEqual(200);
     expect(css).toContain('scroll-padding-bottom:1rem');
     expect(css).toContain('ritual-fan-settle');
     expect(css).toContain('ritual-card-lift');
