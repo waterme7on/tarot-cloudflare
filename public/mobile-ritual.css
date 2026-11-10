@@ -140,7 +140,7 @@
 .ritual-pick-scene{max-width:500px}
 .ritual-fan-card{--fan-step:43px;--fan-dip:11px;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(calc(var(--distance) * var(--fan-dip))) rotate(calc(var(--offset) * var(--fan-rotate,7deg)));}
 .ritual-pick-scene.is-extracting .ritual-fan-card{pointer-events:none}
-.ritual-pick-scene.is-extracting .ritual-fan-card:not(.is-focused){opacity:.2;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(35px) rotate(calc(var(--offset) * 7deg)) scale(.92)}
+.ritual-pick-scene.is-extracting .ritual-fan-card:not(.is-focused){opacity:.2;transform:translateX(calc(var(--offset) * var(--fan-step))) translateY(35px) rotate(calc(var(--offset) * var(--fan-rotate,7deg))) scale(.92)}
 .ritual-pick-scene.is-extracting .ritual-fan-card.is-focused{z-index:20!important;transform:translateY(-105px) scale(.7) rotateY(62deg);opacity:0;transition:transform .3s cubic-bezier(.2,.7,.25,1),opacity .3s ease}
 .ritual-fanning .ritual-fan-card{animation:ritual-unfurl .42s cubic-bezier(.12,.82,.26,1) both;animation-delay:calc(var(--distance) * 18ms)}
 @keyframes ritual-unfurl{
