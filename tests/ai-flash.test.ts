@@ -26,8 +26,8 @@ describe('DeepSeek Flash report integration', () => {
   });
 
   it('runs DeepSeek without reasoning and validates the complete report', async () => {
-    const drawn = drawCards(ALL_CARDS, 'one-card');
-    const example = buildRulesReport(drawn, getCard, 'one-card', 'love');
+    const drawn = drawCards(ALL_CARDS, 'three-card');
+    const example = buildRulesReport(drawn, getCard, 'three-card', 'love');
     let request: Record<string, unknown> | undefined;
     const ai = { run: async (name: string, options: Record<string, unknown>) => {
       expect(name).toBe(model);
@@ -36,10 +36,10 @@ describe('DeepSeek Flash report integration', () => {
     } };
     const result = await generateAiReport(
       { AI: ai as unknown as Ai, AI_GATEWAY_ID: '', AI_MODEL: model },
-      { drawn, lookup: getCard, spread: 'one-card', questionType: 'love', userSummary: null },
+      { drawn, lookup: getCard, spread: 'three-card', questionType: 'love', userSummary: null },
     );
     expect(request?.reasoning_effort).toBe('none');
-    expect(request?.max_completion_tokens).toBe(2048);
+    expect(request?.max_completion_tokens).toBe(4096);
     expect(result.generator).toBe('ai');
     expect(result.model).toBe(model);
     expect(result.cards[0]!.name).toBe(drawn[0]!.name);
