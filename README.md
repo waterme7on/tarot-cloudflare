@@ -90,8 +90,8 @@ Update `SITE_URL` in `wrangler.jsonc` and `public/robots.txt` to the production 
 
 Connect the GitHub repo in Cloudflare → Workers & Pages → Workers Builds:
 
-- Build command: `npm run build`
-- Deploy command: `npx wrangler deploy`
+- Build command: `npm run build` (Workers Builds installs dependencies first; do not add `npm ci`)
+- Deploy command: `npx wrangler deploy --keep-vars`
 - Production branch: `main`; PRs get preview deployments (`--env preview`).
 
 Manual: `npm run deploy`. Before each production release run `npm run backup` (D1 export → R2).
