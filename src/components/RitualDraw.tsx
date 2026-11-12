@@ -377,10 +377,10 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
             {siteKey && <div className="ritual-human-check" ref={widgetRef} />}
           </div>
         )}
-        {error && <p className="ritual-error" role="alert">{error}</p>}
         <noscript><p className="ritual-error">Enable JavaScript to draw cards or browse the <a href="/cards/">card meanings</a>.</p></noscript>
       </div>
       <div className="ritual-actionbar">
+        {error && <p className="ritual-error ritual-actionbar-error" role="alert">{error}</p>}
         <button className="ritual-primary" type="button" disabled={loading || extracting || stage === 'shuffling' || stage === 'fanning'} onClick={() => {
           if (stage === 'prepare') { setStage('deck'); setError(null); }
           else if (stage === 'deck') shuffle();

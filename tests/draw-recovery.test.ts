@@ -27,4 +27,14 @@ describe('ritual draw recovery wiring', () => {
     expect(ritual).not.toContain('Reading your cards…');
     expect(ritual).toContain('Restart is safe');
   });
+
+  it('renders one alert inside the action bar, outside the clipped scroll scene', () => {
+    expect(ritual.match(/role="alert"/g)).toHaveLength(1);
+    expect(ritual.indexOf('role="alert"')).toBeGreaterThan(ritual.indexOf('className="ritual-actionbar"'));
+  });
+
+  it('keeps the action-bar alert readable at 12px or larger', () => {
+    const css = readFileSync(new URL('../public/mobile-ritual.css', import.meta.url), 'utf8');
+    expect(css).toMatch(/\.ritual-actionbar \.ritual-error\{[^}]*font-size:max\(12px,\.8rem\)/);
+  });
 });

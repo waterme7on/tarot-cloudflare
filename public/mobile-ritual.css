@@ -39,6 +39,7 @@
 .ritual-primary:active{transform:scale(.993)}
 .ritual-primary:disabled{opacity:.64;cursor:default}
 .ritual-actionbar>p{font-size:.67rem;text-align:center;margin:.45rem 0 0;color:#93a0af}
+.ritual-actionbar .ritual-error{margin:0 0 .55rem;padding:.5rem .65rem;max-width:none;font-size:max(12px,.8rem);line-height:1.35;overflow-wrap:anywhere;color:#ffd2c8;background:rgba(255,120,90,.09);border:1px solid rgba(255,195,182,.24);border-radius:8px}
 .ritual-deck-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding-bottom:1.7rem}
 .ritual-deck-scene .ritual-heading{margin-bottom:1.1rem}
 .ritual-deck-button{position:relative;background:transparent;border:0;padding:0;width:192px;height:270px;cursor:pointer;perspective:800px}
