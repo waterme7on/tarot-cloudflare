@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { verifyWaffoSignature } from '../src/lib/waffo';
 import { hmacHex, signR2Path, verifyR2Signature, timingSafeEqual } from '../src/lib/auth';
-import { LIMITS, checkRateLimit } from '../src/lib/rate-limit';
+import { LIMITS, checkRateLimit, readRateLimit } from '../src/lib/rate-limit';
 import { readFileSync } from 'node:fs';
 import { sanitizeMeta } from '../src/lib/events';
 
@@ -63,8 +63,14 @@ describe('rate limit', () => {
 });
 
 describe('free draw allowance', () => {
-  it('caps free draws at three per IP per day', () => {
-    expect(LIMITS.drawsPerIpPerDay).toBe(3);
+  it('caps free draws at ten per IP per day', async () => {
+    expect(LIMITS.drawsPerIpPerDay).toBe(10);
+    const kv = fakeKv();
+    await checkRateLimit(kv, 'daily', 10, 60, 1000);
+    const first = await readRateLimit(kv, 'daily', 10, 1000);
+    const second = await readRateLimit(kv, 'daily', 10, 1000);
+    expect(first.remaining).toBe(9);
+    expect(second.remaining).toBe(9);
     const api = readFileSync(new URL('../src/pages/api/v1/draw.ts', import.meta.url), 'utf8');
     expect(api).toContain('drawsPerIpPerDay');
     expect(api).toContain('daily_limit');

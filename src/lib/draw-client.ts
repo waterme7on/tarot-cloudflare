@@ -38,6 +38,24 @@ export function newIdempotencyKey(): string {
   return `${time.slice(0, 8)}-${time.slice(8, 12)}-4${random.slice(0, 3)}-a${random.slice(3, 6)}-${random.slice(6, 18)}`;
 }
 
+export interface DrawQuota {
+  limit: number;
+  remaining: number;
+  resetAt: number;
+}
+
+export async function fetchDrawQuota(fetchImpl: typeof fetch = fetch): Promise<DrawQuota | null> {
+  try {
+    const res = await fetchImpl('/api/v1/draw-quota', { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = (await res.json()) as Partial<DrawQuota>;
+    if (typeof data.limit !== 'number' || typeof data.remaining !== 'number' || typeof data.resetAt !== 'number') return null;
+    return { limit: data.limit, remaining: Math.max(0, data.remaining), resetAt: data.resetAt };
+  } catch {
+    return null;
+  }
+}
+
 interface DrawErrorBody {
   error?: { code?: string; message?: string; retryAfterSeconds?: number };
 }

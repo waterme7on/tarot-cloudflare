@@ -62,3 +62,7 @@
 .holo-card.is-revealing::after{animation:holo-sheen var(--flip-ms,280ms) cubic-bezier(.2,.75,.2,1) both}
 @keyframes holo-sheen{0%{opacity:0;background-position:120% 0}35%{opacity:.85}100%{opacity:0;background-position:-20% 0}}
 @media(prefers-reduced-motion:reduce){.holo-card.is-revealing::after{animation:none}}
+
+.ritual-quota{margin:0 0 .55rem;font-size:.8rem;line-height:1.45;color:var(--gold2);text-align:center}
+
+.flow-quota{margin:.2rem 0 .6rem;font-size:.78rem;line-height:1.45;color:var(--gold2)}
