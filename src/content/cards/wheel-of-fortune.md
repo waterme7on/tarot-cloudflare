@@ -3,8 +3,8 @@ title: "Wheel of Fortune Tarot Card Meaning: Upright & Reversed"
 description: "Wheel of Fortune tarot card meaning: cycles, luck, and turning points. Upright, reversed, love, career, money readings, a yes-or-no lean, and what not to ask it."
 name: "Wheel of Fortune"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-world", "the-tower", "ten-of-pentacles", "two-of-pentacles"]
 relatedSpreads: ["three-card", "celtic-cross"]
 relatedQuestions: ["money", "career", "decision"]

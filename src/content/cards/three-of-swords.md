@@ -3,8 +3,8 @@ title: "Three of Swords Tarot Card Meaning: Upright & Reversed"
 description: "Three of Swords tarot card meaning: heartbreak, painful truth and grief that clears the air. Upright and reversed, in love, career and money, plus a yes-or-no answer."
 name: "Three of Swords"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-tower", "three-of-pentacles", "two-of-cups", "the-star"]
 relatedSpreads: ["three-card", "celtic-cross"]
 relatedQuestions: ["love", "decision"]

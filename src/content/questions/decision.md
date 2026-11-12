@@ -4,7 +4,7 @@ description: "How to use tarot for decisions: framing yes/no and either/or quest
 name: "Decision Tarot Reading"
 questionType: "decision"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 relatedCards: ["the-lovers", "the-chariot", "the-hanged-man", "judgement"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 faq:

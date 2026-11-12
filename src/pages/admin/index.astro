@@ -14,7 +14,7 @@ const [orders, stats, readings, backups] = await Promise.all([
 const statusCounts = orders.results.reduce<Record<string, number>>((acc, o) => ((acc[String(o.status)] = (acc[String(o.status)] ?? 0) + 1), acc), {});
 Astro.response.headers.set('Cache-Control', 'no-store');
 ---
-<Base title="Admin – Tarot Tools" description="Internal dashboard protected by Cloudflare Access." noindex>
+<Base title="Admin – RandomTarot" description="Internal dashboard protected by Cloudflare Access." noindex>
   <h1>Admin</h1>
   <p class="muted small">Protected by Cloudflare Access. Environment: {env.ENVIRONMENT}</p>
   <div class="grid grid-3">

@@ -1,4 +1,4 @@
-# Tarot Tools — Tarot Card Generator on Cloudflare
+# RandomTarot — Tarot Card Generator on Cloudflare
 
 Free, no-signup tarot card generator with paid AI-assisted deep reports. Everything except card payments runs on Cloudflare: Workers (Astro SSR + API), D1, KV, R2, Queues, Workflows, Workers AI + AI Gateway, Turnstile, Analytics Engine, Cron Triggers, Access and Workers Builds. Waffo Pancake (merchant of record) is the only external service (payment rail only).
 

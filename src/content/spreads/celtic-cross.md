@@ -5,7 +5,7 @@ name: "Celtic Cross Tarot Spread"
 cardCount: 10
 positions: ["Present", "Challenge", "Past", "Future", "Above", "Below", "Advice", "External influences", "Hopes and fears", "Outcome"]
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 relatedCards: ["the-tower", "the-star", "wheel-of-fortune", "the-lovers"]
 relatedQuestions: ["love", "career", "money", "decision"]
 faq:

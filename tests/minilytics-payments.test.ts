@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { minilyticsPaymentBody, recordMinilyticsPayment } from '../src/lib/minilytics';
+import { minilyticsPaymentBody, recordMinilyticsGoal, recordMinilyticsPayment } from '../src/lib/minilytics';
 
 const payment = {
   transactionId: 'pay_123',
@@ -39,6 +39,26 @@ describe('Minilytics payments', () => {
 
     const skipped = vi.fn(async () => new Response('{}', { status: 200 }));
     await recordMinilyticsPayment({}, payment, skipped as unknown as typeof fetch);
+    expect(skipped).not.toHaveBeenCalled();
+  });
+
+  it('records a server-side purchase goal for funnels', async () => {
+    const fetchMock = vi.fn(async () => new Response('{}', { status: 200 }));
+    await recordMinilyticsGoal(
+      { MINILYTICS_API_KEY: 'ml_test' },
+      { visitorId: 'visitor-1234', name: 'purchase', props: { product: 'three', amount_cents: 999 } },
+      fetchMock as unknown as typeof fetch,
+    );
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://analytics.yololab.cc/api/v1/goals');
+    expect(JSON.parse(String(init.body))).toEqual({
+      visitor_id: 'visitor-1234',
+      name: 'purchase',
+      props: { product: 'three', amount_cents: 999 },
+    });
+
+    const skipped = vi.fn(async () => new Response('{}', { status: 200 }));
+    await recordMinilyticsGoal({ MINILYTICS_API_KEY: 'ml_test' }, { visitorId: null, name: 'purchase' }, skipped as unknown as typeof fetch);
     expect(skipped).not.toHaveBeenCalled();
   });
 });

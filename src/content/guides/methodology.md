@@ -2,7 +2,7 @@
 title: "How Our Tarot Card Generator Works"
 description: "How this tarot generator draws cards: secure randomness on Cloudflare's edge, a rules-based free reading, optional AI deep reports, limitations, and privacy."
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 noindex: false
 ---
 

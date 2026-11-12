@@ -1,22 +1,22 @@
 ---
-title: "About Tarot Tools"
+title: "About RandomTarot"
 description: "Who runs this tarot site, how our editorial team writes and reviews card meanings and guides, how often content is updated, and how to contact us with corrections."
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 noindex: false
 ---
 
-Tarot Tools is a small, independent site that offers a free tarot card generator, card meanings, spread guides, and question guides. It is run by a small editorial team rather than a large company. Everything on this site is offered for reflection and entertainment only.
+RandomTarot is a small, independent site that offers a free tarot card generator, card meanings, spread guides, and question guides. It is run by a small editorial team rather than a large company. Everything on this site is offered for reflection and entertainment only.
 
 ## Who we are
 
-The site is written and maintained by the Tarot Tools Editorial team. We are writers and readers who have used tarot for years as a journaling and reflection tool, and who were frustrated by sites that either promise supernatural accuracy or bury useful information under advertising. We wanted a card generator that was honest about how it works, with interpretations that are practical and plainly written.
+The site is written and maintained by the RandomTarot Editorial team. We are writers and readers who have used tarot for years as a journaling and reflection tool, and who were frustrated by sites that either promise supernatural accuracy or bury useful information under advertising. We wanted a card generator that was honest about how it works, with interpretations that are practical and plainly written.
 
 We do not claim psychic ability, and we do not offer personal readings. The site is a tool, and the writing is here to help you use it well.
 
 ## How to contact us
 
-For corrections, questions, refund requests, or data deletion requests, email **support@tarot-tools.example.com**. We aim to respond within a few business days. For refund requests, please include your order token so we can find your purchase. See the [refund policy](/refund/) for details.
+For corrections, questions, refund requests, or data deletion requests, email **support@randomtarot.site**. We aim to respond within a few business days. For refund requests, please include your order token so we can find your purchase. See the [refund policy](/refund/) for details.
 
 ## Editorial policy
 

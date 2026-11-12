@@ -3,8 +3,8 @@ title: "Ten of Pentacles Tarot Card Meaning: Upright & Reversed"
 description: "Ten of Pentacles tarot card meaning: legacy, family wealth and long-term security. Upright and reversed, in love, career and money, plus a yes-or-no answer."
 name: "Ten of Pentacles"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["ten-of-cups", "ace-of-pentacles", "the-emperor", "the-world"]
 relatedSpreads: ["celtic-cross", "three-card"]
 relatedQuestions: ["money", "career"]

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 
 export const prerender = true;
 
-const SITE = (import.meta.env.SITE ?? 'https://tarot-tools.example.com').replace(/\/$/, '');
+const SITE = (import.meta.env.SITE ?? 'https://randomtarot.site').replace(/\/$/, '');
 
 export function urlset(urls: { loc: string; lastmod?: string; priority?: string }[]): Response {
   const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls

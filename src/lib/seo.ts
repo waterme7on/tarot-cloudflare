@@ -25,7 +25,7 @@ export function articleLd(site: string, input: { path: string; headline: string;
     description: input.description,
     dateModified: input.updatedAt,
     author: { '@type': 'Organization', name: input.author },
-    publisher: { '@type': 'Organization', name: 'Tarot Tools', url: site },
+    publisher: { '@type': 'Organization', name: 'RandomTarot', url: site },
   };
 }
 

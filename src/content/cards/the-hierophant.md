@@ -3,8 +3,8 @@ title: "The Hierophant Tarot Card Meaning: Upright & Reversed"
 description: "The Hierophant tarot card meaning: tradition, teaching, and belonging. Upright and reversed readings for love, career, money, with a yes-or-no lean and limits."
 name: "The Hierophant"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-high-priestess", "the-emperor", "three-of-pentacles", "ten-of-pentacles"]
 relatedSpreads: ["three-card", "celtic-cross"]
 relatedQuestions: ["love", "career", "decision"]

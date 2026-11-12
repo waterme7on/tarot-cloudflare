@@ -4,7 +4,7 @@ description: "A grounded guide to money tarot readings: which questions help, th
 name: "Money Tarot Reading"
 questionType: "money"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 relatedCards: ["ace-of-pentacles", "ten-of-pentacles", "wheel-of-fortune", "the-devil"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 faq:

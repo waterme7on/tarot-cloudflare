@@ -1,4 +1,6 @@
-const PAYMENTS_URL = 'https://analytics.yololab.cc/api/v1/payments';
+const API_BASE = 'https://analytics.yololab.cc/api/v1';
+const PAYMENTS_URL = `${API_BASE}/payments`;
+const GOALS_URL = `${API_BASE}/goals`;
 
 export interface MinilyticsPayment {
   transactionId: string;
@@ -38,5 +40,30 @@ export async function recordMinilyticsPayment(
     if (!res.ok) console.error('minilytics payment failed', res.status);
   } catch (error) {
     console.error('minilytics payment error', String(error));
+  }
+}
+
+export interface MinilyticsGoal {
+  visitorId?: string | null;
+  name: string;
+  props?: Record<string, string | number | boolean>;
+}
+
+export async function recordMinilyticsGoal(
+  env: Pick<Env, 'MINILYTICS_API_KEY'>,
+  goal: MinilyticsGoal,
+  fetchImpl: typeof fetch = fetch,
+): Promise<void> {
+  if (!env.MINILYTICS_API_KEY || !goal.visitorId) return;
+  try {
+    const res = await fetchImpl(GOALS_URL, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${env.MINILYTICS_API_KEY}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ visitor_id: goal.visitorId, name: goal.name, props: goal.props }),
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) console.error('minilytics goal failed', res.status);
+  } catch (error) {
+    console.error('minilytics goal error', String(error));
   }
 }

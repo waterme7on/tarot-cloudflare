@@ -3,8 +3,8 @@ title: "Ace of Wands Tarot Card Meaning: Upright & Reversed"
 description: "Ace of Wands tarot card meaning: a spark of inspiration, drive and the urge to begin. Upright and reversed, in love, career and money, with a yes-or-no verdict."
 name: "Ace of Wands"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-magician", "ace-of-pentacles", "the-sun", "knight-of-wands"]
 relatedSpreads: ["one-card", "three-card"]
 relatedQuestions: ["career", "decision"]
