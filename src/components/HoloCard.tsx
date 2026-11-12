@@ -15,6 +15,8 @@ export interface HoloCardProps {
   active?: boolean;
   /** Load the fallback image eagerly (used on the reveal card). */
   eager?: boolean;
+  /** Begin preparing WebGL during the flip, before the canvas is shown. */
+  start?: boolean;
 }
 
 export function cardImage(slug: string): string {
@@ -120,7 +122,7 @@ interface HoloRuntime {
   dispose(): void;
 }
 
-export default function HoloCard({ slug, name, orientation = 'upright', reveal = false, revealDelayMs = 0, width = 220, interactive = true, foil = 0.75, className, active = true, eager = false }: HoloCardProps) {
+export default function HoloCard({ slug, name, orientation = 'upright', reveal = false, revealDelayMs = 0, width = 220, interactive = true, foil = 0.75, className, active = true, eager = false, start = false }: HoloCardProps) {
   const host = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
@@ -128,13 +130,15 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
   const runtime = useRef<HoloRuntime | null>(null);
   const latest = useRef({ slug, orientation });
   latest.current = { slug, orientation };
+  const latestActive = useRef(active);
+  latestActive.current = active;
   const height = Math.round(width * 1.5);
 
   // Start WebGL only once, and only after the reveal has settled. The same
   // context is reused for every card in the reading.
   useEffect(() => {
-    if (active) setStarted(true);
-  }, [active]);
+    if (active || (start && qualityTier(eager) !== 'low')) setStarted(true);
+  }, [active, start, eager]);
 
   useEffect(() => {
     if (!started) return;
@@ -159,9 +163,10 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
     let loadToken = 0;
     const base = { x: 0, y: 0, z: orientation === 'reversed' ? Math.PI : 0 };
     let inv: any = null;
-    let activeNow = true;
+    let activeNow = latestActive.current;
     let inView = typeof IntersectionObserver === 'undefined';
     let hasRendered = false;
+    let readyFrames = 0;
     let hover = false;
     let revealed = !reveal;
     let targetX = 0;
@@ -224,7 +229,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         uniforms.uView.value.copy(camera.position).applyMatrix4(inv.copy(root.matrixWorld).invert()).normalize();
         uniforms.uTime.value = reduced.matches ? 0 : elapsed;
         renderer.render(scene, camera);
-        if (!hasRendered) {
+        if (!hasRendered && (reduced.matches || ++readyFrames >= 2)) {
           hasRendered = true;
           renderer.domElement.style.opacity = '1';
           setReady(true);
@@ -306,6 +311,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
       }
       const token = ++loadToken;
       hasRendered = false;
+      readyFrames = 0;
       setFailed(false);
       setReady(false);
       renderer.domElement.style.opacity = '0';
@@ -320,6 +326,8 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         if (art) art.dispose();
         art = tex;
         uniforms.tArt.value = tex;
+        renderer.initTexture?.(tex);
+        if (renderer.compileAsync) await renderer.compileAsync(scene, camera);
         loadedKey = key;
         targetX = 0;
         targetY = 0;
