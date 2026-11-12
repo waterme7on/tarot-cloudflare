@@ -64,6 +64,8 @@ describe('mobile-first tarot ritual', () => {
     const result = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
     expect(result).toContain('active={holoActive}');
     expect(result).toContain('new Image()');
+    expect(holo).toContain('eager ? cardPoster(slug) : cardImage(slug)');
+    expect(holo).toContain('const targetFps = eager ? 30');
     const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
     expect(css).not.toContain('filter:blur(2px)');
   });

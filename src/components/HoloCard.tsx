@@ -150,7 +150,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
           () => renderer.dispose(),
         );
         // Non-interactive reveal cards are a small mobile surface: reduce GPU fill cost.
-        renderer.setPixelRatio(Math.min(devicePixelRatio, interactive ? 2 : 1.5));
+        renderer.setPixelRatio(Math.min(devicePixelRatio, eager ? 1.75 : interactive ? 2 : 1.5));
         renderer.setSize(el.clientWidth || 1, el.clientHeight || 1);
         renderer.setClearColor(0x000000, 0);
         renderer.domElement.style.position = 'absolute';
@@ -162,7 +162,9 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         const camera = new THREE.PerspectiveCamera(28, (el.clientWidth || 1) / (el.clientHeight || 1), 0.1, 100);
         camera.position.set(0, 0, 7.2);
 
-        const art = await new THREE.TextureLoader().loadAsync(cardImage(slug));
+        // Reveal cards use the 480×720 poster already in the browser cache; the
+        // full 768×1152 art is reserved for card pages at larger widths.
+        const art = await new THREE.TextureLoader().loadAsync(eager ? cardPoster(slug) : cardImage(slug));
         if (cancelled || disposed) {
           art.dispose();
           return;
@@ -240,11 +242,12 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
           }
         };
         let lastPresented = 0;
+        // The reveal card is the critical mobile surface: 30 fps ambient foil
+        // is indistinguishable from 60 here and costs half the GPU frames.
+        const targetFps = eager ? 30 : interactive ? 60 : 30;
         const tick = (now: number) => {
           frame = null;
-          // 30 fps is plenty for the ambient foil of a non-interactive revealed
-          // card; interactive 3D card pages still render at display refresh rate.
-          if (interactive || now - lastPresented >= 1000 / 30) {
+          if (now - lastPresented >= 1000 / targetFps) {
             render(now);
             lastPresented = now;
           }
