@@ -57,6 +57,17 @@ describe('mobile-first tarot ritual', () => {
     const baseCss = readFileSync(new URL('../public/styles.css', import.meta.url), 'utf8');
     expect(baseCss).toMatch(/\.holo-card img\{[^}]*transition:opacity \.22s ease/s);
   });
+  it('keeps WebGL off the draw-to-flip critical path', () => {
+    const holo = readFileSync(new URL('../src/components/HoloCard.tsx', import.meta.url), 'utf8');
+    expect(holo).toContain('if (!active)');
+    expect(holo).toContain('}, [slug, orientation, reveal, revealDelayMs, interactive, foil, active]);');
+    const result = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
+    expect(result).toContain('active={holoActive}');
+    expect(result).toContain('new Image()');
+    const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
+    expect(css).not.toContain('filter:blur(2px)');
+  });
+
   it('keeps the fan away from its controls at narrow and short heights', () => {
     const css = readFileSync(new URL('../public/mobile-ritual.css', import.meta.url), 'utf8');
     expect(css).toContain('--fan-step:clamp(23px,7.2vw,35px)');

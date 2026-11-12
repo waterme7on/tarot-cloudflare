@@ -11,10 +11,19 @@ export interface HoloCardProps {
   interactive?: boolean;
   foil?: number;
   className?: string;
+  /** Keep the static image visible and skip WebGL until the caller is ready. */
+  active?: boolean;
+  /** Load the fallback image eagerly (used on the reveal card). */
+  eager?: boolean;
 }
 
 export function cardImage(slug: string): string {
   return `/cards/${slug}.webp`;
+}
+
+/** 480×720 poster used before WebGL takes over; much cheaper to decode than the 768×1152 art. */
+export function cardPoster(slug: string): string {
+  return `/cards/reveal/${slug}.webp`;
 }
 
 const VERT = `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
@@ -91,13 +100,20 @@ function drawBack(): HTMLCanvasElement {
   return c;
 }
 
-export default function HoloCard({ slug, name, orientation = 'upright', reveal = false, revealDelayMs = 0, width = 220, interactive = true, foil = 0.75, className }: HoloCardProps) {
+export default function HoloCard({ slug, name, orientation = 'upright', reveal = false, revealDelayMs = 0, width = 220, interactive = true, foil = 0.75, className, active = true, eager = false }: HoloCardProps) {
   const host = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
   const height = Math.round(width * 1.5);
 
   useEffect(() => {
+    // The static art is the critical path. Starting Three.js here is what made
+    // the draw-to-flip transition stutter, so wait until the caller says the
+    // reveal animation has finished.
+    if (!active) {
+      setReady(false);
+      return;
+    }
     const el = host.current;
     if (!el) return;
     let cancelled = false;
@@ -317,19 +333,19 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
       cancelled = true;
       dispose();
     };
-  }, [slug, orientation, reveal, revealDelayMs, interactive, foil]);
+  }, [slug, orientation, reveal, revealDelayMs, interactive, foil, active]);
 
   return (
     <div ref={host} className={`holo-card ${className ?? ''}`} style={{ width, maxWidth: '100%', aspectRatio: `${width} / ${height}` }}>
       <img
-        src={cardImage(slug)}
+        src={eager ? cardPoster(slug) : cardImage(slug)}
         alt={`${name} tarot card illustration${orientation === 'reversed' ? ' (reversed)' : ''}`}
         width={768}
         height={1152}
         className={orientation === 'reversed' ? 'reversed' : ''}
         // Opacity preserves the accessible SSR image after the canvas takes over.
         style={{ opacity: ready && !failed ? 0 : 1 }}
-        loading={reveal ? 'eager' : 'lazy'}
+        loading={eager || reveal ? 'eager' : 'lazy'}
         decoding="async"
       />
     </div>
