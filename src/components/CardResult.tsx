@@ -22,6 +22,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   const [opened, setOpened] = useState(false);
   const [flipDone, setFlipDone] = useState(false);
   const [holoActive, setHoloActive] = useState(false);
+  const [holoStart, setHoloStart] = useState(false);
   const [instantReset, setInstantReset] = useState(false);
   const [pickedSlots, setPickedSlots] = useState<number[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
@@ -35,6 +36,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   function revealNext(slot: number) {
     if (pickLock.current || pickedSlots.includes(slot)) return;
     pickLock.current = true;
+    setHoloStart(true);
     clearTimeout(transitionTimer.current);
     clearTimeout(startTimer.current);
     setSelectedSlot(slot);
@@ -61,6 +63,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
         return;
       }
       pickLock.current = false;
+      setHoloStart(false);
       setOpened(false);
       setFlipDone(false);
       setSelectedSlot(null);
@@ -177,7 +180,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
           {usesFan ? <>
             {/* The chosen fan card reaches edge-on before the prewarmed front takes over. */}
             <div className="turned-card-layer" aria-hidden={!opened}>
-              {clientReady && <div className={`table-turned-card${advancing ? ' is-leaving' : ''}`}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive active={holoActive} eager className={opened && !flipDone ? 'is-revealing' : ''} /></div>}
+              {clientReady && <div className={`table-turned-card${advancing ? ' is-leaving' : ''}`}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive active={holoActive} start={holoStart} eager className={opened && !flipDone ? 'is-revealing' : ''} /></div>}
             </div>
             {!opened && (
               <div className={`table-fan ${selectedSlot !== null ? 'has-selection' : ''}`} key={`fan-${activeCard}`} role="group" aria-label="Deck card backs">
@@ -192,7 +195,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
               back={preselected ?
                 <button type="button" className="ritual-selected-back" disabled={opened || instantReset || !clientReady} onClick={() => revealNext(activeCard)} aria-label={'Turn over your selected card ' + (activeCard + 1)}><CardBack /><span>Tap to turn over</span></button> :
                 <button type="button" className="deck-back reveal-card" disabled={opened || instantReset || !clientReady} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>}
-              front={clientReady && <HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} active={holoActive} eager className={opened && !flipDone ? 'is-revealing' : ''} />}
+              front={clientReady && <HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} active={holoActive} start={holoStart} eager className={opened && !flipDone ? 'is-revealing' : ''} />}
             />
           )}
           <div className="card-mist" aria-hidden="true" />

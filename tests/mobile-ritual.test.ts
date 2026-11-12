@@ -62,9 +62,12 @@ describe('mobile-first tarot ritual', () => {
     expect(holo).toContain('runtime.current');
     expect(holo).toContain('setCard');
     expect(holo).toContain('5_000');
+    expect(holo).toContain('compileAsync');
+    expect(holo).toContain('readyFrames');
     expect(holo).toContain('}, [started, interactive, foil, eager]);');
     const result = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
     expect(result).toContain('active={holoActive}');
+    expect(result).toContain('start={holoStart}');
     expect(result).toContain('new Image()');
     expect(holo).toContain('eager ? cardPoster(slug) : cardImage(slug)');
     expect(holo).toContain("nav.connection?.saveData");
