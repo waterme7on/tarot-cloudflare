@@ -7,7 +7,17 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "not_found_handling": "none"
+    "not_found_handling": "none",
+    "run_worker_first": [
+      "/tarot-card-meanings",
+      "/tarot-card-meanings/",
+      "/one-card-tarot",
+      "/one-card-tarot/",
+      "/three-card-tarot",
+      "/three-card-tarot/",
+      "/love-tarot",
+      "/love-tarot/"
+    ]
   },
   "routes": [
     { "pattern": "randomtarot.site", "custom_domain": true },
