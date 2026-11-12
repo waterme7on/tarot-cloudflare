@@ -1,4 +1,6 @@
-export default function CardBack() {
+import { memo } from 'react';
+
+function CardBack() {
   return <svg className="celestial-back" viewBox="0 0 200 300" fill="none" aria-hidden="true" focusable="false">
     <rect x="2" y="2" width="196" height="296" rx="13" fill="#101827" stroke="#ece2c7" strokeWidth="4" />
     <rect x="12" y="12" width="176" height="276" rx="7" stroke="#bca76c" strokeWidth=".8" />
@@ -17,3 +19,5 @@ export default function CardBack() {
     {[ [49,53],[153,248],[31,124],[169,176],[54,204],[146,96],[61,29],[140,272] ].map(([cx,cy],i)=><circle key={i} cx={cx} cy={cy} r="1.5" fill="#d8c28d" />)}
   </svg>;
 }
+
+export default memo(CardBack);
