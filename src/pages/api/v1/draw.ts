@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { ALL_CARDS, getCard } from '@/data/cards';
 import { drawCards, validDrawSlots } from '@/lib/draw';
 import { buildFreeSummary } from '@/lib/interpretation';
-import { checkRateLimit, LIMITS } from '@/lib/rate-limit';
+import { checkRateLimit, dailyDrawKey, LIMITS, secondsUntilUtcMidnight } from '@/lib/rate-limit';
 import { clientIp, hashIp, randomToken, verifyTurnstile } from '@/lib/auth';
 import { getReadingByIdempotency, insertReading } from '@/lib/db';
 import { track } from '@/lib/events';
@@ -41,12 +41,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!human) return error(403, 'turnstile_failed', 'Human verification failed. Reload and try again.');
 
   if (ipHash) {
-    const now = new Date();
-    const day = now.toISOString().slice(0, 10);
-    const secondsToMidnight = 86_400 - (now.getUTCHours() * 3_600 + now.getUTCMinutes() * 60 + now.getUTCSeconds());
-    const daily = await checkRateLimit(env.CACHE, `draw:ip:${ipHash}:day:${day}`, LIMITS.drawsPerIpPerDay, Math.max(60, secondsToMidnight));
+    const daily = await checkRateLimit(env.CACHE, dailyDrawKey(ipHash), LIMITS.drawsPerIpPerDay, Math.max(60, secondsUntilUtcMidnight()));
     if (!daily.allowed) {
-      return error(429, 'daily_limit', 'You have used your 3 free draws for today. Free draws reset after midnight UTC.', { retryAfterSeconds: daily.retryAfterSeconds });
+      return error(429, 'daily_limit', `You have used your ${LIMITS.drawsPerIpPerDay} free draws for today. Free draws reset after midnight UTC.`, { retryAfterSeconds: daily.retryAfterSeconds });
     }
   }
 

@@ -3,7 +3,7 @@ import type { CSSProperties, PointerEvent } from 'react';
 import CardBack from './CardBack';
 import { CardResult } from './CardResult';
 import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
-import { DRAW_SLOW_HINT_MS, DrawRequestError, newIdempotencyKey, requestDraw } from '../lib/draw-client';
+import { DRAW_SLOW_HINT_MS, DrawRequestError, fetchDrawQuota, newIdempotencyKey, requestDraw, type DrawQuota } from '../lib/draw-client';
 import { moveToUnpickedPosition, wrapDeckPosition } from '../lib/deck-navigation';
 
 type Stage = 'prepare' | 'deck' | 'shuffling' | 'fanning' | 'choose';
@@ -44,6 +44,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [siteKey, setSiteKey] = useState('');
+  const [quota, setQuota] = useState<DrawQuota | null>(null);
   const deckTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fanTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const extractTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -61,6 +62,8 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   const count = SPREADS.find((item) => item.value === spread)!.count;
   const nextLabel = spread === 'one-card' ? 'Your card' : spread === 'three-card' ? ['Past', 'Present', 'Future'][selected.length] : CROSS_POSITIONS[selected.length];
   const finishedPicking = selected.length === count;
+  const quotaExhausted = quota?.remaining === 0;
+  const quotaMessage = quotaExhausted ? `You have used all ${quota?.limit ?? 10} free draws today. Free draws reset after midnight UTC.` : '';
 
   useEffect(() => {
     setSiteKey(document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content ?? '');
@@ -73,6 +76,14 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       clearTimeout(slowTimer.current);
       requestController.current?.abort();
     };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchDrawQuota().then((next) => {
+      if (!cancelled && next) setQuota(next);
+    });
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -177,6 +188,10 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
 
   async function requestReading(slots: number[]) {
     if (requestPending.current) return;
+    if (quotaExhausted) {
+      setError(quotaMessage);
+      return;
+    }
     const token = siteKey ? window.turnstile?.getResponse(widgetId.current ?? undefined) : undefined;
     if (siteKey && !token) {
       setError('Complete the verification below, then reveal your cards.');
@@ -210,10 +225,12 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       );
       if (attemptSeq.current !== attempt || controller.signal.aborted) return;
       setReading(data);
+      setQuota((current) => current ? { ...current, remaining: Math.max(0, current.remaining - 1) } : current);
       window.minilytics?.('goal', 'draw', { spread, question_type: topic, cards: data.cards.length, mode: 'ritual' });
     } catch (err) {
       if (attemptSeq.current !== attempt) return;
       if (err instanceof DrawRequestError && err.kind === 'cancelled') return;
+      if (err instanceof DrawRequestError && err.code === 'daily_limit') setQuota((current) => current ? { ...current, remaining: 0 } : current);
       setError(err instanceof DrawRequestError ? err.message : 'Connection interrupted. Tap Try again to recover the same selection.');
       window.turnstile?.reset(widgetId.current ?? undefined);
     } finally {
@@ -324,7 +341,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
               <h2>{stage === 'shuffling' ? 'Shuffling…' : 'Ready when you are.'}</h2>
               <p>{stage === 'shuffling' ? 'Each card has an equal chance.' : 'Tap the deck to fan out 78 card positions.'}</p>
             </div>
-            <button className={'ritual-deck-button' + (stage === 'shuffling' ? ' is-shuffling' : '')} type="button" disabled={stage === 'shuffling'} onClick={shuffle} aria-label="Shuffle all 78 tarot cards">
+            <button className={'ritual-deck-button' + (stage === 'shuffling' ? ' is-shuffling' : '')} type="button" disabled={stage === 'shuffling' || quotaExhausted} onClick={shuffle} aria-label="Shuffle all 78 tarot cards">
               <span className="ritual-deck-layer"><CardBack /></span>
               <span className="ritual-deck-layer"><CardBack /></span>
               <span className="ritual-deck-layer"><CardBack /></span>
@@ -354,7 +371,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
                     key={position} type="button"
                     className={'ritual-fan-card' + (center ? ' is-focused' : '') + (selected.includes(position) ? ' is-used' : '')}
                     style={{ '--offset': offset, '--distance': Math.abs(offset), zIndex: 7 - Math.abs(offset) } as CSSProperties}
-                    disabled={loading || extracting || finishedPicking || stage === 'fanning'}
+                    disabled={loading || extracting || finishedPicking || stage === 'fanning' || quotaExhausted}
                     aria-label={center ? 'Choose focused card, position ' + (position + 1) : 'Focus card at position ' + (position + 1)}
                     onClick={() => { if (suppressTap.current) { suppressTap.current = false; return; } if (center) choose(); else setFocus((current) => moveToUnpickedPosition(current, offset, selected)); }}
                   ><CardBack /></button>;
@@ -362,9 +379,9 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
                 <div className="ritual-focus-marker" aria-hidden="true">↑</div>
               </div>
               <div className="ritual-fan-controls">
-                <button type="button" disabled={loading || extracting || finishedPicking || stage === 'fanning'} aria-label="Previous card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, -1, selected))}>←</button>
+                <button type="button" disabled={loading || extracting || finishedPicking || stage === 'fanning' || quotaExhausted} aria-label="Previous card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, -1, selected))}>←</button>
                 <span>{finishedPicking ? 'Selection complete' : 'Position ' + (focus + 1) + ' of 78'}</span>
-                <button type="button" disabled={loading || extracting || finishedPicking || stage === 'fanning'} aria-label="Next card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, 1, selected))}>→</button>
+                <button type="button" disabled={loading || extracting || finishedPicking || stage === 'fanning' || quotaExhausted} aria-label="Next card position" onClick={() => setFocus((n) => moveToUnpickedPosition(n, 1, selected))}>→</button>
               </div>
             </div>
             <div className="ritual-slots" ref={slotsRef} aria-label="Selected cards">
@@ -380,8 +397,9 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
         <noscript><p className="ritual-error">Enable JavaScript to draw cards or browse the <a href="/cards/">card meanings</a>.</p></noscript>
       </div>
       <div className="ritual-actionbar">
+        {quotaExhausted && <p className="ritual-quota" role="status">{quotaMessage}</p>}
         {error && <p className="ritual-error ritual-actionbar-error" role="alert">{error}</p>}
-        <button className="ritual-primary" type="button" disabled={loading || extracting || stage === 'shuffling' || stage === 'fanning'} onClick={() => {
+        <button className="ritual-primary" type="button" disabled={loading || extracting || stage === 'shuffling' || stage === 'fanning' || quotaExhausted} onClick={() => {
           if (stage === 'prepare') { setStage('deck'); setError(null); }
           else if (stage === 'deck') shuffle();
           else if (stage === 'choose') choose();

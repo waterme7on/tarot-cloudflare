@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
-import { DrawRequestError, newIdempotencyKey, requestDraw } from '../lib/draw-client';
+import { DrawRequestError, fetchDrawQuota, newIdempotencyKey, requestDraw, type DrawQuota } from '../lib/draw-client';
 import { CardResult } from './CardResult';
 import RitualDraw from './RitualDraw';
 import CardBack from './CardBack';
@@ -35,6 +35,7 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DrawResponse | null>(null);
   const [siteKey, setSiteKey] = useState('');
+  const [quota, setQuota] = useState<DrawQuota | null>(null);
   const id = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const idemRef = useRef<string | null>(null);
@@ -46,7 +47,14 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
   const widgetId = useRef<string | null>(null);
   const selectedTopic = TOPICS.find((t) => t.value === questionType)!;
   const selectedSpread = SPREAD_OPTIONS.find((s) => s.value === spread)!;
+  const quotaExhausted = quota?.remaining === 0;
+  const quotaMessage = quotaExhausted ? `You have used all ${quota?.limit ?? 10} free draws today. Free draws reset after midnight UTC.` : '';
   useEffect(() => { setSiteKey(document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content ?? ''); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    void fetchDrawQuota().then((next) => { if (!cancelled && next) setQuota(next); });
+    return () => { cancelled = true; };
+  }, []);
   useEffect(() => {
     if (step < 0 || (!immersive && step === 0)) return;
     headingRef.current?.focus({ preventScroll: true });
@@ -69,6 +77,7 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
   function changeStep(next: number) { setError(null); setStep(next); }
   async function draw() {
     if (pendingRef.current) return;
+    if (quotaExhausted) { setError(quotaMessage); return; }
     pendingRef.current = true;
     setLoading(true);
     setError(null);
@@ -87,9 +96,11 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
       ]);
       if (controller.signal.aborted) return;
       setResult(data);
+      setQuota((current) => current ? { ...current, remaining: Math.max(0, current.remaining - 1) } : current);
       window.minilytics?.('goal', 'draw', { spread, question_type: questionType, cards: data.cards.length, mode: immersive ? 'ritual' : 'flow' });
     } catch (err) {
       if (err instanceof DrawRequestError && err.kind === 'cancelled') return;
+      if (err instanceof DrawRequestError && err.code === 'daily_limit') setQuota((current) => current ? { ...current, remaining: 0 } : current);
       setError(err instanceof DrawRequestError ? err.message : 'Connection interrupted. Try again; we will recover the same draw if it was saved.');
       if (siteKey) window.turnstile?.reset(widgetId.current ?? undefined);
     } finally { pendingRef.current = false; setLoading(false); }
@@ -134,16 +145,17 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
           </details>
         </>}
         {step === 2 && <>
-          {immersive ? <button type="button" className={`table-shuffle-deck ${loading ? 'is-shuffling' : ''}`} onClick={() => void draw()} disabled={loading} aria-label="Tap the deck to shuffle and draw"><span className="shuffle-card"><CardBack /></span><span className="shuffle-card"><CardBack /></span><span className="shuffle-card"><CardBack /></span></button> : <div className={`ritual-deck ${loading ? 'shuffling' : ''}`} aria-hidden="true"><div className="deck-back" /><div className="deck-back" /><div className="deck-back"><span>TT</span></div></div>}
+          {immersive ? <button type="button" className={`table-shuffle-deck ${loading ? 'is-shuffling' : ''}`} onClick={() => void draw()} disabled={loading || quotaExhausted} aria-label="Tap the deck to shuffle and draw"><span className="shuffle-card"><CardBack /></span><span className="shuffle-card"><CardBack /></span><span className="shuffle-card"><CardBack /></span></button> : <div className={`ritual-deck ${loading ? 'shuffling' : ''}`} aria-hidden="true"><div className="deck-back" /><div className="deck-back" /><div className="deck-back"><span>TT</span></div></div>}
           <p className="draw-recap"><strong>{selectedTopic.label}</strong><span>{selectedSpread.count} {selectedSpread.count === 1 ? 'card' : 'cards'} · 78-card deck</span></p>
           {siteKey && <div ref={widgetRef} className="human-check" />}
           <p className="microcopy" role="status">{loading ? 'Shuffling and saving your reading…' : 'Tap the deck or the button below. Every card has an equal chance.'}</p>
         </>}
+        {quotaExhausted && <p className="flow-quota" role="status">{quotaMessage}</p>}
         {error && <p className="flow-error" role="alert">{error}</p>}
       </div>
       <div className="flow-actions">
         {!immersive && step > 0 && <button className="back-button" type="button" disabled={loading} onClick={() => changeStep(step - 1)}>Back</button>}
-        <button className="btn flow-primary" type="button" disabled={loading} onClick={() => step < 2 ? changeStep(step + 1) : void draw()}>{loading ? 'Shuffling your cards…' : step === 0 ? 'Choose my spread' : step === 1 ? 'Ready to draw' : 'Shuffle & draw'}<span aria-hidden="true">→</span></button>
+        <button className="btn flow-primary" type="button" disabled={loading || quotaExhausted} onClick={() => step < 2 ? changeStep(step + 1) : void draw()}>{loading ? 'Shuffling your cards…' : step === 0 ? 'Choose my spread' : step === 1 ? 'Ready to draw' : 'Shuffle & draw'}<span aria-hidden="true">→</span></button>
       </div>
       <noscript><p className="flow-caption">Enable JavaScript to draw cards. You can still browse all <a href="/cards/">card meanings</a>.</p></noscript>
     </section>

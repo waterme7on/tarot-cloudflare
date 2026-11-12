@@ -2,6 +2,7 @@ export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
   retryAfterSeconds: number;
+  resetAt: number;
 }
 
 interface Bucket {
@@ -33,12 +34,34 @@ export async function checkRateLimit(
     allowed,
     remaining: Math.max(0, limit - bucket.count),
     retryAfterSeconds: allowed ? 0 : Math.ceil((bucket.resetAt - now) / 1000),
+    resetAt: bucket.resetAt,
   };
+}
+
+/** Read the counter without consuming a slot (used by the pre-draw quota check). */
+export async function readRateLimit(kv: KVNamespace, key: string, limit: number, now = Date.now()): Promise<RateLimitResult> {
+  const existing = (await kv.get<Bucket>(`rl:${key}`, 'json')) ?? null;
+  const count = existing && existing.resetAt > now ? existing.count : 0;
+  const resetAt = existing && existing.resetAt > now ? existing.resetAt : now;
+  return {
+    allowed: count < limit,
+    remaining: Math.max(0, limit - count),
+    retryAfterSeconds: count < limit ? 0 : Math.max(0, Math.ceil((resetAt - now) / 1000)),
+    resetAt,
+  };
+}
+
+export function secondsUntilUtcMidnight(now = new Date()): number {
+  return 86_400 - (now.getUTCHours() * 3_600 + now.getUTCMinutes() * 60 + now.getUTCSeconds());
+}
+
+export function dailyDrawKey(ipHash: string, now = new Date()): string {
+  return `draw:ip:${ipHash}:day:${now.toISOString().slice(0, 10)}`;
 }
 
 export const LIMITS = {
   drawPerIpPerMinute: 10,
-  drawsPerIpPerDay: 3,
+  drawsPerIpPerDay: 10,
   drawPerTokenPerHour: 30,
   checkoutPerIpPerHour: 5,
   eventsPerIpPerMinute: 60,
