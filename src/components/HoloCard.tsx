@@ -26,6 +26,20 @@ export function cardPoster(slug: string): string {
   return `/cards/reveal/${slug}.webp`;
 }
 
+type QualityTier = 'off' | 'low' | 'medium' | 'high';
+
+/** Keep the effect on modest phones, but spend fewer pixels and frames. */
+function qualityTier(eager: boolean): QualityTier {
+  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+  if (nav.connection?.saveData) return 'off';
+  const cores = nav.hardwareConcurrency || 8;
+  const memory = nav.deviceMemory || 8;
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  const modest = cores <= 4 || memory <= 4;
+  if (eager) return modest || coarse ? 'low' : 'medium';
+  return modest ? 'medium' : 'high';
+}
+
 const VERT = `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
 
 const SHARED = `precision highp float;varying vec2 vUv;uniform float uTime,uFoil;uniform vec3 uView;
@@ -114,6 +128,12 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
       setReady(false);
       return;
     }
+    const tier = qualityTier(eager);
+    if (tier === 'off') {
+      // Save-Data users keep the static poster instead of downloading Three.js.
+      setReady(false);
+      return;
+    }
     const el = host.current;
     if (!el) return;
     let cancelled = false;
@@ -142,7 +162,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         const THREE = await import('three');
         if (cancelled) return;
         const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+        const renderer = new THREE.WebGLRenderer({ antialias: tier !== 'low', alpha: true, powerPreference: tier === 'high' ? 'high-performance' : 'low-power' });
         // Register ownership before any setup or await can fail or be cancelled.
         cleanups.push(
           () => renderer.domElement.remove(),
@@ -150,7 +170,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
           () => renderer.dispose(),
         );
         // Non-interactive reveal cards are a small mobile surface: reduce GPU fill cost.
-        renderer.setPixelRatio(Math.min(devicePixelRatio, eager ? 1.75 : interactive ? 2 : 1.5));
+        renderer.setPixelRatio(Math.min(devicePixelRatio, tier === 'low' ? 1.25 : tier === 'medium' ? 1.5 : 2));
         renderer.setSize(el.clientWidth || 1, el.clientHeight || 1);
         renderer.setClearColor(0x000000, 0);
         renderer.domElement.style.position = 'absolute';
@@ -244,7 +264,7 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         let lastPresented = 0;
         // The reveal card is the critical mobile surface: 30 fps ambient foil
         // is indistinguishable from 60 here and costs half the GPU frames.
-        const targetFps = eager ? 30 : interactive ? 60 : 30;
+        const targetFps = tier === 'low' ? 24 : tier === 'medium' ? 30 : 60;
         const tick = (now: number) => {
           frame = null;
           if (now - lastPresented >= 1000 / targetFps) {
