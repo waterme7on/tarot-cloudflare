@@ -29,6 +29,7 @@ declare global {
     WAFFO_PRODUCT_THREE?: string;
     IP_HASH_SALT?: string;
     TOKEN_SIGNING_KEY?: string;
+    MINILYTICS_API_KEY?: string;
     CF_ACCESS_TEAM_DOMAIN?: string;
     CF_ACCESS_AUD?: string;
   }
@@ -39,8 +40,13 @@ declare global {
     }
   }
 
+  interface MinilyticsApi {
+    (command: 'goal' | 'track' | 'identify' | 'pageview', name?: string, props?: Record<string, unknown>): void;
+    attribution?: () => Record<string, string>;
+  }
+
   interface Window {
-    minilytics?: (command: 'goal' | 'track' | 'identify' | 'pageview', name?: string, props?: Record<string, unknown>) => void;
+    minilytics?: MinilyticsApi;
   }
 }
 

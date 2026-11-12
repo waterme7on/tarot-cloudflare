@@ -74,6 +74,7 @@ npx wrangler secret put TURNSTILE_SECRET_KEY
 npx wrangler secret put PUBLIC_TURNSTILE_SITE_KEY
 npx wrangler secret put WAFFO_MERCHANT_ID       # Dashboard → API & Development
 npx wrangler secret put WAFFO_PRIVATE_KEY < key.pem   # production API key (PEM, PKCS#8)
+npx wrangler secret put MINILYTICS_API_KEY       # analytics.yololab.cc site API key (ml_...) for payment attribution
 # Dashboard → store → Settings → Webhooks: add https://<site>/api/v1/webhooks/waffo (order.completed, refund.succeeded, refund.failed)
 # and paste the Production "Webhook Public Key" + product IDs into wrangler.jsonc vars
 npx wrangler secret put IP_HASH_SALT            # openssl rand -hex 32
