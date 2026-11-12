@@ -98,7 +98,7 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
     } finally { pendingRef.current = false; setLoading(false); }
   }
   function reset() { setResult(null); setStep(immersive ? -1 : 0); setQuestion(''); setError(null); idemRef.current = null; }
-  if (result) return <CardResult reading={result} question={question} onReset={reset} immersive={immersive} />;
+  if (result) return <div id="result"><CardResult reading={result} question={question} onReset={reset} immersive={immersive} /></div>;
   if (immersive && step === -1) return (
     <section className="reading-table table-welcome" id="draw-tool" data-active="false" aria-labelledby={`${id}-welcome`}>
       <div className="table-welcome-copy"><p className="table-format">{defaultSpread === 'three-card' ? 'Past, present, possibility' : 'One card. A different perspective.'}</p>

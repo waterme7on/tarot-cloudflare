@@ -32,6 +32,8 @@ describe('mobile-first SEO regression', () => {
     expect(free).toContain('<section class="prose">');
     expect(free).toContain('breadcrumbLd(site');
     expect(free).toContain('<Faq items={faq} />');
+    expect(source('src/components/DrawTool.tsx')).toContain('<div id="result">');
+    expect(source('src/components/RitualDraw.tsx')).toContain('<div id="result">');
   });
 
   it('keeps the production host aligned across build, runtime and robots', () => {

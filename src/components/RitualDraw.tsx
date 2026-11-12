@@ -250,7 +250,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     window.setTimeout(() => { suppressTap.current = false; }, 380);
   }
 
-  if (reading) return <CardResult reading={reading} question={question} onReset={reset} immersive preselected />;
+  if (reading) return <div id="result"><CardResult reading={reading} question={question} onReset={reset} immersive preselected /></div>;
 
   return (
     <section className={'reading-app reading-table ritual-app ritual-' + stage} id="draw-tool" ref={appRef} tabIndex={-1} role={stage === 'prepare' ? undefined : 'dialog'} aria-modal={stage === 'prepare' ? undefined : true} aria-label="Interactive tarot reading" aria-busy={loading}>
