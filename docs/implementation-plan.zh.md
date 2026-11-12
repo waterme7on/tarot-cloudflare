@@ -287,7 +287,7 @@ tarot-cloudflare/
 ```jsonc
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tarot-tools",
+  "name": "random-tarot",
   "main": "./dist/_worker.js/index.js",
   "compatibility_date": "2026-11-06",
   "compatibility_flags": ["nodejs_compat"],
