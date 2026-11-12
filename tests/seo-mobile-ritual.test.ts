@@ -50,6 +50,12 @@ describe('mobile-first SEO regression', () => {
     expect(middleware).toContain('https://analytics.yololab.cc');
     expect(privacy).toContain('Minilytics');
     expect(privacy).toContain('ml_vid');
+    const draw = source('src/components/DrawTool.tsx');
+    const ritual = source('src/components/RitualDraw.tsx');
+    const result = source('src/components/CardResult.tsx');
+    expect(draw).toContain("'goal', 'draw'");
+    expect(ritual).toContain("'goal', 'draw'");
+    expect(result).toContain('data-ml-goal="report_unlock"');
   });
 
   it('retains canonical, robots, structured data and sitemap paths', () => {

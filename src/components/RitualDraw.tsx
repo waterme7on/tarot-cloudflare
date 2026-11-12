@@ -196,6 +196,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
         return;
       }
       setReading(data);
+      window.minilytics?.('goal', 'draw', { spread, question_type: topic, cards: data.cards.length, mode: 'ritual' });
     } catch {
       if (!requestController.current?.signal.aborted) {
         setError('Connection interrupted. Retry to recover the same selection.');
