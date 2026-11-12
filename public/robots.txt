@@ -5,4 +5,4 @@ Disallow: /report/
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://tarot-tools.me7o.workers.dev/sitemap-index.xml
+Sitemap: https://randomtarot.site/sitemap-index.xml

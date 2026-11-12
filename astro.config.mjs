@@ -3,7 +3,7 @@ import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: process.env.SITE_URL || 'https://tarot-tools.me7o.workers.dev',
+  site: process.env.SITE_URL || 'https://randomtarot.site',
   output: 'server',
   trailingSlash: 'ignore',
   adapter: cloudflare({

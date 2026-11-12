@@ -29,7 +29,7 @@ describe('mobile-first SEO regression', () => {
   });
 
   it('keeps the production host aligned across build, runtime and robots', () => {
-    const host = 'https://tarot-tools.me7o.workers.dev';
+    const host = 'https://randomtarot.site';
     const astro = source('astro.config.mjs');
     const wrangler = source('wrangler.jsonc');
     const robots = source('public/robots.txt');
@@ -53,6 +53,6 @@ describe('mobile-first SEO regression', () => {
     const robots = source('public/robots.txt');
     expect(robots).toContain('Allow: /');
     expect(robots).toContain('Disallow: /reading/');
-    expect(robots).toContain('Sitemap: https://tarot-tools.me7o.workers.dev/sitemap-index.xml');
+    expect(robots).toContain('Sitemap: https://randomtarot.site/sitemap-index.xml');
   });
 });
