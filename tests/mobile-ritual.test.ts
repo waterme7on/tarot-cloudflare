@@ -67,6 +67,11 @@ describe('mobile-first tarot ritual', () => {
     expect(holo).toContain('eager ? cardPoster(slug) : cardImage(slug)');
     expect(holo).toContain("nav.connection?.saveData");
     expect(holo).toContain("tier === 'low' ? 24");
+    expect(holo).toContain('srcSet={eager');
+    expect(holo).toContain("return modest || coarse ? 'medium' : 'high'");
+    const drawClient = readFileSync(new URL('../src/lib/draw-client.ts', import.meta.url), 'utf8');
+    expect(drawClient).toContain('warmHoloRuntime');
+    expect(drawClient).toContain("import('three')");
     const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
     expect(css).not.toContain('filter:blur(2px)');
   });
