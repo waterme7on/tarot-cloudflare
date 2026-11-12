@@ -23,7 +23,7 @@ When you purchase a deep report, we additionally record an order token, the amou
 
 We also use **Cloudflare Web Analytics**, a privacy-focused analytics service that does not use cookies and does not track you across sites. It gives us aggregate page view and performance data.
 
-We additionally run **Minilytics**, our own self-hosted analytics service at `analytics.yololab.cc`. It sets two first-party cookies: `ml_vid`, a random visitor identifier kept for one year, and `ml_sid`, a session identifier kept for 30 minutes. They let us count unique visitors, sessions, entry pages and referral sources in aggregate. Minilytics does not use advertising identifiers, does not track you across other websites, and does not receive the text of your tarot question.
+We additionally run **Minilytics**, our own self-hosted analytics service at `analytics.yololab.cc`. It sets two first-party cookies: `ml_vid`, a random visitor identifier kept for one year, and `ml_sid`, a session identifier kept for 30 minutes. They let us count unique visitors, sessions, entry pages and referral sources in aggregate. Minilytics does not use advertising identifiers, does not track you across other websites, and does not receive the text of your tarot question. When you buy a report, we also send Minilytics the order identifier, amount, currency and the same random visitor/session identifiers so the purchase can be attributed to the visit that led to it; we do not send your question, report or payment details.
 
 ## What we do not collect
 

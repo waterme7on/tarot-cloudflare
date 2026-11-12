@@ -15,6 +15,8 @@ interface CheckoutBody {
   turnstileToken?: string;
   userSummary?: string;
   consent?: boolean;
+  visitorId?: string;
+  sessionId?: string;
 }
 
 export const PRODUCTS: Record<ReportProduct, { name: string; priceVar: 'REPORT_PRICE_SINGLE_CENTS' | 'REPORT_PRICE_THREE_CENTS'; productVar: 'WAFFO_PRODUCT_SINGLE' | 'WAFFO_PRODUCT_THREE'; spreads: string[] }> = {
@@ -30,6 +32,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (typeof body.publicToken !== 'string' || !/^pub_[0-9a-f]{32}$/.test(body.publicToken)) return error(400, 'invalid_token', 'Bad reading token');
   if (body.product !== 'single' && body.product !== 'three') return error(400, 'invalid_product', 'Unknown product');
   const userSummary = typeof body.userSummary === 'string' && body.consent === true ? body.userSummary.replace(/\s+/g, ' ').trim().slice(0, 280) : null;
+  const analyticsId = (value: unknown) => (typeof value === 'string' && /^[\w-]{8,64}$/.test(value) ? value : null);
 
   const ip = clientIp(request);
   const ipHash = ip ? await hashIp(ip, env.IP_HASH_SALT ?? 'dev-salt') : null;
@@ -49,7 +52,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const amountCents = Number(env[product.priceVar]);
   const reportId = randomToken('rpt');
   const reportToken = randomToken('rep');
-  await insertReport(env.DB, { id: reportId, readingId: reading.id, publicToken: reportToken, product: body.product, amountCents, currency: 'usd', userSummary });
+  await insertReport(env.DB, { id: reportId, readingId: reading.id, publicToken: reportToken, product: body.product, amountCents, currency: 'usd', userSummary, mlVisitorId: analyticsId(body.visitorId), mlSessionId: analyticsId(body.sessionId) });
 
   const site = env.SITE_URL.replace(/\/$/, '');
   let session;

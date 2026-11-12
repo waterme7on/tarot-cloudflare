@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getReportById, updateReport, updateReportIfStatus } from '@/lib/db';
 import { track } from '@/lib/events';
 import { error, json } from '@/lib/http';
+import { recordMinilyticsPayment } from '@/lib/minilytics';
 import { refundFailureStatus } from '@/lib/report-state';
 import { toCents, verifyWaffoSignature, type WaffoWebhookEvent } from '@/lib/waffo';
 
@@ -28,20 +29,41 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const report = await getReportById(env.DB, reportId);
     if (report && report.status === 'pending_payment') {
       // Amount comes from the webhook, never from the client.
+      const amountCents = toCents(event.data.chargedAmount ?? event.data.amount ?? event.data.total) ?? report.amount_cents ?? 0;
       await updateReport(env.DB, reportId, {
         status: 'paid',
         waffo_order_id: event.data.orderId,
         waffo_payment_id: event.data.paymentId ?? null,
-        amount_cents: toCents(event.data.chargedAmount ?? event.data.amount ?? event.data.total) ?? report.amount_cents,
+        amount_cents: amountCents,
         currency: event.data.currency?.toLowerCase() ?? report.currency,
         paid_at: new Date().toISOString(),
       });
       await env.REPORT_QUEUE.send({ type: 'generate-report', reportId });
-      track(env, { name: 'checkout_completed', readingId: report.reading_id, route: '/api/v1/webhooks/waffo', meta: { product: report.product, amountCents: toCents(event.data.chargedAmount) ?? 0 } });
+      track(env, { name: 'checkout_completed', readingId: report.reading_id, route: '/api/v1/webhooks/waffo', meta: { product: report.product, amountCents } });
+      await recordMinilyticsPayment(env, {
+        transactionId: event.data.paymentId ?? event.data.orderId,
+        amountCents,
+        currency: event.data.currency ?? report.currency ?? 'usd',
+        timestamp: event.timestamp,
+        visitorId: report.ml_visitor_id,
+        sessionId: report.ml_session_id,
+      });
     }
   } else if (event.eventType === 'refund.succeeded' && reportId) {
     // The provider has confirmed the refund; this is the only success transition.
-    await updateReport(env.DB, reportId, { status: 'refunded', error: null });
+    const report = await getReportById(env.DB, reportId);
+    if (report) {
+      await updateReport(env.DB, reportId, { status: 'refunded', error: null });
+      await recordMinilyticsPayment(env, {
+        transactionId: event.data.paymentId ?? event.data.orderId,
+        amountCents: toCents(event.data.refundedAmount) ?? report.amount_cents ?? 0,
+        currency: event.data.currency ?? report.currency ?? 'usd',
+        timestamp: event.timestamp,
+        visitorId: report.ml_visitor_id,
+        sessionId: report.ml_session_id,
+        refunded: true,
+      });
+    }
     track(env, { name: 'refund_requested', route: '/api/v1/webhooks/waffo', meta: { reportId, outcome: 'succeeded' } });
   } else if (event.eventType === 'refund.failed' && reportId) {
     const report = await getReportById(env.DB, reportId);

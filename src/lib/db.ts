@@ -23,6 +23,8 @@ export interface ReportRow {
   waffo_order_id: string | null;
   waffo_payment_id: string | null;
   waffo_refund_ticket_id: string | null;
+  ml_visitor_id: string | null;
+  ml_session_id: string | null;
   status: 'pending_payment' | 'paid' | 'generating' | 'ready' | 'failed' | 'refund_pending' | 'refunded' | 'refund_failed';
   r2_key: string | null;
   workflow_id: string | null;
@@ -99,15 +101,15 @@ export async function getReadingById(db: D1Database, id: string): Promise<Readin
 
 export async function insertReport(
   db: D1Database,
-  r: { id: string; readingId: string; publicToken: string; product: ReportProduct; amountCents: number; currency: string; userSummary: string | null },
+  r: { id: string; readingId: string; publicToken: string; product: ReportProduct; amountCents: number; currency: string; userSummary: string | null; mlVisitorId?: string | null; mlSessionId?: string | null },
 ): Promise<void> {
   const ts = nowIso();
   await db
     .prepare(
-      `INSERT INTO reports (id, reading_id, public_token, product, status, amount_cents, currency, user_summary, created_at, updated_at)
-       VALUES (?1, ?2, ?3, ?4, 'pending_payment', ?5, ?6, ?7, ?8, ?8)`,
+      `INSERT INTO reports (id, reading_id, public_token, product, status, amount_cents, currency, user_summary, ml_visitor_id, ml_session_id, created_at, updated_at)
+       VALUES (?1, ?2, ?3, ?4, 'pending_payment', ?5, ?6, ?7, ?8, ?9, ?10, ?10)`,
     )
-    .bind(r.id, r.readingId, r.publicToken, r.product, r.amountCents, r.currency, r.userSummary, ts)
+    .bind(r.id, r.readingId, r.publicToken, r.product, r.amountCents, r.currency, r.userSummary, r.mlVisitorId ?? null, r.mlSessionId ?? null, ts)
     .run();
 }
 

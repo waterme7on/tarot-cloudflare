@@ -56,6 +56,8 @@ describe('mobile-first SEO regression', () => {
     expect(draw).toContain("'goal', 'draw'");
     expect(ritual).toContain("'goal', 'draw'");
     expect(result).toContain('data-ml-goal="report_unlock"');
+    expect(result).toContain('attribution?.ml_visitor_id');
+    expect(source('src/pages/api/v1/webhooks/waffo.ts')).toContain('recordMinilyticsPayment');
   });
 
   it('retains canonical, robots, structured data and sitemap paths', () => {

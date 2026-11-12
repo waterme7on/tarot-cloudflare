@@ -127,10 +127,11 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
     }
     setCheckout({ loading: true, error: null });
     try {
+      const attribution = window.minilytics?.attribution?.();
       const res = await fetch('/api/v1/report/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ publicToken: reading.publicToken, product, turnstileToken, userSummary: consent ? question : undefined, consent }),
+        body: JSON.stringify({ publicToken: reading.publicToken, product, turnstileToken, userSummary: consent ? question : undefined, consent, visitorId: attribution?.ml_visitor_id, sessionId: attribution?.ml_session_id }),
       });
       const data = (await res.json()) as { checkoutUrl?: string; error?: { message: string } };
       if (!res.ok || !data.checkoutUrl) {
