@@ -3,8 +3,8 @@ title: "The Magician Tarot Card Meaning: Upright & Reversed"
 description: "The Magician tarot card meaning in plain terms: upright, reversed, love, career, money, a direct yes-or-no lean, and the questions this card answers poorly."
 name: "The Magician"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-fool", "the-high-priestess", "ace-of-wands", "eight-of-pentacles"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 relatedQuestions: ["career", "money", "decision"]

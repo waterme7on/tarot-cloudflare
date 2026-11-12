@@ -3,8 +3,8 @@ title: "The Moon Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "The Moon tarot card meaning explained: illusion, intuition and fear of the unknown. Upright and reversed, in love, career and money, plus yes or no. Draw The Moon free."
 name: "The Moon"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-high-priestess", "the-sun", "seven-of-cups", "the-hermit"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 relatedQuestions: ["love", "decision", "career"]

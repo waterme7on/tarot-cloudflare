@@ -11,15 +11,15 @@ interface Props {
   readingEntry?: boolean;
 }
 const { title, description, canonical, noindex = false, jsonLd = [], updatedAt, author } = Astro.props;
-const ogImage = Astro.props.ogImage ?? `${(Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '')}/og-default.png`;
-const site = (Astro.site ?? new URL('https://tarot-tools.example.com')).toString().replace(/\/$/, '');
+const ogImage = Astro.props.ogImage ?? `${(Astro.site ?? new URL('https://randomtarot.site')).toString().replace(/\/$/, '')}/og-default.png`;
+const site = (Astro.site ?? new URL('https://randomtarot.site')).toString().replace(/\/$/, '');
 const path = Astro.url.pathname === '/' ? '/' : `${Astro.url.pathname.replace(/\/+$/, '')}/`;
 const canonicalUrl = canonical ?? `${site}${path}`;
 const turnstileKey = Astro.locals.runtime?.env?.PUBLIC_TURNSTILE_SITE_KEY ?? import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 const isPreview = Astro.locals.runtime?.env?.ENVIRONMENT === 'preview';
 const baseLd = [
-  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Tarot Tools', url: site },
-  { '@context': 'https://schema.org', '@type': 'Organization', name: 'Tarot Tools', url: site, email: 'support@tarot-tools.example.com' },
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: 'RandomTarot', url: site },
+  { '@context': 'https://schema.org', '@type': 'Organization', name: 'RandomTarot', url: site, email: 'support@randomtarot.site' },
 ];
 ---
 <!doctype html>
@@ -37,7 +37,7 @@ const baseLd = [
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:site_name" content="Tarot Tools" />
+    <meta property="og:site_name" content="RandomTarot" />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -63,7 +63,7 @@ const baseLd = [
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
-      <a href="/" class="brand" aria-label="Tarot Tools home"><img src="/brand/logo-horizontal-dark.svg" alt="" width="166" height="32" /></a>
+      <a href="/" class="brand" aria-label="RandomTarot home"><img src="/brand/logo-horizontal-dark.svg" alt="" width="166" height="32" /></a>
       <nav aria-label="Primary">
         <a href="/">Card Generator</a>
         <a href="/free-tarot-reading/">Free Reading</a>
@@ -92,7 +92,7 @@ const baseLd = [
         <a href="/refund/">Refunds</a>
         <a href="/holo-card-license.txt">Visual credits</a>
       </nav>
-      <p class="muted">© {new Date().getFullYear()} Tarot Tools. Hosted on Cloudflare.</p>
+      <p class="muted">© {new Date().getFullYear()} RandomTarot. Hosted on Cloudflare.</p>
     </footer>
     {turnstileKey && <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
   </body>

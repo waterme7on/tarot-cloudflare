@@ -3,8 +3,8 @@ title: "The Empress Tarot Card Meaning: Upright & Reversed"
 description: "The Empress tarot card meaning: abundance, creativity, and care. Upright and reversed readings for love, career, and money, plus a clear yes-or-no lean."
 name: "The Empress"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-emperor", "the-lovers", "nine-of-pentacles", "queen-of-pentacles"]
 relatedSpreads: ["three-card", "celtic-cross"]
 relatedQuestions: ["love", "money"]

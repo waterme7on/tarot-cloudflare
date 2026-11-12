@@ -1,8 +1,8 @@
 ---
 title: "Disclaimer"
-description: "Tarot Tools is for entertainment and self-reflection only, not medical, legal, financial or psychological advice. AI-assisted content is labelled; no accuracy is claimed."
+description: "RandomTarot is for entertainment and self-reflection only, not medical, legal, financial or psychological advice. AI-assisted content is labelled; no accuracy is claimed."
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 noindex: false
 ---
 
@@ -10,7 +10,7 @@ Please read this before using any reading, card meaning, spread guide, or report
 
 ## Entertainment and self-reflection only
 
-Everything on Tarot Tools is provided **for reflection and entertainment only**. Tarot cards are drawn at random. The interpretations we attach to them are editorial writing intended to prompt thought, journaling, and conversation. They are not predictions, and they do not reveal hidden facts about you, other people, or the future.
+Everything on RandomTarot is provided **for reflection and entertainment only**. Tarot cards are drawn at random. The interpretations we attach to them are editorial writing intended to prompt thought, journaling, and conversation. They are not predictions, and they do not reveal hidden facts about you, other people, or the future.
 
 ## Not professional advice
 
@@ -37,4 +37,4 @@ The site is intended for adults aged 18 and over.
 
 ## Questions
 
-If anything here is unclear, email **support@tarot-tools.example.com**. See also our [terms of service](/terms/) and [privacy policy](/privacy/).
+If anything here is unclear, email **support@randomtarot.site**. See also our [terms of service](/terms/) and [privacy policy](/privacy/).

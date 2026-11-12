@@ -4,7 +4,7 @@ description: "A practical guide to love tarot readings: which questions work, ho
 name: "Love Tarot Reading"
 questionType: "love"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 relatedCards: ["the-lovers", "ace-of-cups", "two-of-cups", "the-star"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 faq:

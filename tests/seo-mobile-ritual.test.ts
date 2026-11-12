@@ -43,7 +43,9 @@ describe('mobile-first SEO regression', () => {
 
   it('uses one brand mark and icon set across every page', () => {
     const base = source('src/layouts/Base.astro');
-    expect(base).toContain('aria-label="Tarot Tools home"');
+    expect(base).toContain('aria-label="RandomTarot home"');
+    expect(base).toContain("name: 'RandomTarot'");
+    expect(source('README.md')).toContain('# RandomTarot');
     expect(base).toContain('/brand/logo-horizontal-dark.svg');
     expect(base).toContain('/apple-touch-icon.png');
     expect(base).toContain('/favicon.svg');

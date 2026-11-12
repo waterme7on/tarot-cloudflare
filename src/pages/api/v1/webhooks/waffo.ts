@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { getReportById, updateReport, updateReportIfStatus } from '@/lib/db';
 import { track } from '@/lib/events';
 import { error, json } from '@/lib/http';
-import { recordMinilyticsPayment } from '@/lib/minilytics';
+import { recordMinilyticsGoal, recordMinilyticsPayment } from '@/lib/minilytics';
 import { refundFailureStatus } from '@/lib/report-state';
 import { toCents, verifyWaffoSignature, type WaffoWebhookEvent } from '@/lib/waffo';
 
@@ -47,6 +47,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
         timestamp: event.timestamp,
         visitorId: report.ml_visitor_id,
         sessionId: report.ml_session_id,
+      });
+      await recordMinilyticsGoal(env, {
+        visitorId: report.ml_visitor_id,
+        name: 'purchase',
+        props: { product: report.product, amount_cents: amountCents },
       });
     }
   } else if (event.eventType === 'refund.succeeded' && reportId) {

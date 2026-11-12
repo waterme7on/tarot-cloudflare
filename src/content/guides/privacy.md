@@ -1,12 +1,12 @@
 ---
 title: "Privacy Policy"
-description: "What Tarot Tools collects and does not collect, how long readings and orders are kept, how payments are handled by Waffo, and how to request deletion of your data."
+description: "What RandomTarot collects and does not collect, how long readings and orders are kept, how payments are handled by Waffo, and how to request deletion of your data."
 updatedAt: "2026-11-12"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 noindex: false
 ---
 
-This policy explains what information Tarot Tools collects when you use the site, why, how long we keep it, and how you can ask us to delete it. The service is provided for reflection and entertainment only.
+This policy explains what information RandomTarot collects when you use the site, why, how long we keep it, and how you can ask us to delete it. The service is provided for reflection and entertainment only.
 
 Last updated: 12 November 2026.
 
@@ -52,7 +52,7 @@ We do not share data with any other third party except where required by law.
 
 ## Your rights and deletion requests
 
-You can ask us to delete the data associated with you. Email **support@tarot-tools.example.com** with your order token (for paid reports) or the approximate time and category of a free reading. Because free readings are not linked to an account or a raw IP, we may not be able to identify a specific free reading, but we will delete whatever we can match. Minimal paid order records may be retained where tax or accounting law requires it.
+You can ask us to delete the data associated with you. Email **support@randomtarot.site** with your order token (for paid reports) or the approximate time and category of a free reading. Because free readings are not linked to an account or a raw IP, we may not be able to identify a specific free reading, but we will delete whatever we can match. Minimal paid order records may be retained where tax or accounting law requires it.
 
 Depending on where you live, you may also have rights to access, correct, or export your data. Contact the same address.
 
@@ -62,4 +62,4 @@ The site does not set advertising or cross-site tracking cookies. Minilytics set
 
 ## Changes and contact
 
-If this policy changes, we will update the date at the top of this page. Questions: **support@tarot-tools.example.com**. See also our [terms of service](/terms/) and [disclaimer](/disclaimer/).
+If this policy changes, we will update the date at the top of this page. Questions: **support@randomtarot.site**. See also our [terms of service](/terms/) and [disclaimer](/disclaimer/).

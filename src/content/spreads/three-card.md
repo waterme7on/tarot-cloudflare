@@ -5,7 +5,7 @@ name: "Three Card Tarot Spread"
 cardCount: 3
 positions: ["Past", "Present", "Future"]
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 relatedCards: ["the-lovers", "the-star", "ace-of-cups", "wheel-of-fortune"]
 relatedQuestions: ["love", "career", "money", "decision"]
 faq:

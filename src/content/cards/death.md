@@ -3,8 +3,8 @@ title: "Death Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "Death tarot card meaning explained: it rarely means physical death. Upright and reversed, in love, career and money, plus a yes-or-no answer. Draw Death free."
 name: "Death"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-tower", "ten-of-swords", "the-hanged-man", "judgement"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 relatedQuestions: ["decision", "love", "career"]

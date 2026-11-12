@@ -1,12 +1,12 @@
 ---
 title: "Terms of Service"
-description: "The terms for using Tarot Tools: age requirement, entertainment-only purpose, no guarantees, acceptable use, how paid digital reports are delivered, and governing law."
+description: "The terms for using RandomTarot: age requirement, entertainment-only purpose, no guarantees, acceptable use, how paid digital reports are delivered, and governing law."
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 noindex: false
 ---
 
-These terms govern your use of Tarot Tools (the "site"), including the free card generator, the content pages, and the optional paid deep reports. By using the site you agree to these terms. If you do not agree, please do not use the site.
+These terms govern your use of RandomTarot (the "site"), including the free card generator, the content pages, and the optional paid deep reports. By using the site you agree to these terms. If you do not agree, please do not use the site.
 
 Last updated: 6 November 2026.
 
@@ -52,7 +52,7 @@ AI-assisted reports are produced by a language model and are labelled as such. T
 
 ## 6. Content and intellectual property
 
-All original text, card interpretations, and design on the site are owned by Tarot Tools or its licensors. You may use readings and reports for your own personal, non-commercial purposes and may share a single reading or quote short excerpts with attribution. You may not reproduce the content library or reports for commercial use without written permission.
+All original text, card interpretations, and design on the site are owned by RandomTarot or its licensors. You may use readings and reports for your own personal, non-commercial purposes and may share a single reading or quote short excerpts with attribution. You may not reproduce the content library or reports for commercial use without written permission.
 
 ## 7. Privacy
 
@@ -60,7 +60,7 @@ Our handling of your data is described in the [privacy policy](/privacy/), which
 
 ## 8. Limitation of liability
 
-To the fullest extent permitted by law, Tarot Tools and its team will not be liable for any indirect, incidental, or consequential loss arising from your use of the site or reliance on any reading or report. Where liability cannot be excluded, it is limited to the amount you paid us in the twelve months before the claim.
+To the fullest extent permitted by law, RandomTarot and its team will not be liable for any indirect, incidental, or consequential loss arising from your use of the site or reliance on any reading or report. Where liability cannot be excluded, it is limited to the amount you paid us in the twelve months before the claim.
 
 ## 9. Changes
 
@@ -72,4 +72,4 @@ These terms are governed by the laws of **[Jurisdiction placeholder]**, and any 
 
 ## 11. Contact
 
-Questions about these terms: **support@tarot-tools.example.com**.
+Questions about these terms: **support@randomtarot.site**.

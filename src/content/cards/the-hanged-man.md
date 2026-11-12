@@ -3,8 +3,8 @@ title: "The Hanged Man Tarot Card Meaning: Upright & Reversed"
 description: "The Hanged Man tarot card meaning: upright and reversed, in love, career and money, with a yes-or-no verdict and what not to ask. Draw The Hanged Man free."
 name: "The Hanged Man"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-high-priestess", "four-of-swords", "death", "eight-of-swords"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 relatedQuestions: ["decision", "career", "love"]

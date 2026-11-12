@@ -3,8 +3,8 @@ title: "The Sun Tarot Card Meaning: Upright, Reversed, Love & Money"
 description: "The Sun tarot card meaning explained: joy, clarity and success. Upright and reversed, in love, career and money, plus a yes-or-no answer. Draw The Sun free."
 name: "The Sun"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-star", "the-moon", "the-world", "ten-of-cups"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 relatedQuestions: ["love", "career", "money"]

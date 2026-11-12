@@ -2,11 +2,11 @@
 title: "Refund Policy"
 description: "Refunds for paid tarot reports: automatic refund request if not generated in 10 minutes, full within 7 days if unopened, case by case if opened, and how to request one."
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 noindex: false
 ---
 
-This policy covers refunds for paid deep reports purchased on Tarot Tools. Deep reports are digital goods delivered by link, so our policy is built around whether the report was generated and whether you have opened it. All readings and reports are for reflection and entertainment only; dissatisfaction with the content of a random draw is not by itself a basis for refund. The cases below are.
+This policy covers refunds for paid deep reports purchased on RandomTarot. Deep reports are digital goods delivered by link, so our policy is built around whether the report was generated and whether you have opened it. All readings and reports are for reflection and entertainment only; dissatisfaction with the content of a random draw is not by itself a basis for refund. The cases below are.
 
 Last updated: 6 November 2026.
 
@@ -32,7 +32,7 @@ If you were charged more than once for the same report, email us and we will ref
 
 ## 5. How to request a refund
 
-Send an email to **support@tarot-tools.example.com** with:
+Send an email to **support@randomtarot.site** with:
 
 - Your **order token** (shown on the confirmation page and in the delivery email).
 - The email address used at checkout, if any.

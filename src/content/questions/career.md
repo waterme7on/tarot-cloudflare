@@ -4,7 +4,7 @@ description: "How to use tarot for career questions: what to ask about jobs and 
 name: "Career Tarot Reading"
 questionType: "career"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 relatedCards: ["the-chariot", "wheel-of-fortune", "the-magician", "ace-of-pentacles"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 faq:

@@ -256,7 +256,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     <section className={'reading-app reading-table ritual-app ritual-' + stage} id="draw-tool" ref={appRef} tabIndex={-1} role={stage === 'prepare' ? undefined : 'dialog'} aria-modal={stage === 'prepare' ? undefined : true} aria-label="Interactive tarot reading" aria-busy={loading}>
       <div className="ritual-topbar">
         <button type="button" className="ritual-back" disabled={loading || stage === 'prepare'} onClick={reset} aria-label="Start over">← <span>Restart</span></button>
-        <span className="ritual-name">Tarot Tools</span>
+        <span className="ritual-name">RandomTarot</span>
         <a className="ritual-exit" href="/cards/" aria-label="Exit reading and browse the deck">Exit</a>
       </div>
       <div className="ritual-scroll">

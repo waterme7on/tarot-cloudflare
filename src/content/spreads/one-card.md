@@ -5,7 +5,7 @@ name: "One Card Tarot Spread"
 cardCount: 1
 positions: ["The answer"]
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
 relatedCards: ["the-star", "the-lovers", "ace-of-cups", "the-tower"]
 relatedQuestions: ["decision", "love", "career"]
 faq:

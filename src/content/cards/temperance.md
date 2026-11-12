@@ -3,8 +3,8 @@ title: "Temperance Tarot Card Meaning: Upright & Reversed"
 description: "Temperance tarot card meaning explained: balance, patience and blending. Upright and reversed, in love, career and money, plus yes or no. Draw Temperance free."
 name: "Temperance"
 updatedAt: "2026-11-06"
-author: "Tarot Tools Editorial"
-editor: "Tarot Tools Editorial"
+author: "RandomTarot Editorial"
+editor: "RandomTarot Editorial"
 relatedCards: ["the-star", "two-of-cups", "the-lovers", "six-of-pentacles"]
 relatedSpreads: ["one-card", "three-card", "celtic-cross"]
 relatedQuestions: ["love", "decision", "career"]
