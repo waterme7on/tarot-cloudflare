@@ -19,6 +19,12 @@ describe('mobile-first SEO regression', () => {
     expect(home).toContain('<h1>Tarot Card Generator</h1>');
     expect(home).toContain('<section class="prose">');
     expect(home).toContain('What is a tarot card generator?');
+    expect(home).toContain('title="Tarot Card Generator – Free Random Tarot Card Draw"');
+    expect(home).toContain('How to use the random tarot card generator');
+    expect(home).toContain('Are random tarot cards accurate?');
+    expect(home).toContain('All 78 tarot card meanings');
+    expect(home).toContain('Explore by topic');
+    expect(home).toContain('breadcrumbLd(site');
     expect(home).toContain('webAppLd(site)');
     expect(home).toContain('<Faq items={faq} />');
     expect(home).toContain('<SeoLinks');

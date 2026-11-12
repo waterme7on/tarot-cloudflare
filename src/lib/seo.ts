@@ -35,7 +35,7 @@ export function webAppLd(site: string) {
     '@type': 'WebApplication',
     name: 'Tarot Card Generator',
     url: site,
-    applicationCategory: 'LifestyleApplication',
+    applicationCategory: 'GameApplication',
     operatingSystem: 'Any',
     browserRequirements: 'Requires JavaScript',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
