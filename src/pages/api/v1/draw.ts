@@ -40,6 +40,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const human = await verifyTurnstile(env.TURNSTILE_SECRET_KEY, body.turnstileToken, ip);
   if (!human) return error(403, 'turnstile_failed', 'Human verification failed. Reload and try again.');
 
+  if (ipHash) {
+    const now = new Date();
+    const day = now.toISOString().slice(0, 10);
+    const secondsToMidnight = 86_400 - (now.getUTCHours() * 3_600 + now.getUTCMinutes() * 60 + now.getUTCSeconds());
+    const daily = await checkRateLimit(env.CACHE, `draw:ip:${ipHash}:day:${day}`, LIMITS.drawsPerIpPerDay, Math.max(60, secondsToMidnight));
+    if (!daily.allowed) {
+      return error(429, 'daily_limit', 'You have used your 3 free draws for today. Free draws reset after midnight UTC.', { retryAfterSeconds: daily.retryAfterSeconds });
+    }
+  }
+
   track(env, { name: 'draw_started', route: '/api/v1/draw', locale, meta: { spread: body.spread, questionType: body.questionType } });
 
   const cards = drawCards(ALL_CARDS, body.spread, undefined, body.slots);

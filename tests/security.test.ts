@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { verifyWaffoSignature } from '../src/lib/waffo';
 import { hmacHex, signR2Path, verifyR2Signature, timingSafeEqual } from '../src/lib/auth';
-import { checkRateLimit } from '../src/lib/rate-limit';
+import { LIMITS, checkRateLimit } from '../src/lib/rate-limit';
+import { readFileSync } from 'node:fs';
 import { sanitizeMeta } from '../src/lib/events';
 
 describe('waffo webhook signature', () => {
@@ -58,6 +59,15 @@ describe('rate limit', () => {
     expect(blocked.allowed).toBe(false);
     expect(blocked.retryAfterSeconds).toBeGreaterThan(0);
     expect((await checkRateLimit(kv, 'x', 3, 60, 1000 + 61_000)).allowed).toBe(true);
+  });
+});
+
+describe('free draw allowance', () => {
+  it('caps free draws at three per IP per day', () => {
+    expect(LIMITS.drawsPerIpPerDay).toBe(3);
+    const api = readFileSync(new URL('../src/pages/api/v1/draw.ts', import.meta.url), 'utf8');
+    expect(api).toContain('drawsPerIpPerDay');
+    expect(api).toContain('daily_limit');
   });
 });
 

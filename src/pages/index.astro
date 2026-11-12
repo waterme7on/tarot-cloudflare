@@ -18,7 +18,7 @@ const site = Astro.site!.toString().replace(/\/$/, '');
 const faq = [
   { q: 'Is this tarot card generator really random?', a: 'Yes. Each draw happens on a Cloudflare Worker using crypto.getRandomValues with rejection sampling, so every one of the 78 cards and both orientations have an equal chance. No AI decides the card.' },
   { q: 'Do I need to sign up?', a: 'No. There is no account, no email and no birthday. Your optional question stays in your browser unless you explicitly include it in a paid report.' },
-  { q: 'Can I choose more than one card, and how often can I draw?', a: 'Yes. Choose a one-card draw for a quick answer, a three-card spread for past, present and future, or the ten-card Celtic Cross for a full picture. Free draws are unlimited within fair-use limits; start a new reading whenever you need one.' },
+  { q: 'Can I choose more than one card, and how often can I draw?', a: 'Yes. Choose a one-card draw for a quick answer, a three-card spread for past, present and future, or the ten-card Celtic Cross for a full picture. You can draw up to 3 free readings per day; each new reading is a fresh shuffle.' },
   { q: 'What does a reversed card mean?', a: 'A reversed card shows the same energy turned inward, blocked or delayed. Each card page explains both orientations in love, career and money.' },
   { q: 'Are random tarot cards accurate?', a: 'Tarot does not predict fixed events or read another person’s mind, so accuracy is not the right measure. A draw is a structured prompt for reflection: it can help you name what you already sense and choose a next step you can act on.' },
   { q: 'Can I ask a yes or no question?', a: 'Yes. Choose the decision question type and the reading returns a lean (yes, no or maybe) plus the reasoning behind it. Treat the lean as a prompt to think, not a guarantee.' },
@@ -45,7 +45,7 @@ const faq = [
           </picture>
         ))}
       </div>
-      <p class="intro-note">78 illustrated cards · No account needed<br />For entertainment and self-reflection, ages 18+</p>
+      <p class="intro-note">78 illustrated cards · 3 free draws a day · No account needed<br />For entertainment and self-reflection, ages 18+</p>
     </header>
     <DrawTool client:load immersive />
   </div>

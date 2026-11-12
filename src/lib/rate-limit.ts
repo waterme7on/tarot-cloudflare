@@ -38,6 +38,7 @@ export async function checkRateLimit(
 
 export const LIMITS = {
   drawPerIpPerMinute: 10,
+  drawsPerIpPerDay: 3,
   drawPerTokenPerHour: 30,
   checkoutPerIpPerHour: 5,
   eventsPerIpPerMinute: 60,
