@@ -356,3 +356,9 @@
 @media(prefers-reduced-motion:reduce){
   .ritual-fanning .ritual-fan-card,.ritual-pick-scene.is-extracting .ritual-fan-card.is-focused{animation:none!important}
 }
+
+/* Mobile fan: one box-shadow per card is cheaper than 7-10 drop-shadow filters. */
+@media (max-width:760px){
+  .ritual-fan-card{filter:none;box-shadow:0 6px 12px rgba(0,0,0,.3)}
+  .ritual-fan-card.is-focused{filter:brightness(1.08);box-shadow:0 15px 18px rgba(0,0,0,.46)}
+}

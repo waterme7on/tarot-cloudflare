@@ -65,7 +65,8 @@ describe('mobile-first tarot ritual', () => {
     expect(result).toContain('active={holoActive}');
     expect(result).toContain('new Image()');
     expect(holo).toContain('eager ? cardPoster(slug) : cardImage(slug)');
-    expect(holo).toContain('const targetFps = eager ? 30');
+    expect(holo).toContain("nav.connection?.saveData");
+    expect(holo).toContain("tier === 'low' ? 24");
     const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
     expect(css).not.toContain('filter:blur(2px)');
   });
