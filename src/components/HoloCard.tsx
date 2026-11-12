@@ -36,8 +36,8 @@ function qualityTier(eager: boolean): QualityTier {
   const memory = nav.deviceMemory || 8;
   const coarse = matchMedia('(pointer: coarse)').matches;
   const modest = cores <= 4 || memory <= 4;
-  if (eager) return modest || coarse ? 'low' : 'medium';
-  return modest ? 'medium' : 'high';
+  if (eager) return modest ? 'low' : 'medium';
+  return modest || coarse ? 'medium' : 'high';
 }
 
 const VERT = `varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
@@ -362,6 +362,8 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
     <div ref={host} className={`holo-card ${className ?? ''}`} style={{ width, maxWidth: '100%', aspectRatio: `${width} / ${height}` }}>
       <img
         src={eager ? cardPoster(slug) : cardImage(slug)}
+        srcSet={eager ? `${cardPoster(slug)} 480w, ${cardImage(slug)} 768w` : undefined}
+        sizes={eager ? '(max-width: 760px) 200px, 230px' : undefined}
         alt={`${name} tarot card illustration${orientation === 'reversed' ? ' (reversed)' : ''}`}
         width={768}
         height={1152}

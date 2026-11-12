@@ -53,7 +53,17 @@ interface RequestDrawOptions {
  * free draw spinner running forever; callers retry with the same idempotencyKey
  * so a reading that the server already saved is returned instead of redrawn.
  */
+/** Download/parse the Three.js module while the draw request is in flight. */
+function warmHoloRuntime(): void {
+  if (typeof window === 'undefined') return;
+  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+  if (nav.connection?.saveData || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if ((nav.hardwareConcurrency || 8) <= 4 || (nav.deviceMemory || 8) <= 4) return;
+  void import('three').catch(() => {});
+}
+
 export async function requestDraw(body: DrawRequest, options: RequestDrawOptions = {}): Promise<DrawResponse> {
+  warmHoloRuntime();
   const timeoutMs = options.timeoutMs ?? DRAW_TIMEOUT_MS;
   const fetchImpl = options.fetchImpl ?? fetch;
   const controller = new AbortController();
