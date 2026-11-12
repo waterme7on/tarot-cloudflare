@@ -3,7 +3,7 @@ import Base from '@/layouts/Base.astro';
 import DrawTool from '@/components/DrawTool';
 import SeoLinks from '@/components/SeoLinks.astro';
 import Faq from '@/components/Faq.astro';
-import { webAppLd, faqLd } from '@/lib/seo';
+import { breadcrumbLd, webAppLd, faqLd } from '@/lib/seo';
 import { MAJOR_ARCANA } from '@/data/cards-major';
 import { ALL_CARDS } from '@/data/cards';
 import { getCollection } from 'astro:content';
@@ -18,14 +18,18 @@ const site = Astro.site!.toString().replace(/\/$/, '');
 const faq = [
   { q: 'Is this tarot card generator really random?', a: 'Yes. Each draw happens on a Cloudflare Worker using crypto.getRandomValues with rejection sampling, so every one of the 78 cards and both orientations have an equal chance. No AI decides the card.' },
   { q: 'Do I need to sign up?', a: 'No. There is no account, no email and no birthday. Your optional question stays in your browser unless you explicitly include it in a paid report.' },
-  { q: 'Can I draw more than one card?', a: 'Yes. Choose a one-card draw for a quick answer, a three-card spread for past, present and future, or the ten-card Celtic Cross for a full picture.' },
+  { q: 'Can I choose more than one card, and how often can I draw?', a: 'Yes. Choose a one-card draw for a quick answer, a three-card spread for past, present and future, or the ten-card Celtic Cross for a full picture. Free draws are unlimited within fair-use limits; start a new reading whenever you need one.' },
   { q: 'What does a reversed card mean?', a: 'A reversed card shows the same energy turned inward, blocked or delayed. Each card page explains both orientations in love, career and money.' },
+  { q: 'Are random tarot cards accurate?', a: 'Tarot does not predict fixed events or read another person’s mind, so accuracy is not the right measure. A draw is a structured prompt for reflection: it can help you name what you already sense and choose a next step you can act on.' },
+  { q: 'Can I ask a yes or no question?', a: 'Yes. Choose the decision question type and the reading returns a lean (yes, no or maybe) plus the reasoning behind it. Treat the lean as a prompt to think, not a guarantee.' },
+  { q: 'Can I share my reading?', a: 'Yes. Each result has a share link that opens the same cards without exposing your question. Shared readings are private links and expire after 90 days.' },
+  { q: 'Does it work on my phone?', a: 'Yes. The generator, card fan and result pages are built for small screens and work in a mobile browser without an app or account.' },
 ];
 ---
 <Base
-  title="Tarot Card Generator – Free Random Tarot Draw, No Sign-Up"
-  description="Free tarot card generator: ask a question, draw one or three cards instantly and get upright or reversed meanings, a next step and a shareable result."
-  jsonLd={[webAppLd(site), faqLd(faq)]}
+  title="Tarot Card Generator – Free Random Tarot Card Draw"
+  description="Draw a random tarot card free – one-card, three-card or Celtic Cross spreads, with upright and reversed meanings explained. No signup, instant result."
+  jsonLd={[webAppLd(site), faqLd(faq), breadcrumbLd(site, [{ name: 'Home', path: '/' }])]}
   readingEntry
 >
   <div class="home-experience">
@@ -57,17 +61,50 @@ const faq = [
     <p>A tarot card generator is a browser tool that shuffles a full deck and draws cards for you, so you can get a reading without owning a physical deck. This one uses all 78 Rider-Waite cards and returns the card's keywords, a reading matched to your question type, and a suggested next step. You choose a focus, pick a spread from one to ten cards and can add a question; the result appears on the same page. It is free, needs no account and works on phone or desktop. Card meanings come from a fixed rules engine rather than an AI guess, so the same card keeps the same core meaning. Browse the <a href="/cards/">card meanings index</a> to read any card in depth, or open the <a href="/methodology/">methodology page</a> for the shuffle rules.</p>
     <h2>Random tarot card generator</h2>
     <p>Every shuffle is random: a Cloudflare Worker draws from a full 78-card deck with <code>crypto.getRandomValues</code>, chooses upright or reversed, and never repeats a card inside one spread. Draw again and the random tarot card generator produces a new result; nothing is decided by AI, and no account is required for a reading.</p>
-    <h2>How this tarot card generator works</h2>
-    <p>Pick a focus and a spread, optionally write a question that stays on your device, then shuffle the full deck. On the interactive table, swipe or use the arrow controls to choose card positions and turn your chosen cards over to read them. A Cloudflare Worker shuffles a full 78-card Rider-Waite deck with cryptographically secure randomness, chooses upright or reversed for each card, and returns the card's keywords, a reading matched to your question type, and a next action. The free interpretation comes from a consistent rules engine, so the same card always carries the same core meaning — no AI improvisation.</p>
+    <h2>How to use the random tarot card generator</h2>
+    <ol>
+      <li><strong>Choose your focus.</strong> Pick love, career, money, a decision or general reflection. Add an optional question that stays on your device.</li>
+      <li><strong>Pick a spread.</strong> Start with one card for a daily pull, three cards for past, present and future, or the ten-card Celtic Cross for a complex situation.</li>
+      <li><strong>Turn the cards.</strong> Read the card keywords, the interpretation matched to your question type, and one suggested next step. The result stays on this page.</li>
+    </ol>
+    <p>A Cloudflare Worker shuffles a full 78-card Rider-Waite deck with cryptographically secure randomness, chooses upright or reversed for each card, and returns a consistent reading from a rules engine — no AI improvisation.</p>
     <h2>One card, three cards or the Celtic Cross</h2>
     <p>A single card is best for a daily pull or a yes-or-no lean. Three cards map past, present and future. The ten-card Celtic Cross goes deep on a complex situation. Read more on the <a href="/spreads/one-card/">one card</a>, <a href="/spreads/three-card/">three card</a> and <a href="/spreads/celtic-cross/">Celtic Cross</a> pages.</p>
-    <h2>Upright vs reversed tarot cards</h2>
+    <h2 id="reversals">Upright vs reversed: how to read your card</h2>
     <p>An upright card is read at face value: its energy moves outward and is available to you. A reversed card is not the opposite, and it is not bad luck. It usually means the same theme is blocked, delayed or turned inward — The Sun reversed still points to warmth and success, but they are harder to enjoy or partly hidden. Some readers treat a reversal as a signal to slow down; others read it as a prompt to look at the shadow side of the card. Every <a href="/cards/">card page</a> on this site covers both orientations, with separate upright and reversed sections for love, career and money. For a quick lean, choose the <a href="/questions/decision/">decision question type</a> and the reading returns a yes, no or maybe answer with its reasoning.</p>
-    <h2>What should I ask the tarot?</h2>
-    <p>The best questions are specific, current and about something you can act on this week. "What should I pay attention to in my relationship?" gives the cards more to work with than "Will they text me?". Questions about another person's private thoughts are hard to answer; questions about your own next step are not. Tarot is for reflection, so keep medical, legal and financial decisions with a qualified professional. Pick the focus that matches the question, because the same card reads differently in a love, career or money context. The <a href="/questions/">questions section</a> has phrasing guides for <a href="/questions/love/">love</a>, <a href="/questions/career/">career</a> and <a href="/questions/money/">money</a>, plus a dedicated guide to <a href="/questions/decision/">yes-or-no decisions</a>.</p>
-    <h2>Major Arcana meanings</h2>
+    <h2>What to ask your tarot cards</h2>
+    <p>The best questions are specific, current and about something you can act on this week. Questions about another person’s private thoughts are hard to answer; questions about your own next step are not. Start with one of these:</p>
+    <ul>
+      <li>What should I pay attention to in my relationship this week?</li>
+      <li>What am I not saying that needs to be said?</li>
+      <li>Where am I holding on longer than I need to?</li>
+      <li>What would a braver next step look like at work?</li>
+      <li>What is draining my energy right now?</li>
+      <li>What should I stop doing before I start something new?</li>
+      <li>How can I make this decision with less fear?</li>
+      <li>What is the smallest useful action I can take today?</li>
+      <li>What am I avoiding, and why?</li>
+      <li>What do I need to hear that I have been ignoring?</li>
+      <li>Where is my money habit costing me more than money?</li>
+      <li>What would help me feel more grounded this month?</li>
+    </ul>
+    <p>Pick the focus that matches the question, because the same card reads differently in a love, career or money context. The <a href="/questions/">questions section</a> has phrasing guides for <a href="/questions/love/">love</a>, <a href="/questions/career/">career</a> and <a href="/questions/money/">money</a>, plus a dedicated guide to <a href="/questions/decision/">yes-or-no decisions</a>.</p>
+    <h2>Are random tarot cards accurate?</h2>
+    <p>Tarot does not predict a fixed future, tell you what another person is thinking, or replace medical, legal or financial advice. A random draw is a reflection tool: it gives you a new angle and a prompt to act on. Accuracy is less useful than fit — if the reading does not match your situation, leave it and draw again. The <a href="/methodology/">methodology page</a> explains the shuffle, the rules engine and the limits in detail.</p>
+    <h2>All 78 tarot card meanings</h2>
+    <p>The deck has 78 cards: 22 Major Arcana and 56 Minor Arcana. The Major Arcana describe the big themes, while the Minor Arcana cover everyday love, work, money and decisions. Start with the Major Arcana below or open the <a href="/cards/">tarot card meanings index</a> to browse published card pages.</p>
+    <h3>Major Arcana</h3>
     <ul class="card-list">{MAJOR_ARCANA.map((c) => <li><a href={`/cards/${c.slug}/`}>{c.name}</a></li>)}</ul>
-    <p><a href="/cards/">See all card meanings →</a></p>
+    <p><a href="/cards/">See all 78 card meanings →</a></p>
+    <h2>Explore by topic</h2>
+    <ul>
+      <li><a href="/free-tarot-reading/">Free Tarot Reading</a></li>
+      <li><a href="/spreads/one-card/">One Card Tarot</a></li>
+      <li><a href="/spreads/three-card/">Three Card Tarot</a></li>
+      <li><a href="/questions/love/">Love Tarot</a></li>
+      <li><a href="/cards/">Tarot Card Meanings</a></li>
+      <li><a href="#reversals">Reversed Tarot Cards</a></li>
+    </ul>
   </section>
   <Faq items={faq} />
   <SeoLinks spreads={['one-card', 'three-card', 'celtic-cross']} questions={['love', 'career', 'money', 'decision']} cards={['the-lovers', 'the-star', 'the-tower']} />
