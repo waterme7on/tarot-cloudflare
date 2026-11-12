@@ -79,6 +79,8 @@ describe('mobile-first tarot ritual', () => {
     expect(drawClient).toContain("import('three')");
     const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
     expect(css).not.toContain('filter:blur(2px)');
+    expect(css).not.toContain('.fan-card{backface-visibility:hidden;transform-style:preserve-3d;will-change');
+    expect(readFileSync(new URL('../src/components/CardBack.tsx', import.meta.url), 'utf8')).toContain('memo(CardBack)');
     expect(css).toContain('holo-sheen');
     expect(result).toContain("is-revealing");
   });
