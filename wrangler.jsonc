@@ -9,6 +9,7 @@
     "binding": "ASSETS",
     "not_found_handling": "none"
   },
+  "routes": [{ "pattern": "randomtarot.site", "custom_domain": true }],
   "d1_databases": [
     { "binding": "DB", "database_name": "tarot-db", "database_id": "b40842ec-7013-4544-9977-c04bad7a8f58", "migrations_dir": "migrations" }
   ],
@@ -27,7 +28,7 @@
   "triggers": { "crons": ["0 3 * * *", "*/10 * * * *"] },
   "vars": {
     "ENVIRONMENT": "production",
-    "SITE_URL": "https://tarot-tools.me7o.workers.dev",
+    "SITE_URL": "https://randomtarot.site",
     "AI_GATEWAY_ID": "tarot-gateway",
     "AI_MODEL": "@cf/deepseek-ai/deepseek-v4.1-flash-1017",
     "REPORT_PRICE_SINGLE_CENTS": "499",
