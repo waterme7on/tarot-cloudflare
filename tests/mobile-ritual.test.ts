@@ -59,8 +59,10 @@ describe('mobile-first tarot ritual', () => {
   });
   it('keeps WebGL off the draw-to-flip critical path', () => {
     const holo = readFileSync(new URL('../src/components/HoloCard.tsx', import.meta.url), 'utf8');
-    expect(holo).toContain('if (!active)');
-    expect(holo).toContain('}, [slug, orientation, reveal, revealDelayMs, interactive, foil, active]);');
+    expect(holo).toContain('runtime.current');
+    expect(holo).toContain('setCard');
+    expect(holo).toContain('5_000');
+    expect(holo).toContain('}, [started, interactive, foil, eager]);');
     const result = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
     expect(result).toContain('active={holoActive}');
     expect(result).toContain('new Image()');
@@ -74,6 +76,8 @@ describe('mobile-first tarot ritual', () => {
     expect(drawClient).toContain("import('three')");
     const css = readFileSync(new URL('../public/reading-table.css', import.meta.url), 'utf8');
     expect(css).not.toContain('filter:blur(2px)');
+    expect(css).toContain('holo-sheen');
+    expect(result).toContain("is-revealing");
   });
 
   it('keeps the fan away from its controls at narrow and short heights', () => {

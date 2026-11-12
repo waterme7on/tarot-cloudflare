@@ -114,89 +114,257 @@ function drawBack(): HTMLCanvasElement {
   return c;
 }
 
+interface HoloRuntime {
+  setActive(next: boolean): void;
+  setCard(slug: string, orientation: Orientation): Promise<void>;
+  dispose(): void;
+}
+
 export default function HoloCard({ slug, name, orientation = 'upright', reveal = false, revealDelayMs = 0, width = 220, interactive = true, foil = 0.75, className, active = true, eager = false }: HoloCardProps) {
   const host = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
+  const [started, setStarted] = useState(false);
+  const runtime = useRef<HoloRuntime | null>(null);
+  const latest = useRef({ slug, orientation });
+  latest.current = { slug, orientation };
   const height = Math.round(width * 1.5);
 
+  // Start WebGL only once, and only after the reveal has settled. The same
+  // context is reused for every card in the reading.
   useEffect(() => {
-    // The static art is the critical path. Starting Three.js here is what made
-    // the draw-to-flip transition stutter, so wait until the caller says the
-    // reveal animation has finished.
-    if (!active) {
-      setReady(false);
-      return;
-    }
-    const tier = qualityTier(eager);
-    if (tier === 'off') {
-      // Save-Data users keep the static poster instead of downloading Three.js.
-      setReady(false);
-      return;
-    }
+    if (active) setStarted(true);
+  }, [active]);
+
+  useEffect(() => {
+    if (!started) return;
     const el = host.current;
     if (!el) return;
-    let cancelled = false;
+    const tier = qualityTier(eager);
+    if (tier === 'off') {
+      setReady(false);
+      return;
+    }
+
     let disposed = false;
     const cleanups: Array<() => void> = [];
+    let THREE: any = null;
+    let renderer: any = null;
+    let scene: any = null;
+    let camera: any = null;
+    let uniforms: any = null;
+    let root: any = null;
+    let art: any = null;
+    let loadedKey = '';
+    let loadToken = 0;
+    const base = { x: 0, y: 0, z: orientation === 'reversed' ? Math.PI : 0 };
+    let inv: any = null;
+    let activeNow = true;
+    let inView = typeof IntersectionObserver === 'undefined';
+    let hasRendered = false;
+    let hover = false;
+    let revealed = !reveal;
+    let targetX = 0;
+    let targetY = revealed ? 0 : Math.PI;
+    let rotX = 0;
+    let rotY = targetY;
+    let elapsed = 0;
+    let last = performance.now();
+    let frame: number | null = null;
+    let idleTimer: ReturnType<typeof setTimeout> | undefined;
+    let reduced: MediaQueryList;
+
     const dispose = () => {
       if (disposed) return;
       disposed = true;
-      // Release partial setups too, even if an individual cleanup fails.
+      if (idleTimer) clearTimeout(idleTimer);
       for (const cleanup of cleanups.splice(0).reverse()) {
         try { cleanup(); } catch { /* Continue releasing the remaining resources. */ }
       }
     };
     const fail = () => {
       dispose();
-      if (!cancelled) {
-        setReady(false);
-        setFailed(true);
+      runtime.current = null;
+      setReady(false);
+      setFailed(true);
+    };
+    const stop = () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+    };
+    const scheduleIdle = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      if (!activeNow || reduced?.matches) return;
+      // The foil is ambient after the reveal; stop paying for frames when the
+      // reader is still and resume on the next pointer, visibility or card event.
+      idleTimer = setTimeout(stop, 5_000);
+    };
+    const canRender = () => !disposed && activeNow && inView && !document.hidden && el.clientWidth > 0 && el.clientHeight > 0;
+
+    const revealAt = performance.now() + revealDelayMs;
+    const render = (now: number) => {
+      if (!canRender() || !uniforms || !uniforms.tArt.value) return;
+      try {
+        const dt = Math.min((now - last) / 1000, 0.1);
+        last = now;
+        if (!reduced.matches) elapsed += dt;
+        if (!revealed && (reduced.matches || now >= revealAt)) {
+          revealed = true;
+          targetY = 0;
+        }
+        if (revealed && !hover && interactive && !reduced.matches) {
+          targetY = Math.sin(elapsed * 0.6) * 0.18;
+          targetX = Math.sin(elapsed * 0.8) * 0.08;
+        }
+        const ease = reduced.matches ? 1 : 1 - Math.exp(-dt * (revealed ? 6 : 3.2));
+        rotX += (targetX - rotX) * ease;
+        rotY += (targetY - rotY) * ease;
+        root.rotation.set(base.x + rotX, base.y + rotY, base.z);
+        root.updateMatrixWorld(true);
+        uniforms.uView.value.copy(camera.position).applyMatrix4(inv.copy(root.matrixWorld).invert()).normalize();
+        uniforms.uTime.value = reduced.matches ? 0 : elapsed;
+        renderer.render(scene, camera);
+        if (!hasRendered) {
+          hasRendered = true;
+          renderer.domElement.style.opacity = '1';
+          setReady(true);
+        }
+      } catch {
+        fail();
       }
     };
-    setReady(false);
-    setFailed(false);
+    const targetFps = tier === 'low' ? 24 : tier === 'medium' ? 30 : 60;
+    let lastPresented = 0;
+    const tick = (now: number) => {
+      frame = null;
+      if (now - lastPresented >= 1000 / targetFps) {
+        render(now);
+        lastPresented = now;
+      }
+      if (canRender() && !reduced.matches) frame = requestAnimationFrame(tick);
+    };
+    const resume = () => {
+      stop();
+      if (!canRender() || !uniforms || !uniforms.tArt.value) return;
+      last = performance.now();
+      render(last);
+      if (canRender() && !reduced.matches) {
+        frame = requestAnimationFrame(tick);
+        scheduleIdle();
+      }
+    };
+    const renderStatic = () => {
+      if (reduced.matches) render(performance.now());
+    };
+
+    const onMove = (e: PointerEvent) => {
+      if (!interactive || reduced.matches || !canRender()) return;
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      targetY = nx * 0.55;
+      targetX = ny * 0.45;
+      hover = true;
+      renderStatic();
+      if (frame === null) resume();
+      else scheduleIdle();
+    };
+    const onLeave = () => {
+      hover = false;
+      if (reduced.matches) {
+        targetX = targetY = 0;
+        renderStatic();
+      }
+    };
+    const onOrient = (e: DeviceOrientationEvent) => {
+      if (!interactive || reduced.matches || !canRender() || hover || e.gamma == null || e.beta == null) return;
+      targetY = THREE.MathUtils.clamp(e.gamma / 45, -1, 1) * 0.5;
+      targetX = THREE.MathUtils.clamp((e.beta - 40) / 45, -1, 1) * 0.4;
+      if (frame === null) resume();
+      else scheduleIdle();
+    };
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else resume();
+    };
+    const setActive = (next: boolean) => {
+      activeNow = next;
+      if (next) resume();
+      else {
+        if (idleTimer) clearTimeout(idleTimer);
+        stop();
+      }
+    };
+    const setCard = async (nextSlug: string, nextOrientation: Orientation) => {
+      if (!renderer || !uniforms || disposed) return;
+      const key = `${nextSlug}:${nextOrientation}`;
+      base.z = nextOrientation === 'reversed' ? Math.PI : 0;
+      if (key === loadedKey) {
+        if (activeNow) resume();
+        return;
+      }
+      const token = ++loadToken;
+      hasRendered = false;
+      setFailed(false);
+      setReady(false);
+      renderer.domElement.style.opacity = '0';
+      try {
+        const tex = await new THREE.TextureLoader().loadAsync(eager ? cardPoster(nextSlug) : cardImage(nextSlug));
+        if (token !== loadToken || disposed) {
+          tex.dispose();
+          return;
+        }
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+        if (art) art.dispose();
+        art = tex;
+        uniforms.tArt.value = tex;
+        loadedKey = key;
+        targetX = 0;
+        targetY = 0;
+        rotX = 0;
+        rotY = 0;
+        elapsed = 0;
+        if (activeNow) resume();
+        else renderStatic();
+      } catch {
+        if (!disposed) {
+          setFailed(true);
+          setReady(false);
+        }
+      }
+    };
+    runtime.current = { setActive, setCard, dispose };
 
     void (async () => {
       try {
-        const THREE = await import('three');
-        if (cancelled) return;
-        const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-        const renderer = new THREE.WebGLRenderer({ antialias: tier !== 'low', alpha: true, powerPreference: tier === 'high' ? 'high-performance' : 'low-power' });
-        // Register ownership before any setup or await can fail or be cancelled.
+        THREE = await import('three');
+        if (disposed) return;
+        reduced = matchMedia('(prefers-reduced-motion: reduce)');
+        renderer = new THREE.WebGLRenderer({ antialias: tier !== 'low', alpha: true, powerPreference: tier === 'high' ? 'high-performance' : 'low-power' });
         cleanups.push(
           () => renderer.domElement.remove(),
           () => renderer.forceContextLoss(),
           () => renderer.dispose(),
         );
-        // Non-interactive reveal cards are a small mobile surface: reduce GPU fill cost.
         renderer.setPixelRatio(Math.min(devicePixelRatio, tier === 'low' ? 1.25 : tier === 'medium' ? 1.5 : 2));
         renderer.setSize(el.clientWidth || 1, el.clientHeight || 1);
         renderer.setClearColor(0x000000, 0);
         renderer.domElement.style.position = 'absolute';
         renderer.domElement.style.inset = '0';
+        renderer.domElement.style.opacity = '0';
+        renderer.domElement.style.transition = 'opacity .18s ease';
         renderer.domElement.setAttribute('aria-hidden', 'true');
         el.appendChild(renderer.domElement);
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(28, (el.clientWidth || 1) / (el.clientHeight || 1), 0.1, 100);
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(28, (el.clientWidth || 1) / (el.clientHeight || 1), 0.1, 100);
         camera.position.set(0, 0, 7.2);
-
-        // Reveal cards use the 480×720 poster already in the browser cache; the
-        // full 768×1152 art is reserved for card pages at larger widths.
-        const art = await new THREE.TextureLoader().loadAsync(eager ? cardPoster(slug) : cardImage(slug));
-        if (cancelled || disposed) {
-          art.dispose();
-          return;
-        }
-        cleanups.push(() => art.dispose());
-        art.colorSpace = THREE.SRGBColorSpace;
-        art.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
         const back = new THREE.CanvasTexture(drawBack());
         cleanups.push(() => back.dispose());
         back.colorSpace = THREE.SRGBColorSpace;
-
-        const uniforms = { uTime: { value: 0 }, uFoil: { value: foil }, uView: { value: new THREE.Vector3(0, 0, 1) }, tArt: { value: art }, tBack: { value: back } };
+        uniforms = { uTime: { value: 0 }, uFoil: { value: foil }, uView: { value: new THREE.Vector3(0, 0, 1) }, tArt: { value: null }, tBack: { value: back } };
         const front = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: FRONT });
         cleanups.push(() => front.dispose());
         const backMat = new THREE.ShaderMaterial({ uniforms, vertexShader: VERT, fragmentShader: BACK });
@@ -206,120 +374,24 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         const geo = new THREE.BoxGeometry(2, 3, 0.035);
         cleanups.push(() => geo.dispose());
         const mesh = new THREE.Mesh(geo, [edge, edge, edge, edge, front, backMat]);
-        const root = new THREE.Group();
+        root = new THREE.Group();
         root.add(mesh);
         scene.add(root);
+        inv = new THREE.Matrix4();
 
-        const base = { x: 0, y: 0, z: orientation === 'reversed' ? Math.PI : 0 };
-        let targetX = 0;
-        let revealed = !reveal || reduced.matches;
-        let targetY = revealed ? 0 : Math.PI;
-        let rotX = 0;
-        let rotY = targetY;
-        let hover = false;
-        const revealAt = performance.now() + revealDelayMs;
-        let last = performance.now();
-        let elapsed = 0;
-        let frame: number | null = null;
-        let inView = typeof IntersectionObserver === 'undefined';
-        let hasRendered = false;
-        const inv = new THREE.Matrix4();
-        const canRender = () => !cancelled && !disposed && inView && !document.hidden && el.clientWidth > 0 && el.clientHeight > 0;
-        const stop = () => {
-          if (frame !== null) cancelAnimationFrame(frame);
-          frame = null;
-        };
-        cleanups.push(stop);
-
-        const render = (now: number) => {
-          if (!canRender()) return;
-          try {
-            const dt = Math.min((now - last) / 1000, 0.1);
-            last = now;
-            if (!reduced.matches) elapsed += dt;
-            if (!revealed && (reduced.matches || now >= revealAt)) {
-              revealed = true;
-              targetY = 0;
-            }
-            if (revealed && !hover && interactive && !reduced.matches) {
-              targetY = Math.sin(elapsed * 0.6) * 0.18;
-              targetX = Math.sin(elapsed * 0.8) * 0.08;
-            }
-            const ease = reduced.matches ? 1 : 1 - Math.exp(-dt * (revealed ? 6 : 3.2));
-            rotX += (targetX - rotX) * ease;
-            rotY += (targetY - rotY) * ease;
-            root.rotation.set(base.x + rotX, base.y + rotY, base.z);
-            root.updateMatrixWorld(true);
-            uniforms.uView.value.copy(camera.position).applyMatrix4(inv.copy(root.matrixWorld).invert()).normalize();
-            uniforms.uTime.value = reduced.matches ? 0 : elapsed;
-            renderer.render(scene, camera);
-            if (!hasRendered) {
-              hasRendered = true;
-              setReady(true);
-            }
-          } catch {
-            fail();
-          }
-        };
-        let lastPresented = 0;
-        // The reveal card is the critical mobile surface: 30 fps ambient foil
-        // is indistinguishable from 60 here and costs half the GPU frames.
-        const targetFps = tier === 'low' ? 24 : tier === 'medium' ? 30 : 60;
-        const tick = (now: number) => {
-          frame = null;
-          if (now - lastPresented >= 1000 / targetFps) {
-            render(now);
-            lastPresented = now;
-          }
-          if (canRender() && !reduced.matches) frame = requestAnimationFrame(tick);
-        };
-        const resume = () => {
-          stop();
-          if (!canRender()) return;
-          last = performance.now();
-          render(last);
-          if (canRender() && !reduced.matches) frame = requestAnimationFrame(tick);
-        };
-        const renderStatic = () => {
-          if (reduced.matches) render(performance.now());
-        };
-
-        const onMove = (e: PointerEvent) => {
-          if (!interactive || reduced.matches || !canRender()) return;
-          const r = el.getBoundingClientRect();
-          if (!r.width || !r.height) return;
-          const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-          const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
-          targetY = nx * 0.55;
-          targetX = ny * 0.45;
-          hover = true;
-          renderStatic();
-        };
-        const onLeave = () => {
-          hover = false;
-          if (reduced.matches) {
-            targetX = targetY = 0;
-            renderStatic();
-          }
-        };
-        const onOrient = (e: DeviceOrientationEvent) => {
-          if (!interactive || reduced.matches || !canRender() || hover || e.gamma == null || e.beta == null) return;
-          targetY = THREE.MathUtils.clamp(e.gamma / 45, -1, 1) * 0.5;
-          targetX = THREE.MathUtils.clamp((e.beta - 40) / 45, -1, 1) * 0.4;
-        };
         el.addEventListener('pointermove', onMove);
         cleanups.push(() => el.removeEventListener('pointermove', onMove));
         el.addEventListener('pointerleave', onLeave);
         cleanups.push(() => el.removeEventListener('pointerleave', onLeave));
         window.addEventListener('deviceorientation', onOrient);
         cleanups.push(() => window.removeEventListener('deviceorientation', onOrient));
-        document.addEventListener('visibilitychange', resume);
-        cleanups.push(() => document.removeEventListener('visibilitychange', resume));
+        document.addEventListener('visibilitychange', onVisibility);
+        cleanups.push(() => document.removeEventListener('visibilitychange', onVisibility));
         reduced.addEventListener('change', resume);
         cleanups.push(() => reduced.removeEventListener('change', resume));
 
         const ro = new ResizeObserver(() => {
-          if (cancelled || disposed) return;
+          if (disposed || !renderer) return;
           const w = el.clientWidth;
           const h = el.clientHeight;
           if (!w || !h) {
@@ -339,24 +411,33 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         ro.observe(el);
         if (typeof IntersectionObserver !== 'undefined') {
           const io = new IntersectionObserver(([entry]) => {
-            if (cancelled || disposed || !entry) return;
+            if (disposed || !entry) return;
             inView = entry.isIntersecting;
-            resume();
+            if (inView) resume();
+            else stop();
           });
           cleanups.push(() => io.disconnect());
           io.observe(el);
         }
-        resume();
+        await setCard(latest.current.slug, latest.current.orientation);
+        if (activeNow) resume();
       } catch {
         fail();
       }
     })();
 
     return () => {
-      cancelled = true;
+      runtime.current = null;
       dispose();
     };
-  }, [slug, orientation, reveal, revealDelayMs, interactive, foil, active]);
+  }, [started, interactive, foil, eager]);
+
+  useEffect(() => {
+    const rt = runtime.current;
+    if (!rt) return;
+    rt.setActive(active);
+    void rt.setCard(slug, orientation);
+  }, [active, slug, orientation]);
 
   return (
     <div ref={host} className={`holo-card ${className ?? ''}`} style={{ width, maxWidth: '100%', aspectRatio: `${width} / ${height}` }}>
@@ -368,7 +449,6 @@ export default function HoloCard({ slug, name, orientation = 'upright', reveal =
         width={768}
         height={1152}
         className={orientation === 'reversed' ? 'reversed' : ''}
-        // Opacity preserves the accessible SSR image after the canvas takes over.
         style={{ opacity: ready && !failed ? 0 : 1 }}
         loading={eager || reveal ? 'eager' : 'lazy'}
         decoding="async"
