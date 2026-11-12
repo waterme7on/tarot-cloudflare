@@ -4,9 +4,10 @@ const NOINDEX_PREFIXES = ['/reading/', '/report/', '/admin', '/api/'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.requestId = crypto.randomUUID();
-  if (context.url.hostname === 'www.randomtarot.site') {
+  if (context.url.protocol === 'http:' || context.url.hostname === 'www.randomtarot.site') {
     const url = new URL(context.url);
-    url.hostname = 'randomtarot.site';
+    url.protocol = 'https:';
+    if (context.url.hostname === 'www.randomtarot.site') url.hostname = 'randomtarot.site';
     return context.redirect(url.toString(), 301);
   }
 
