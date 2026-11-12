@@ -4,7 +4,7 @@ import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
 import { hasCardPage } from '../data/card-pages';
 import CardBack from './CardBack';
 import FlipCard from './FlipCard';
-import HoloCard from './HoloCard';
+import HoloCard, { cardPoster } from './HoloCard';
 import { ShareCard } from './ShareCard';
 
 const FLIP_MS = 280;
@@ -21,6 +21,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   const [activeCard, setActiveCard] = useState(0);
   const [opened, setOpened] = useState(false);
   const [flipDone, setFlipDone] = useState(false);
+  const [holoActive, setHoloActive] = useState(false);
   const [instantReset, setInstantReset] = useState(false);
   const [pickedSlots, setPickedSlots] = useState<number[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
@@ -82,6 +83,16 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   }, []);
   useEffect(() => { setClientReady(true); }, []);
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    for (const slug of [currentCard.slug, reading.cards[activeCard + 1]?.slug]) {
+      if (!slug) continue;
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = cardPoster(slug);
+      void image.decode?.().catch(() => {});
+    }
+  }, [activeCard, currentCard.slug, reading.cards]);
+  useEffect(() => {
     if (!showSummary) return;
     setCheckoutSiteKey(document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content ?? '');
   }, [showSummary]);
@@ -105,6 +116,15 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
   }, [showSummary, checkoutSiteKey]);
   useEffect(() => {
     if (flipDone) headingRef.current?.focus({ preventScroll: true });
+  }, [flipDone]);
+  useEffect(() => {
+    if (!flipDone) {
+      setHoloActive(false);
+      return;
+    }
+    // Let the flip and the meaning settle before paying for WebGL setup.
+    const timer = setTimeout(() => setHoloActive(true), motionDelay(180));
+    return () => clearTimeout(timer);
   }, [flipDone]);
   useEffect(() => {
     headingRef.current?.focus({ preventScroll: true });
@@ -157,7 +177,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
           {usesFan ? <>
             {/* The chosen fan card reaches edge-on before the prewarmed front takes over. */}
             <div className="turned-card-layer" aria-hidden={!opened}>
-              {clientReady && <div className={`table-turned-card${advancing ? ' is-leaving' : ''}`}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive /></div>}
+              {clientReady && <div className={`table-turned-card${advancing ? ' is-leaving' : ''}`}><HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive active={holoActive} eager /></div>}
             </div>
             {!opened && (
               <div className={`table-fan ${selectedSlot !== null ? 'has-selection' : ''}`} key={`fan-${activeCard}`} role="group" aria-label="Deck card backs">
@@ -172,7 +192,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
               back={preselected ?
                 <button type="button" className="ritual-selected-back" disabled={opened || instantReset || !clientReady} onClick={() => revealNext(activeCard)} aria-label={'Turn over your selected card ' + (activeCard + 1)}><CardBack /><span>Tap to turn over</span></button> :
                 <button type="button" className="deck-back reveal-card" disabled={opened || instantReset || !clientReady} onClick={() => revealNext(activeCard)} aria-label={`Reveal card ${activeCard + 1}`}><span aria-hidden="true">TT</span><small>Tap to turn over</small></button>}
-              front={clientReady && <HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} />}
+              front={clientReady && <HoloCard slug={currentCard.slug} name={currentCard.name} orientation={currentCard.orientation} width={216} reveal={false} interactive={!preselected} active={holoActive} eager />}
             />
           )}
           <div className="card-mist" aria-hidden="true" />
