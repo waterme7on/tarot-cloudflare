@@ -1,0 +1,99 @@
+---
+import Base from '@/layouts/Base.astro';
+import Faq from '@/components/Faq.astro';
+import { breadcrumbLd, faqLd } from '@/lib/seo';
+
+export const prerender = true;
+
+const site = Astro.site!.toString().replace(/\/$/, '');
+const faq = [
+  { q: 'How much does a deep tarot reading cost?', a: 'A one-card deep reading is $4.99. The three-card reading and the ten-card Celtic Cross use the three-card report and cost $9.99. Prices are shown again before checkout; there is no subscription and no recurring charge.' },
+  { q: 'Do I need an account to buy a report?', a: 'No. You draw a reading first, then choose the report from the result. Checkout is handled by Waffo Pancake, and the finished report is delivered to a private link.' },
+  { q: 'What is included in the full reading?', a: 'Every card is interpreted for your spread and question type, followed by a synthesis that connects the cards, practical next steps and a journaling prompt. The report is written after payment and saved to a private link you can reopen.' },
+  { q: 'Is the report written by AI?', a: 'The report is AI-assisted, with a rules-based edition used if the AI service is unavailable. The cards themselves are always drawn by the same cryptographically secure shuffle used in the free reading; buying a report never changes the cards.' },
+  { q: 'When does the report arrive?', a: 'Usually within a minute of payment. The order page updates automatically. If generation does not finish within 10 minutes, we retry once and then request an automatic refund.' },
+  { q: 'Can I get a refund?', a: 'Yes, within the limits in our refund policy. If the report cannot be generated, we request the refund automatically. Dissatisfaction with the meaning of a random draw is not by itself a refund reason. See the refund policy for the exact cases.' },
+  { q: 'Is a deep reading a prediction?', a: 'No. It is a longer reflection on the cards you drew: context, connections and next steps. It does not predict fixed events or tell you what another person is thinking, and it is not medical, legal or financial advice.' },
+];
+---
+<Base
+  title="Deep Tarot Readings – Personal Written Report"
+  description="Get a personal deep tarot reading after your free draw. Each card interpreted for your question, with a synthesis, next steps and a private report link."
+  updatedAt="2026-11-12"
+  author="RandomTarot Editorial"
+  jsonLd={[
+    breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Deep Tarot Readings', path: '/readings/' }]),
+    faqLd(faq),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: 'RandomTarot Deep Reading',
+      description: 'A personal written tarot report based on the cards you drew, with per-card interpretation, synthesis, next steps and a private report link.',
+      brand: { '@type': 'Brand', name: 'RandomTarot' },
+      offers: { '@type': 'AggregateOffer', lowPrice: '4.99', highPrice: '9.99', priceCurrency: 'USD', offerCount: '2' },
+    },
+  ]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Deep Tarot Readings</nav>
+  <h1>Deep Tarot Readings</h1>
+  <p class="lead">A private written report for the cards you actually drew. Each card is interpreted for your question type, then connected into one reading with practical next steps.</p>
+  <p><a class="btn" href="/free-tarot-reading/">Draw a card first</a> <a class="btn btn-ghost" href="#pricing">See pricing</a></p>
+
+  <section class="prose">
+    <h2>What you get</h2>
+    <p>The free draw gives you the card, its keywords and a short interpretation. The deep reading expands that into a written report:</p>
+    <ul>
+      <li><strong>Every card in context.</strong> Each card is read for your spread and for love, career, money, decision or general reflection.</li>
+      <li><strong>A synthesis.</strong> The cards are connected into one reading instead of being explained in isolation.</li>
+      <li><strong>Next steps.</strong> Practical actions you can take this week, not a fixed prediction.</li>
+      <li><strong>A journaling prompt.</strong> One question to carry into the week.</li>
+      <li><strong>A private link.</strong> Reopen the report later without creating an account.</li>
+    </ul>
+
+    <h2 id="pricing">Choose a reading</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>Single Card Deep Reading</h3>
+        <p><strong>$4.99</strong> · one-time</p>
+        <p>A close reading of one card for a daily focus, a yes-or-no lean or a single decision.</p>
+      </div>
+      <div class="card">
+        <h3>Three Card Reading</h3>
+        <p><strong>$9.99</strong> · one-time</p>
+        <p>Past, present and future interpreted together, with a synthesis and next steps.</p>
+      </div>
+      <div class="card">
+        <h3>Celtic Cross Report</h3>
+        <p><strong>$9.99</strong> · one-time</p>
+        <p>All ten cards connected for a complex situation with several people or competing priorities.</p>
+      </div>
+    </div>
+    <p class="muted small">Prices are in USD. Payment is processed by Waffo Pancake as merchant of record. The report offer appears on the result page after you draw, so checkout is always tied to a real reading.</p>
+
+    <h2>What a report looks like</h2>
+    <div class="card">
+      <p class="muted small">Example format, not a generated reading</p>
+      <h3 style="margin-top:0">The Tower — a closer look</h3>
+      <p>The Tower in this position is less about disaster and more about a structure that has stopped being honest. Look at what you have been holding together by effort alone, and what would change if you stopped calling it stable.</p>
+      <h3>Bringing it together</h3>
+      <p>The spread moves from a demand for certainty toward permission to revise the plan. Your next step is not a leap; it is one conversation that stops the pretending.</p>
+      <p class="muted small">A journaling prompt and a short list of next actions follow this section in the full report.</p>
+    </div>
+
+    <h2>How it works</h2>
+    <ol>
+      <li><strong>Draw first.</strong> Start a <a href="/free-tarot-reading/">free tarot reading</a>, choose your focus and spread, and reveal the cards.</li>
+      <li><strong>Choose the full reading.</strong> On the result page, select the report that matches your spread and complete the secure checkout.</li>
+      <li><strong>Read and return.</strong> The report is written after payment and saved to a private link. You can close the tab and come back later.</li>
+    </ol>
+
+    <h2>What the deep reading is not</h2>
+    <p>It is not a prediction, a psychic reading of another person, or a replacement for medical, legal, financial or mental-health advice. Tarot is used here for reflection and entertainment. The report gives you a structured way to think about a situation; it does not decide the outcome for you.</p>
+    <p>The <a href="/methodology/">methodology page</a> explains the shuffle, the interpretation rules and the role of AI. The <a href="/free-tarot-reading/">free reading page</a> explains what the free draw includes before you buy anything.</p>
+
+    <h2>Delivery and refunds</h2>
+    <p>Reports are delivered to a private link and kept for re-download for 180 days. If the report cannot be generated within 10 minutes, the system retries once and then requests an automatic refund. Refund confirmation can take several business days. Read the full <a href="/refund/">refund policy</a> and <a href="/privacy/">privacy policy</a> for details, including what payment data is stored.</p>
+  </section>
+  <Faq items={faq} />
+  <p><a class="btn" href="/free-tarot-reading/">Start with a free draw</a></p>
+</Base>

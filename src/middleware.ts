@@ -11,6 +11,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const path = context.url.pathname;
+  const cleanPath = path.replace(/\/+$/, '');
+  const legacyTargets: Record<string, string> = {
+    '/tarot-card-meanings': '/cards/',
+    '/one-card-tarot': '/spreads/one-card/',
+    '/three-card-tarot': '/spreads/three-card/',
+    '/love-tarot': '/questions/love/',
+  };
+  const legacyTarget = legacyTargets[cleanPath];
+  if (legacyTarget) return context.redirect(`${legacyTarget}${context.url.search}`, 301);
 
   if (path !== '/' && !path.endsWith('/') && !path.startsWith('/api/') && !path.includes('.')) {
     const url = new URL(context.url);

@@ -235,6 +235,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
         <p className="muted small">
           A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, practical next steps and a journaling prompt. Delivered to a private link. If generation fails, we retry once and automatically request a refund if it still cannot be delivered; refund confirmation can take several business days. Entertainment only.
         </p>
+        <p className="muted small"><a href="/readings/">See what each report includes →</a></p>
         <div className="report-preview" aria-label="Sample layout of the full reading report">
           <div className="report-preview-header"><strong>Report preview</strong><span>Example layout</span></div>
           <div className="report-preview-paper">
