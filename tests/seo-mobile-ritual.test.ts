@@ -33,7 +33,9 @@ describe('mobile-first SEO regression', () => {
     const astro = source('astro.config.mjs');
     const wrangler = source('wrangler.jsonc');
     const robots = source('public/robots.txt');
+    const middleware = source('src/middleware.ts');
     expect(astro).toContain(host);
+    expect(middleware).toContain("hostname === 'www.randomtarot.site'");
     expect(wrangler).toContain(`"SITE_URL": "${host}"`);
     expect(robots).toContain(`Sitemap: ${host}/sitemap-index.xml`);
     for (const file of [astro, wrangler, robots]) expect(file).not.toContain('waterme7on333');
