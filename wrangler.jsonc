@@ -9,7 +9,10 @@
     "binding": "ASSETS",
     "not_found_handling": "none"
   },
-  "routes": [{ "pattern": "randomtarot.site", "custom_domain": true }],
+  "routes": [
+    { "pattern": "randomtarot.site", "custom_domain": true },
+    { "pattern": "www.randomtarot.site", "custom_domain": true }
+  ],
   "d1_databases": [
     { "binding": "DB", "database_name": "tarot-db", "database_id": "b40842ec-7013-4544-9977-c04bad7a8f58", "migrations_dir": "migrations" }
   ],
