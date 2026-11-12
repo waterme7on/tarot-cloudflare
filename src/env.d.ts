@@ -38,6 +38,10 @@ declare global {
       requestId: string;
     }
   }
+
+  interface Window {
+    minilytics?: (command: 'goal' | 'track' | 'identify' | 'pageview', name?: string, props?: Record<string, unknown>) => void;
+  }
 }
 
 type Runtime<E> = import('@astrojs/cloudflare').Runtime<E>;

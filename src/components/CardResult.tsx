@@ -255,7 +255,16 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
         {checkoutSiteKey && <div className="report-check" ref={checkoutWidgetRef} aria-label="Human verification for checkout" />}
         {checkout.error && <p className="error" role="alert">{checkout.error}</p>}
         <div className="btn-row">
-          <button type="button" className="btn" onClick={startCheckout} disabled={checkout.loading}>
+          <button
+            type="button"
+            className="btn"
+            onClick={startCheckout}
+            disabled={checkout.loading}
+            data-ml-goal="report_unlock"
+            data-ml-goal-product={product}
+            data-ml-goal-spread={reading.spread}
+            data-ml-goal-question_type={reading.questionType}
+          >
             {checkout.loading ? 'Opening checkout…' : 'Get the full reading'}
           </button>
         </div>

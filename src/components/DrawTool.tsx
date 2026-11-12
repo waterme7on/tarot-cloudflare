@@ -90,6 +90,7 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
         return;
       }
       setResult(data);
+      window.minilytics?.('goal', 'draw', { spread, question_type: questionType, cards: data.cards.length, mode: immersive ? 'ritual' : 'flow' });
     } catch {
       if (abortRef.current?.signal.aborted) return;
       setError('Connection interrupted. Try again; we will recover the same draw if it was saved.');
