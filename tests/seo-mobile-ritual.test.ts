@@ -59,6 +59,40 @@ describe('mobile-first SEO regression', () => {
     expect(base).toContain('/favicon.svg');
   });
 
+  it('serves the new topic pages and legacy redirects', () => {
+    const reversed = source('src/pages/reversed-tarot-cards.astro');
+    const readings = source('src/pages/readings.astro');
+    const middleware = source('src/middleware.ts');
+    const sitemap = source('src/pages/sitemap-pages.xml.ts');
+    expect(reversed).toContain('<h1>Reversed Tarot Cards</h1>');
+    expect(readings).toContain('<h1>Deep Tarot Readings</h1>');
+    expect(middleware).toContain("'/tarot-card-meanings': '/cards/'");
+    expect(middleware).toContain("'/one-card-tarot': '/spreads/one-card/'");
+    expect(middleware).toContain("'/three-card-tarot': '/spreads/three-card/'");
+    expect(middleware).toContain("'/love-tarot': '/questions/love/'");
+    expect(sitemap).toContain('/reversed-tarot-cards/');
+    expect(sitemap).toContain('/readings/');
+  });
+
+  it('ships the short-URL redirects and the new reading pages', () => {
+    const middleware = source('src/middleware.ts');
+    for (const [from, to] of [['/tarot-card-meanings', '/cards/'], ['/one-card-tarot', '/spreads/one-card/'], ['/three-card-tarot', '/spreads/three-card/'], ['/love-tarot', '/questions/love/']]) {
+      expect(middleware).toContain(`'${from}': '${to}'`);
+    }
+    const reversed = source('src/pages/reversed-tarot-cards.astro');
+    expect(reversed).toContain('<h1>Reversed Tarot Cards</h1>');
+    expect(reversed).toContain('five ways');
+    const readings = source('src/pages/readings.astro');
+    expect(readings).toContain('<h1>Deep Tarot Readings</h1>');
+    expect(readings).toContain('$4.99');
+    const sitemap = source('src/pages/sitemap-pages.xml.ts');
+    expect(sitemap).toContain('/reversed-tarot-cards/');
+    expect(sitemap).toContain('/readings/');
+    const home = source('src/pages/index.astro');
+    expect(home).toContain('href="/one-card-tarot/"');
+    expect(home).toContain('href="/reversed-tarot-cards/"');
+  });
+
   it('loads Minilytics only in production and allows it in the CSP', () => {
     const base = source('src/layouts/Base.astro');
     const middleware = source('src/middleware.ts');

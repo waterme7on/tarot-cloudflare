@@ -1,0 +1,83 @@
+---
+import Base from '@/layouts/Base.astro';
+import Faq from '@/components/Faq.astro';
+import { MAJOR_ARCANA } from '@/data/cards-major';
+import { articleLd, breadcrumbLd, faqLd } from '@/lib/seo';
+
+export const prerender = true;
+
+const site = Astro.site!.toString().replace(/\/$/, '');
+const faq = [
+  { q: 'Does a reversed tarot card mean something bad?', a: 'No. A reversal is a second reading of the same card, not a punishment. It usually points to energy that is blocked, delayed, turned inward or present in excess. The card keeps its core meaning; the reversal changes how that meaning shows up.' },
+  { q: 'Should I use reversals in every reading?', a: 'You can, but you do not have to. Some readers keep every card upright and get a clear reading that way. If you use reversals, decide the rule before you draw: every reversal counts, only Major Arcana count, or only cards that land sideways. Consistency matters more than the rule itself.' },
+  { q: 'What if the reversed meaning does not fit my situation?', a: 'Use the upright meaning and treat the reversal as a question rather than a verdict. Ask where the card’s energy feels blocked, delayed or internal in your life. If neither reading fits, leave the card and return to it later.' },
+  { q: 'Are reversed cards read differently for love, career and money?', a: 'Yes. The same reversal is applied to the context of the question. The Lovers reversed in a love reading points to misalignment or avoidance; in a career reading it points to a values conflict or a partnership that is not working. Our card pages explain upright and reversed meanings separately for love, career and money.' },
+  { q: 'Do all tarot decks use reversed cards?', a: 'No. Reversals became common in modern practice, but many readers and decks use upright cards only. A deck does not need reversals to be valid. What matters is that you understand the method you are using.' },
+  { q: 'Can I read a reversed card as upright if that feels more useful?', a: 'Yes, as long as you are honest about it. Note that the card landed reversed, read the upright meaning, and say why you chose it. Turning a reversal into the answer you wanted defeats the point of drawing.' },
+];
+---
+<Base
+  title="Reversed Tarot Cards – Meanings and How to Read Them"
+  description="Learn what reversed tarot cards mean, five ways to read them, reversed Major Arcana keywords and how to apply reversals in love, career and money readings."
+  updatedAt="2026-11-12"
+  author="RandomTarot Editorial"
+  jsonLd={[
+    breadcrumbLd(site, [{ name: 'Home', path: '/' }, { name: 'Reversed Tarot Cards', path: '/reversed-tarot-cards/' }]),
+    faqLd(faq),
+    articleLd(site, { path: '/reversed-tarot-cards/', headline: 'Reversed Tarot Cards', description: 'What reversed tarot cards mean, how to read them and what each Major Arcana reversal points to.', updatedAt: '2026-11-12', author: 'RandomTarot Editorial' }),
+  ]}
+>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › Reversed Tarot Cards</nav>
+  <h1>Reversed Tarot Cards</h1>
+  <p class="lead">A reversed card is not the opposite of the upright card, and it is not bad luck. It is the same card read through a different door: blocked, delayed, internal, excessive or ready to be integrated.</p>
+  <p><a class="btn" href="/free-tarot-reading/">Draw a card and read both orientations</a></p>
+
+  <section class="prose">
+    <h2>What does a reversed tarot card mean?</h2>
+    <p>When a card lands upside down, the image is still the same image. The Sun is still The Sun. What changes is the direction of the energy. An upright card usually describes the theme as available and moving outward. A reversed card asks where that theme is stuck, private, late, overdone or asking to be looked at from the inside.</p>
+    <p>This is why “reversed means bad” is a poor shortcut. The Tower reversed can describe a crisis that is being avoided rather than one that has already happened. The Star reversed can describe hope that has gone quiet, not hope that is gone. The card is giving you a more specific place to look.</p>
+
+    <h2>Five ways to read a reversal</h2>
+    <ol>
+      <li><strong>Blocked.</strong> The card’s energy is present but cannot move. Ask what is in the way.</li>
+      <li><strong>Internal.</strong> The theme is happening inside you rather than in the visible situation. Ask what you have not said out loud.</li>
+      <li><strong>Delayed.</strong> The theme is coming, but not yet. Ask what has to happen first.</li>
+      <li><strong>Too much.</strong> The card’s quality is present in excess. Ask where you have overcorrected.</li>
+      <li><strong>Shadow.</strong> The card points to the part of the situation you would rather not see. Ask what you are avoiding.</li>
+    </ol>
+    <p>You do not need to choose one meaning before you look at the card. Let the question decide. A reversal in a love reading about a silent argument points somewhere different from a reversal in a career reading about a delayed decision.</p>
+
+    <h2>Reversed Major Arcana keywords</h2>
+    <p>These are the short reversal themes for the 22 Major Arcana. The full page for each card explains the upright and reversed reading in love, career and money.</p>
+    <ul class="card-list">
+      {MAJOR_ARCANA.map((card) => (
+        <li>
+          <a href={`/cards/${card.slug}/`}>{card.name}</a>
+          <small class="deck-keywords">{card.reversed.keywords.join(' · ')}</small>
+        </li>
+      ))}
+    </ul>
+
+    <h2>Reversed cards by suit</h2>
+    <h3>Wands reversed</h3>
+    <p>Wands carry drive, creativity and momentum. Reversed, the suit often describes burnout, scattered effort, a project that has lost its spark or confidence that is being performed rather than felt. Look for where the fire is going out or being forced.</p>
+    <h3>Cups reversed</h3>
+    <p>Cups carry feeling, connection and intuition. Reversed, the suit points to emotional withdrawal, mixed signals, unmet needs or intuition that is being ignored. It can also describe someone who is feeling too much and saying too little.</p>
+    <h3>Swords reversed</h3>
+    <p>Swords carry thought, communication and conflict. Reversed, the suit often describes overthinking, a conversation that keeps being postponed, information that is missing or a truth that is being withheld. The mind is busy, but not necessarily clear.</p>
+    <h3>Pentacles reversed</h3>
+    <p>Pentacles carry resources, work and the body. Reversed, the suit points to financial leakage, a job that costs more than it returns, neglect of rest or a plan that looks stable on paper but is not sustainable in practice.</p>
+
+    <h2>How to read a reversal in a spread</h2>
+    <p>Start with the position before you start with the reversal. A reversed card in a past position often names something you are still carrying. A reversed card in a future position can describe a delay or a theme that has not fully arrived. A reversed card in an advice position usually asks for an adjustment rather than a stop.</p>
+    <p>Then look at the proportion of reversals. One reversal in a spread is a detail. A spread that is mostly reversed is a mood: the reading may be more about internal work than external events. Do not turn that into a rule. Read the cards in front of you and let the question decide what matters.</p>
+
+    <h2>Reversed cards that are not bad news</h2>
+    <p><strong>Death reversed</strong> often describes resistance to an ending that has already happened. <strong>The Tower reversed</strong> can describe a crisis that is being postponed or a structure that is already cracking. <strong>The Devil reversed</strong> can describe the first stage of leaving a pattern you know is not good for you. None of these are predictions of disaster; they are invitations to look at the part of the situation that is asking for honesty.</p>
+
+    <h2>Read a reversed card in context</h2>
+    <p>Use the <a href="/cards/">tarot card meanings index</a> to open the full page for any card, then read the reversed section for your question type. If you want to see a reversal in a live draw, start a <a href="/free-tarot-reading/">free tarot reading</a> and choose the spread that fits the question. For a specific area, the <a href="/questions/love/">love</a>, <a href="/questions/career/">career</a>, <a href="/questions/money/">money</a> and <a href="/questions/decision/">decision</a> guides show how the same card changes across contexts.</p>
+  </section>
+  <Faq items={faq} />
+  <p><a class="btn" href="/free-tarot-reading/">Draw a card now</a></p>
+</Base>
