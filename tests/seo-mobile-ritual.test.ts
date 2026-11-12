@@ -41,6 +41,14 @@ describe('mobile-first SEO regression', () => {
     for (const file of [astro, wrangler, robots]) expect(file).not.toContain('waterme7on333');
   });
 
+  it('uses one brand mark and icon set across every page', () => {
+    const base = source('src/layouts/Base.astro');
+    expect(base).toContain('aria-label="Tarot Tools home"');
+    expect(base).toContain('/brand/logo-horizontal-dark.svg');
+    expect(base).toContain('/apple-touch-icon.png');
+    expect(base).toContain('/favicon.svg');
+  });
+
   it('loads Minilytics only in production and allows it in the CSP', () => {
     const base = source('src/layouts/Base.astro');
     const middleware = source('src/middleware.ts');
