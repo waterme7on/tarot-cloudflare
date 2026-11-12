@@ -51,6 +51,9 @@ const baseLd = [
     {author && <meta name="author" content={author} />}
     {[...baseLd, ...jsonLd].map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
     {turnstileKey && <meta name="turnstile-site-key" content={turnstileKey} />}
+    {!isPreview && import.meta.env.PROD && (
+      <script defer is:inline data-website-id="5j036o0j5i5t5x2g" src="https://analytics.yololab.cc/js/script.js"></script>
+    )}
     <link rel="preload" href="/fonts/instrument-serif-regular.v1.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/dm-sans-latin.v1.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles.css" />

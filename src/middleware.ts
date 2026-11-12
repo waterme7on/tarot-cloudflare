@@ -34,7 +34,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (!h.has('Content-Security-Policy')) {
     h.set(
       'Content-Security-Policy',
-      "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self'; form-action 'self' https://pancake.waffo.ai; base-uri 'self'; object-src 'none'",
+      "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com https://analytics.yololab.cc; frame-src https://challenges.cloudflare.com; connect-src 'self' https://cloudflareinsights.com https://analytics.yololab.cc; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self'; form-action 'self' https://pancake.waffo.ai; base-uri 'self'; object-src 'none'",
     );
   }
   if (context.locals.runtime?.env?.ENVIRONMENT === 'preview') h.set('X-Robots-Tag', 'noindex, nofollow');

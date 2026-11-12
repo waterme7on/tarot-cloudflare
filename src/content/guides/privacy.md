@@ -1,14 +1,14 @@
 ---
 title: "Privacy Policy"
 description: "What Tarot Tools collects and does not collect, how long readings and orders are kept, how payments are handled by Waffo, and how to request deletion of your data."
-updatedAt: "2026-11-06"
+updatedAt: "2026-11-12"
 author: "Tarot Tools Editorial"
 noindex: false
 ---
 
 This policy explains what information Tarot Tools collects when you use the site, why, how long we keep it, and how you can ask us to delete it. The service is provided for reflection and entertainment only.
 
-Last updated: 6 November 2026.
+Last updated: 12 November 2026.
 
 ## What we collect
 
@@ -22,6 +22,8 @@ When you draw a free reading, we record:
 When you purchase a deep report, we additionally record an order token, the amount and currency, the payment status, the email address you provide for delivery and refunds, and the generated report file.
 
 We also use **Cloudflare Web Analytics**, a privacy-focused analytics service that does not use cookies and does not track you across sites. It gives us aggregate page view and performance data.
+
+We additionally run **Minilytics**, our own self-hosted analytics service at `analytics.yololab.cc`. It sets two first-party cookies: `ml_vid`, a random visitor identifier kept for one year, and `ml_sid`, a session identifier kept for 30 minutes. They let us count unique visitors, sessions, entry pages and referral sources in aggregate. Minilytics does not use advertising identifiers, does not track you across other websites, and does not receive the text of your tarot question.
 
 ## What we do not collect
 
@@ -39,7 +41,7 @@ To produce your reading and, if purchased, your deep report; to apply rate limit
 - **Free readings**: category, card result, and hashed IP are kept for **90 days**, then deleted.
 - **Paid orders**: order records are retained for as long as required for tax, accounting, and refund handling, typically several years depending on jurisdiction.
 - **Report files**: kept for **180 days** from creation so that you can re-download, then deleted.
-- **Analytics**: Cloudflare Web Analytics retains aggregate data under Cloudflare's own policies.
+- **Analytics**: Cloudflare Web Analytics retains aggregate data under Cloudflare's own policies. Minilytics stores aggregate page views and the random `ml_vid` / `ml_sid` identifiers in our own database; the cookies expire after one year and 30 minutes respectively.
 
 ## Third parties
 
@@ -56,7 +58,7 @@ Depending on where you live, you may also have rights to access, correct, or exp
 
 ## Cookies and children
 
-The site does not set tracking cookies. A short-lived session value may be used to deliver a purchased report. The site is intended for adults aged 18 and over, and we do not knowingly collect data from children.
+The site does not set advertising or cross-site tracking cookies. Minilytics sets the first-party `ml_vid` and `ml_sid` cookies described above, used only to measure aggregate usage on this site. A short-lived session value may also be used to deliver a purchased report. The site is intended for adults aged 18 and over, and we do not knowingly collect data from children.
 
 ## Changes and contact
 
