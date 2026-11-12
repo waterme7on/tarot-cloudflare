@@ -41,6 +41,17 @@ describe('mobile-first SEO regression', () => {
     for (const file of [astro, wrangler, robots]) expect(file).not.toContain('waterme7on333');
   });
 
+  it('loads Minilytics only in production and allows it in the CSP', () => {
+    const base = source('src/layouts/Base.astro');
+    const middleware = source('src/middleware.ts');
+    const privacy = source('src/content/guides/privacy.md');
+    expect(base).toContain('data-website-id="5j036o0j5i5t5x2g"');
+    expect(base).toContain('!isPreview && import.meta.env.PROD');
+    expect(middleware).toContain('https://analytics.yololab.cc');
+    expect(privacy).toContain('Minilytics');
+    expect(privacy).toContain('ml_vid');
+  });
+
   it('retains canonical, robots, structured data and sitemap paths', () => {
     const base = source('src/layouts/Base.astro');
     expect(base).toContain('<title>{title}</title>');
