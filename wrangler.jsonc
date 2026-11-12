@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tarot-tools",
+  "name": "random-tarot",
   "main": "./dist/_worker.js/index.js",
   "compatibility_date": "2025-04-01",
   "compatibility_flags": ["nodejs_compat"],
@@ -43,14 +43,14 @@
   "observability": { "enabled": true, "head_sampling_rate": 1 },
   "env": {
     "preview": {
-      "name": "tarot-tools-preview",
+      "name": "random-tarot-preview",
       "assets": {
         "directory": "./dist",
         "binding": "ASSETS",
         "not_found_handling": "none",
         "run_worker_first": true
       },
-      "vars": { "ENVIRONMENT": "preview", "SITE_URL": "https://tarot-tools-preview.me7o.workers.dev", "AI_GATEWAY_ID": "tarot-gateway", "AI_MODEL": "@cf/deepseek-ai/deepseek-v4.1-flash-1017", "REPORT_PRICE_SINGLE_CENTS": "499", "REPORT_PRICE_THREE_CENTS": "999" },
+      "vars": { "ENVIRONMENT": "preview", "SITE_URL": "https://random-tarot-preview.me7o.workers.dev", "AI_GATEWAY_ID": "tarot-gateway", "AI_MODEL": "@cf/deepseek-ai/deepseek-v4.1-flash-1017", "REPORT_PRICE_SINGLE_CENTS": "499", "REPORT_PRICE_THREE_CENTS": "999" },
       "d1_databases": [{ "binding": "DB", "database_name": "tarot-db-preview", "database_id": "463399d8-55ab-49d8-819d-2ba8b1eaa299", "migrations_dir": "migrations" }],
       "kv_namespaces": [{ "binding": "CACHE", "id": "84029e0f7cb24b1097b67842179c2cbc" }],
       "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "tarot-media-preview" }],
