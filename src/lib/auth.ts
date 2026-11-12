@@ -45,15 +45,42 @@ export async function verifyR2Signature(key: string, exp: string | null, sig: st
   return timingSafeEqual(expected, sig);
 }
 
-export async function verifyTurnstile(secret: string | undefined, token: string | undefined, ip: string | null): Promise<boolean> {
+export async function verifyTurnstile(
+  secret: string | undefined,
+  token: string | undefined,
+  ip: string | null,
+  options: { timeoutMs?: number; fetchImpl?: typeof fetch } = {},
+): Promise<boolean> {
   if (!secret) return true; // local dev without Turnstile configured
   if (!token) return false;
   const body = new URLSearchParams({ secret, response: token });
   if (ip) body.set('remoteip', ip);
-  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body });
-  if (!res.ok) return false;
-  const data = (await res.json()) as { success?: boolean };
-  return data.success === true;
+  const controller = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  // Fail closed instead of holding the free-draw request open on a stalled verify.
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      controller.abort();
+      reject(new Error('turnstile verify timeout'));
+    }, options.timeoutMs ?? 5_000);
+  });
+  try {
+    const res = await Promise.race([
+      (options.fetchImpl ?? fetch)('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        body,
+        signal: controller.signal,
+      }),
+      deadline,
+    ]);
+    if (!res.ok) return false;
+    const data = (await Promise.race([res.json(), deadline])) as { success?: boolean };
+    return data.success === true;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export function clientIp(request: Request): string | null {

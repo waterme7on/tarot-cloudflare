@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
+import { DrawRequestError, newIdempotencyKey, requestDraw } from '../lib/draw-client';
 import { CardResult } from './CardResult';
 import RitualDraw from './RitualDraw';
 import CardBack from './CardBack';
@@ -74,26 +75,22 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
     try {
       const turnstileToken = siteKey ? window.turnstile?.getResponse(widgetId.current ?? undefined) : undefined;
       if (siteKey && !turnstileToken) { setError('Complete the human check, then try again. Your choices are saved here.'); return; }
-      idemRef.current ??= crypto.randomUUID();
-      abortRef.current = new AbortController();
-      const [res] = await Promise.all([
-        fetch('/api/v1/draw', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: abortRef.current.signal,
-          body: JSON.stringify({ spread, questionType, locale: 'en', idempotencyKey: idemRef.current, turnstileToken, questionLength: question.trim().length }),
-        }),
+      idemRef.current ??= newIdempotencyKey();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const [data] = await Promise.all([
+        requestDraw(
+          { spread, questionType, locale: 'en', idempotencyKey: idemRef.current, turnstileToken, questionLength: question.trim().length },
+          { signal: controller.signal },
+        ),
         new Promise<void>((resolve) => { shuffleTimer.current = setTimeout(resolve, immersive && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 700 : 0); }),
       ]);
-      const data = await res.json() as DrawResponse & { error?: { message: string } };
-      if (!res.ok || data.error) {
-        setError(data.error?.message ?? 'Your reading could not load. Try again with the same choices.');
-        if (siteKey) window.turnstile?.reset(widgetId.current ?? undefined);
-        return;
-      }
+      if (controller.signal.aborted) return;
       setResult(data);
       window.minilytics?.('goal', 'draw', { spread, question_type: questionType, cards: data.cards.length, mode: immersive ? 'ritual' : 'flow' });
-    } catch {
-      if (abortRef.current?.signal.aborted) return;
-      setError('Connection interrupted. Try again; we will recover the same draw if it was saved.');
+    } catch (err) {
+      if (err instanceof DrawRequestError && err.kind === 'cancelled') return;
+      setError(err instanceof DrawRequestError ? err.message : 'Connection interrupted. Try again; we will recover the same draw if it was saved.');
       if (siteKey) window.turnstile?.reset(widgetId.current ?? undefined);
     } finally { pendingRef.current = false; setLoading(false); }
   }
