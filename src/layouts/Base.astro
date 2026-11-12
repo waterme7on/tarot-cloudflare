@@ -39,6 +39,8 @@ const baseLd = [
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content="RandomTarot" />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -46,6 +48,7 @@ const baseLd = [
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#080b12" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     {updatedAt && <meta property="article:modified_time" content={updatedAt} />}
     {author && <meta name="author" content={author} />}
@@ -54,11 +57,11 @@ const baseLd = [
     {!isPreview && import.meta.env.PROD && (
       <script defer is:inline data-website-id="5j036o0j5i5t5x2g" src="https://analytics.yololab.cc/js/script.js"></script>
     )}
-    <link rel="preload" href="/fonts/instrument-serif-regular.v1.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/dm-sans-latin.v1.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/reading-table.css" />
     <link rel="stylesheet" href="/mobile-ritual.css" />
+    <link rel="stylesheet" href="/typography.css" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

@@ -57,6 +57,9 @@ describe('mobile-first SEO regression', () => {
     expect(source('README.md')).toContain('# RandomTarot');
     expect(base).toContain('/brand/logo-horizontal-dark.svg');
     expect(base).toContain('/apple-touch-icon.png');
+    expect(base).toContain('/site.webmanifest');
+    expect(base).toContain('/typography.css');
+    expect(source('public/typography.css')).toContain("--font:\"DM Sans\"");
     expect(base).toContain('/favicon.svg');
   });
 
