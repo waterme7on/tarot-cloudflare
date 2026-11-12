@@ -46,7 +46,7 @@ const baseLd = [
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#080b12" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/brand/app-icon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     {updatedAt && <meta property="article:modified_time" content={updatedAt} />}
     {author && <meta name="author" content={author} />}
     {[...baseLd, ...jsonLd].map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
@@ -63,7 +63,7 @@ const baseLd = [
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <header class="site-header">
-      <a href="/" class="brand" aria-label="Reveal, Tarot Tools home"><img src="/brand/logo-horizontal-dark.svg" alt="" width="166" height="32" /></a>
+      <a href="/" class="brand" aria-label="Tarot Tools home"><img src="/brand/logo-horizontal-dark.svg" alt="" width="166" height="32" /></a>
       <nav aria-label="Primary">
         <a href="/">Card Generator</a>
         <a href="/free-tarot-reading/">Free Reading</a>
