@@ -5,6 +5,25 @@ export type ReportStatus = ReportRow['status'];
 // Only these states may enter generation. Refund and ready states are terminal.
 export const GENERATION_STATUSES: ReportStatus[] = ['paid', 'generating', 'failed'];
 
+export interface PaidReportEvidence {
+  status: string;
+  paid_at: string | null;
+  waffo_order_id: string | null;
+  waffo_payment_id: string | null;
+}
+
+/**
+ * The only gate for AI report parsing/generation. paid_at and a provider
+ * order/payment id can only be written after the signed Waffo webhook
+ * confirms a succeeded payment; a failed checkout never qualifies.
+ */
+export function isServerConfirmedPaid<T extends PaidReportEvidence>(report: T | null | undefined): report is T {
+  if (!report) return false;
+  if (!GENERATION_STATUSES.includes(report.status as ReportStatus)) return false;
+  if (!report.paid_at) return false;
+  return Boolean(report.waffo_order_id || report.waffo_payment_id);
+}
+
 // Waffo's create-ticket endpoint only opens a refund ticket. A refund is
 // confirmed by the refund.succeeded webhook, never by ticket creation itself.
 export type StaleReportAction = 'retry' | 'request-refund' | 'skip';

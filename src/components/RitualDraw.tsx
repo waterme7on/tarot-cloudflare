@@ -3,6 +3,7 @@ import type { CSSProperties, PointerEvent } from 'react';
 import CardBack from './CardBack';
 import { CardResult } from './CardResult';
 import type { DrawResponse, QuestionType, Spread } from '../lib/schema';
+import { DRAW_SLOW_HINT_MS, DrawRequestError, newIdempotencyKey, requestDraw } from '../lib/draw-client';
 import { moveToUnpickedPosition, wrapDeckPosition } from '../lib/deck-navigation';
 
 type Stage = 'prepare' | 'deck' | 'shuffling' | 'fanning' | 'choose';
@@ -39,14 +40,17 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   const [selected, setSelected] = useState<number[]>([]);
   const [reading, setReading] = useState<DrawResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [slow, setSlow] = useState(false);
   const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [siteKey, setSiteKey] = useState('');
   const deckTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const fanTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const extractTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const slowTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const requestController = useRef<AbortController | null>(null);
   const requestPending = useRef(false);
+  const attemptSeq = useRef(0);
   const idempotency = useRef<string | null>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
@@ -66,6 +70,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       clearTimeout(deckTimer.current);
       clearTimeout(fanTimer.current);
       clearTimeout(extractTimer.current);
+      clearTimeout(slowTimer.current);
       requestController.current?.abort();
     };
   }, []);
@@ -98,7 +103,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   useEffect(() => {
     if (stage === 'prepare') return;
     const onGameKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !loading) {
+      if (event.key === 'Escape') {
         event.preventDefault();
         reset();
         return;
@@ -135,10 +140,14 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   }, [selected.length]);
 
   function reset() {
+    attemptSeq.current += 1;
     clearTimeout(deckTimer.current);
     clearTimeout(fanTimer.current);
     clearTimeout(extractTimer.current);
+    clearTimeout(slowTimer.current);
+    slowTimer.current = undefined;
     requestController.current?.abort();
+    requestController.current = null;
     requestPending.current = false;
     setExtracting(false);
     idempotency.current = null;
@@ -147,6 +156,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     setSelected([]);
     setError(null);
     setLoading(false);
+    setSlow(false);
   }
 
   function shuffle() {
@@ -174,37 +184,51 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     }
     requestPending.current = true;
     setLoading(true);
+    setSlow(false);
     setError(null);
-    idempotency.current ??= crypto.randomUUID();
-    requestController.current = new AbortController();
+    const attempt = ++attemptSeq.current;
+    let controller: AbortController | null = null;
+    let slowTimerId: ReturnType<typeof setTimeout> | undefined;
     try {
-      const response = await fetch('/api/v1/draw', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: requestController.current.signal,
-        body: JSON.stringify({
+      // Stable for every retry of this selection: a timed-out request that the
+      // server already saved must return that reading instead of drawing again.
+      idempotency.current ??= newIdempotencyKey();
+      controller = new AbortController();
+      requestController.current = controller;
+      slowTimerId = setTimeout(() => {
+        if (attemptSeq.current === attempt) setSlow(true);
+      }, DRAW_SLOW_HINT_MS);
+      slowTimer.current = slowTimerId;
+      const data = await requestDraw(
+        {
           spread, questionType: topic, locale: 'en', slots,
           idempotencyKey: idempotency.current,
           questionLength: question.trim().length,
           turnstileToken: token,
-        }),
-      });
-      const data = await response.json() as DrawResponse & { error?: { message: string } };
-      if (!response.ok || data.error) {
-        setError(data.error?.message ?? 'The draw could not load. Try again.');
-        window.turnstile?.reset(widgetId.current ?? undefined);
-        return;
-      }
+        },
+        { signal: controller.signal },
+      );
+      if (attemptSeq.current !== attempt || controller.signal.aborted) return;
       setReading(data);
       window.minilytics?.('goal', 'draw', { spread, question_type: topic, cards: data.cards.length, mode: 'ritual' });
-    } catch {
-      if (!requestController.current?.signal.aborted) {
-        setError('Connection interrupted. Retry to recover the same selection.');
-        window.turnstile?.reset(widgetId.current ?? undefined);
-      }
+    } catch (err) {
+      if (attemptSeq.current !== attempt) return;
+      if (err instanceof DrawRequestError && err.kind === 'cancelled') return;
+      setError(err instanceof DrawRequestError ? err.message : 'Connection interrupted. Tap Try again to recover the same selection.');
+      window.turnstile?.reset(widgetId.current ?? undefined);
     } finally {
-      requestPending.current = false;
-      setLoading(false);
+      // A Restart can start a new attempt while this one is still settling;
+      // never clear the newer attempt's timer, pending flag or loading state.
+      if (slowTimerId !== undefined && slowTimer.current === slowTimerId) {
+        clearTimeout(slowTimerId);
+        slowTimer.current = undefined;
+      }
+      if (attemptSeq.current === attempt) {
+        if (requestController.current === controller) requestController.current = null;
+        requestPending.current = false;
+        setLoading(false);
+        setSlow(false);
+      }
     }
   }
 
@@ -255,7 +279,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   return (
     <section className={'reading-app reading-table ritual-app ritual-' + stage} id="draw-tool" ref={appRef} tabIndex={-1} role={stage === 'prepare' ? undefined : 'dialog'} aria-modal={stage === 'prepare' ? undefined : true} aria-label="Interactive tarot reading" aria-busy={loading}>
       <div className="ritual-topbar">
-        <button type="button" className="ritual-back" disabled={loading || stage === 'prepare'} onClick={reset} aria-label="Start over">← <span>Restart</span></button>
+        <button type="button" className="ritual-back" disabled={stage === 'prepare'} onClick={reset} aria-label="Start over">← <span>Restart</span></button>
         <span className="ritual-name">RandomTarot</span>
         <a className="ritual-exit" href="/cards/" aria-label="Exit reading and browse the deck">Exit</a>
       </div>
@@ -270,14 +294,14 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
             <div className="ritual-section">
               <h3>My focus</h3>
               <div className="ritual-topics" role="group" aria-label="Reading topic">
-                {TOPICS.map((item) => <button key={item.value} type="button" className="ritual-chip" aria-pressed={topic === item.value} onClick={() => setTopic(item.value)}>{item.label}</button>)}
+                {TOPICS.map((item) => <button key={item.value} type="button" className="ritual-chip" aria-pressed={topic === item.value} onClick={() => { setTopic(item.value); idempotency.current = null; }}>{item.label}</button>)}
               </div>
             </div>
             <div className="ritual-section">
               <h3>My spread</h3>
               <div className="ritual-spreads" role="group" aria-label="Card spread">
                 {SPREADS.filter((item) => !lockSpread || item.value === defaultSpread).map((item) => (
-                  <button key={item.value} className="ritual-spread" type="button" aria-pressed={spread === item.value} onClick={() => setSpread(item.value)}>
+                  <button key={item.value} className="ritual-spread" type="button" aria-pressed={spread === item.value} onClick={() => { setSpread(item.value); idempotency.current = null; }}>
                     <span className="ritual-mini-cards" aria-hidden="true">{Array.from({ length: Math.min(item.count, 3) }, (_, i) => <i key={i} />)}</span>
                     <strong>{item.label}</strong>
                     <small>{item.caption}</small>
@@ -362,10 +386,10 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
           else if (stage === 'deck') shuffle();
           else if (stage === 'choose') choose();
         }}>
-          <span>{stage === 'prepare' ? 'Continue to the deck' : stage === 'deck' ? 'Shuffle cards' : stage === 'shuffling' ? 'Shuffling…' : stage === 'fanning' ? 'Spreading cards…' : extracting ? 'Choosing your card…' : loading ? 'Reading your cards…' : finishedPicking ? 'Reveal my cards' : 'Choose this card'}</span>
+          <span>{stage === 'prepare' ? 'Continue to the deck' : stage === 'deck' ? 'Shuffle cards' : stage === 'shuffling' ? 'Shuffling…' : stage === 'fanning' ? 'Spreading cards…' : extracting ? 'Choosing your card…' : loading ? (slow ? 'Still drawing…' : 'Drawing your cards…') : error && finishedPicking ? 'Try again' : finishedPicking ? 'Reveal my cards' : 'Choose this card'}</span>
           <span aria-hidden="true">→</span>
         </button>
-        <p>{stage === 'prepare' ? 'Your reading is always free' : stage === 'choose' ? selected.length + ' of ' + count + ' selected' : 'Every card has an equal chance'}</p>
+        <p role="status" aria-live="polite">{stage === 'prepare' ? 'Your reading is always free' : stage === 'choose' ? (loading && slow ? 'Taking longer than usual. Restart is safe; retrying recovers the same selection.' : selected.length + ' of ' + count + ' selected') : 'Every card has an equal chance'}</p>
       </div>
     </section>
   );

@@ -8,7 +8,8 @@ import { buildRulesReport } from '../lib/interpretation';
 import { getReadingById, getReadingByToken, getReportById, updateReport, updateReportIfStatus, REPORT_FILE_TTL_DAYS } from '../lib/db';
 import { track } from '../lib/events';
 import { runRefundSweep, type StaleReport } from '../lib/refund-sweep';
-import { GENERATION_STATUSES } from '../lib/report-state';
+import { enqueueReportJob } from '../lib/report-jobs';
+import { GENERATION_STATUSES, isServerConfirmedPaid } from '../lib/report-state';
 import { createRefundTicket, toDisplay } from '../lib/waffo';
 import { renderShareSvg } from '../lib/share-image';
 import type { DrawnCard, ReportQueueMessage } from '../lib/schema';
@@ -24,8 +25,9 @@ export class ReportWorkflow extends WorkflowEntrypoint<Env, ReportWorkflowParams
 
     const order = await step.do('verify-order', async () => {
       const report = await getReportById(env.DB, reportId);
-      if (!report) throw new Error(`report ${reportId} missing`);
-      if (!GENERATION_STATUSES.includes(report.status)) return { skip: true as const, report };
+      // Generation (including the rules fallback) is allowed only after the
+      // signed provider webhook has persisted payment evidence.
+      if (!isServerConfirmedPaid(report)) return { skip: true as const };
       const reading = await getReadingById(env.DB, report.reading_id);
       if (!reading) throw new Error(`reading ${report.reading_id} missing`);
       const claimed = await updateReportIfStatus(env.DB, reportId, GENERATION_STATUSES, { status: 'generating', workflow_id: event.instanceId });
@@ -60,8 +62,14 @@ async function handleQueue(batch: MessageBatch<ReportQueueMessage>, env: Env): P
   for (const msg of batch.messages) {
     try {
       const m = msg.body;
-      if ((m.type === 'generate-report' || m.type === 'retry-report') && m.reportId) {
-        await env.REPORT_WORKFLOW.create({ id: `${m.reportId}-${Date.now()}`, params: { reportId: m.reportId } });
+      if (m.type === 'generate-report' || m.type === 'retry-report') {
+        if (m.reportId) {
+          const outcome = await enqueueReportJob({ type: m.type, reportId: m.reportId }, {
+            loadReport: (id) => getReportById(env.DB, id),
+            enqueue: async (id) => { await env.REPORT_WORKFLOW.create({ id: `${id}-${Date.now()}`, params: { reportId: id } }); },
+          });
+          if (outcome === 'skipped') console.warn('report job skipped: no confirmed payment', m.reportId);
+        }
       } else if (m.type === 'share-image' && m.readingId) {
         const reading = await getReadingById(env.DB, m.readingId);
         if (reading) {
@@ -85,7 +93,7 @@ async function handleScheduled(event: ScheduledController, env: Env): Promise<vo
     // Reports paid more than 10 minutes ago and still not ready: retry once, then refund.
     await runRefundSweep({
       listStale: async () => (await env.DB.prepare(
-        `SELECT id, waffo_payment_id, amount_cents, currency, reading_id, error, status FROM reports WHERE status IN ('paid','generating','failed') AND paid_at IS NOT NULL AND paid_at < datetime('now','-10 minutes') LIMIT 50`,
+        `SELECT id, waffo_payment_id, amount_cents, currency, reading_id, error, status FROM reports WHERE status IN ('paid','generating','failed') AND paid_at IS NOT NULL AND (waffo_payment_id IS NOT NULL OR waffo_order_id IS NOT NULL) AND paid_at < datetime('now','-10 minutes') LIMIT 50`,
       ).all<StaleReport>()).results,
       markRetried: (id) => updateReportIfStatus(env.DB, id, GENERATION_STATUSES, { error: 'retried' }),
       enqueueRetry: async (id) => { await env.REPORT_QUEUE.send({ type: 'retry-report', reportId: id }); },

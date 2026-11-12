@@ -30,7 +30,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (report && report.status === 'pending_payment') {
       // Amount comes from the webhook, never from the client.
       const amountCents = toCents(event.data.chargedAmount ?? event.data.amount ?? event.data.total) ?? report.amount_cents ?? 0;
-      await updateReport(env.DB, reportId, {
+      // Only one delivery may claim the verified payment and enqueue generation.
+      const claimed = await updateReportIfStatus(env.DB, reportId, ['pending_payment'], {
         status: 'paid',
         waffo_order_id: event.data.orderId,
         waffo_payment_id: event.data.paymentId ?? null,
@@ -38,21 +39,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
         currency: event.data.currency?.toLowerCase() ?? report.currency,
         paid_at: new Date().toISOString(),
       });
-      await env.REPORT_QUEUE.send({ type: 'generate-report', reportId });
-      track(env, { name: 'checkout_completed', readingId: report.reading_id, route: '/api/v1/webhooks/waffo', meta: { product: report.product, amountCents } });
-      await recordMinilyticsPayment(env, {
-        transactionId: event.data.paymentId ?? event.data.orderId,
-        amountCents,
-        currency: event.data.currency ?? report.currency ?? 'usd',
-        timestamp: event.timestamp,
-        visitorId: report.ml_visitor_id,
-        sessionId: report.ml_session_id,
-      });
-      await recordMinilyticsGoal(env, {
-        visitorId: report.ml_visitor_id,
-        name: 'purchase',
-        props: { product: report.product, amount_cents: amountCents },
-      });
+      if (claimed) {
+        await env.REPORT_QUEUE.send({ type: 'generate-report', reportId });
+        track(env, { name: 'checkout_completed', readingId: report.reading_id, route: '/api/v1/webhooks/waffo', meta: { product: report.product, amountCents } });
+        await recordMinilyticsPayment(env, {
+          transactionId: event.data.paymentId ?? event.data.orderId,
+          amountCents,
+          currency: event.data.currency ?? report.currency ?? 'usd',
+          timestamp: event.timestamp,
+          visitorId: report.ml_visitor_id,
+          sessionId: report.ml_session_id,
+        });
+        await recordMinilyticsGoal(env, {
+          visitorId: report.ml_visitor_id,
+          name: 'purchase',
+          props: { product: report.product, amount_cents: amountCents },
+        });
+      }
     }
   } else if (event.eventType === 'refund.succeeded' && reportId) {
     // The provider has confirmed the refund; this is the only success transition.
