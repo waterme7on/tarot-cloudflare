@@ -218,6 +218,12 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
     <section className={`reading-app result-app summary-enter ${immersive ? 'reading-table table-summary' : ''} ${immersive && preselected ? 'ritual-summary-screen' : ''}`} id="draw-tool" data-active={immersive ? 'true' : undefined} aria-labelledby={`${id}-result-heading`}>
       {immersive ? <div className="table-toolbar"><span>Reading complete</span><a href={`/reading/${reading.publicToken}/`}>Save &amp; close</a></div> : <div className="flow-topline"><span>Reading complete</span><span>{reading.cards.length} / {reading.cards.length} cards</span></div>}
       <h2 ref={headingRef} tabIndex={-1} id={`${id}-result-heading`}>A thought to take with you.</h2>
+      {question && (
+        <div className="result-question">
+          <span>You asked</span>
+          <p>“{question}”</p>
+        </div>
+      )}
       {reading.yesNo && (
         <p className="yesno-lean" style={{ textAlign: 'center', fontSize: '1.4rem', fontFamily: 'var(--font)', color: 'var(--gold2)' }}>
           Lean: <strong>{reading.yesNo.toUpperCase()}</strong>
@@ -255,8 +261,14 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
 
       <div className="report-offer">
         <h3 style={{ marginTop: 0 }}>Get the full reading — {price}</h3>
+        {question && (
+          <div className="report-question">
+            <span>Your question</span>
+            <p>“{question}”</p>
+          </div>
+        )}
         <p className="muted small">
-          A private, AI-assisted deep report: each card interpreted for your question type, a synthesis, practical next steps and a journaling prompt. Delivered to a private link. If generation fails, we retry once and automatically request a refund if it still cannot be delivered; refund confirmation can take several business days. Entertainment only.
+          A private, AI-assisted deep report{question && consent ? ' that answers your question directly' : ''}: each card interpreted for your focus, a synthesis, practical next steps and a journaling prompt. Delivered to a private link. If generation fails, we retry once and automatically request a refund if it still cannot be delivered; refund confirmation can take several business days. Entertainment only.
         </p>
         <p className="muted small"><a href="/readings/">See what each report includes →</a></p>
         <div className="report-preview" aria-label="Sample layout of the full reading report">
@@ -272,9 +284,12 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
           <p className="report-preview-note">Example of the format, not your generated report. Your private report is written after checkout; a rules-based edition is used if AI is unavailable.</p>
         </div>
         {question && (
-          <label style={{ display: 'flex', gap: '.5rem', alignItems: 'flex-start' }}>
-            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ width: 'auto', marginTop: '.3rem' }} />
-            <span>Include my question ("{question.slice(0, 80)}") in the report. It will be sent to Cloudflare Workers AI and stored with the order.</span>
+          <label className="report-consent">
+            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+            <span>
+              <strong>Answer my question in the report</strong>
+              <small>Your question is sent to Cloudflare Workers AI and stored with the order. Without it, the report follows your {reading.questionType === 'general' ? 'everyday' : reading.questionType} focus.</small>
+            </span>
           </label>
         )}
         {checkoutSiteKey && <div className="report-check" ref={checkoutWidgetRef} aria-label="Human verification for checkout" />}
