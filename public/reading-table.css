@@ -66,3 +66,12 @@
 .ritual-quota{margin:0 0 .55rem;font-size:.8rem;line-height:1.45;color:var(--gold2);text-align:center}
 
 .flow-quota{margin:.2rem 0 .6rem;font-size:.78rem;line-height:1.45;color:var(--gold2)}
+.result-question{margin:0 0 1.25rem;padding:.85rem 1rem;border:1px solid var(--line);border-radius:10px;background:rgba(216,194,141,.05)}
+.result-question span,.report-question span{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.result-question p{margin:0;font-family:var(--font);font-size:1.15rem;line-height:1.45;color:var(--text)}
+.report-question{margin:.4rem 0 1rem;padding:.85rem 1rem;border-left:2px solid var(--gold);border-radius:0 10px 10px 0;background:rgba(216,194,141,.07)}
+.report-question p{margin:0;font-family:var(--font);font-size:1.2rem;line-height:1.4;color:var(--text)}
+.report-consent{display:flex;align-items:flex-start;gap:.65rem;margin:1rem 0;padding:.85rem .95rem;border:1px solid var(--line);border-radius:10px;background:rgba(8,11,18,.25);cursor:pointer;color:var(--text)}
+.report-consent input{width:20px;height:20px;flex:none;margin:.15rem 0 0;accent-color:var(--accent)}
+.report-consent strong{display:block;font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:.1rem}
+.report-consent small{display:block;font-size:.72rem;line-height:1.45;color:var(--muted)}

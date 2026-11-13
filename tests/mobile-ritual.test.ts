@@ -26,7 +26,11 @@ describe('mobile-first tarot ritual', () => {
     expect(html).toContain('href="/cards/"');
     expect(html).toContain('Continue to the deck');
     expect(html).toContain('aria-label="Reading topic"');
-    expect(html).toContain('Add a question (optional)');
+    expect(html).toContain('What do you want to ask?');
+    expect(html).toContain('aria-label="Example questions"');
+    expect(html).toContain('What should I pay attention to today?');
+    expect(html).toContain('This is about');
+    expect(html).not.toContain('Add a question (optional)');
     expect(html).not.toContain('<canvas');
   });
   it('keeps the preselected reading covered until the flip and labels card progress', () => {
@@ -116,6 +120,12 @@ describe('mobile-first tarot ritual', () => {
     const source = readFileSync(new URL('../src/components/CardResult.tsx', import.meta.url), 'utf8');
     expect(source).toContain('checkoutWidgetRef');
     expect(source).toContain('getResponse(checkoutWidgetId.current');
+  });
+  it('shows the visitor question in the result and the report offer', () => {
+    const html = renderToStaticMarkup(createElement(CardResult, { reading, question: 'What should I pay attention to?', reveal: false }));
+    expect(html).toContain('You asked');
+    expect(html).toContain('What should I pay attention to?');
+    expect(html).toContain('Answer my question in the report');
   });
   it('preserves the static shared-reading layout', () => {
     const html = renderToStaticMarkup(createElement(CardResult, { reading, reveal: false }));

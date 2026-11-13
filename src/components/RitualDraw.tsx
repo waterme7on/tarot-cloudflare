@@ -20,6 +20,46 @@ const SPREADS: { value: Spread; label: string; caption: string; count: number }[
   { value: 'three-card', label: 'Three cards', caption: 'Past · Present · Future', count: 3 },
   { value: 'celtic-cross', label: 'Ten cards', caption: 'A deeper look', count: 10 },
 ];
+const EXAMPLE_QUESTIONS: Record<QuestionType, string[]> = {
+  general: [
+    'What should I pay attention to today?',
+    'What am I avoiding?',
+    'What would make this easier?',
+  ],
+  love: [
+    'What does this connection need from me?',
+    'What am I not saying?',
+    'Where do I need a boundary?',
+  ],
+  career: [
+    'What is the next honest move?',
+    'What am I holding back at work?',
+    'What would make this sustainable?',
+  ],
+  money: [
+    'What is my relationship with money right now?',
+    'Which habit deserves a second look?',
+    'What would enough look like?',
+  ],
+  decision: [
+    'What am I not weighing?',
+    'What would make this choice clearer?',
+    'Which option leaves room to grow?',
+  ],
+};
+const QUESTION_DRAFT_KEY = 'tt:question-draft';
+
+function readQuestionDraft() {
+  try { return sessionStorage.getItem(QUESTION_DRAFT_KEY) ?? ''; } catch { return ''; }
+}
+function writeQuestionDraft(value: string) {
+  try {
+    if (value) sessionStorage.setItem(QUESTION_DRAFT_KEY, value);
+    else sessionStorage.removeItem(QUESTION_DRAFT_KEY);
+  } catch {
+    // Private mode and blocked storage simply skip draft persistence.
+  }
+}
 const CROSS_POSITIONS = ['Present', 'Challenge', 'Past', 'Future', 'Above', 'Below', 'Advice', 'Outside', 'Hopes', 'Outcome'];
 const VISIBLE = [-3, -2, -1, 0, 1, 2, 3];
 
@@ -67,6 +107,8 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
 
   useEffect(() => {
     setSiteKey(document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content ?? '');
+    const savedQuestion = readQuestionDraft();
+    if (savedQuestion) setQuestion(savedQuestion);
     const random = crypto.getRandomValues(new Uint32Array(1))[0]!;
     setFocus(random % 78);
     return () => {
@@ -150,6 +192,21 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     if (slotsRef.current) slotsRef.current.scrollLeft = Math.max(0, (selected.length - 2) * 57);
   }, [selected.length]);
 
+  function updateQuestion(value: string) {
+    setQuestion(value);
+    writeQuestionDraft(value);
+  }
+
+  function chooseTopic(value: QuestionType) {
+    setTopic(value);
+    idempotency.current = null;
+    // Only a starter question is cleared when the topic changes; anything the
+    // visitor typed or edited is theirs and stays put.
+    if (Object.values(EXAMPLE_QUESTIONS).some((examples) => examples.includes(question))) {
+      updateQuestion('');
+    }
+  }
+
   function reset() {
     attemptSeq.current += 1;
     clearTimeout(deckTimer.current);
@@ -165,6 +222,8 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     setReading(null);
     setStage('prepare');
     setSelected([]);
+    setQuestion('');
+    writeQuestionDraft('');
     setError(null);
     setLoading(false);
     setSlow(false);
@@ -306,16 +365,44 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
             <div className="ritual-heading">
               <span className="ritual-kicker">A moment for yourself</span>
               <h2>What’s on your mind?</h2>
-              <p>Choose a focus. The rest is up to the cards.</p>
+              <p>Ask one real question, or leave it open. The rest is up to the cards.</p>
+            </div>
+            <div className="ritual-question-hero">
+              <label htmlFor={id + '-question'}>What do you want to ask?</label>
+              <textarea
+                id={id + '-question'}
+                rows={2}
+                maxLength={200}
+                value={question}
+                onChange={(event) => updateQuestion(event.target.value)}
+                placeholder="What am I not seeing about this?"
+                autoComplete="off"
+                aria-describedby={id + '-question-note'}
+              />
+              <p className="ritual-example-label">Tap an example, or change the focus below.</p>
+              <div className="ritual-example-chips" role="group" aria-label="Example questions">
+                {EXAMPLE_QUESTIONS[topic].map((example) => (
+                  <button
+                    key={example}
+                    type="button"
+                    className="ritual-example-chip"
+                    aria-pressed={question === example}
+                    onClick={() => updateQuestion(question === example ? '' : example)}
+                  >
+                    {example}
+                  </button>
+                ))}
+              </div>
+              <p id={id + '-question-note'} className="ritual-question-note">Optional. Your words stay in this browser for the free draw.</p>
             </div>
             <div className="ritual-section">
-              <h3>My focus</h3>
+              <h3>This is about</h3>
               <div className="ritual-topics" role="group" aria-label="Reading topic">
-                {TOPICS.map((item) => <button key={item.value} type="button" className="ritual-chip" aria-pressed={topic === item.value} onClick={() => { setTopic(item.value); idempotency.current = null; }}>{item.label}</button>)}
+                {TOPICS.map((item) => <button key={item.value} type="button" className="ritual-chip" aria-pressed={topic === item.value} onClick={() => chooseTopic(item.value)}>{item.label}</button>)}
               </div>
             </div>
             <div className="ritual-section">
-              <h3>My spread</h3>
+              <h3>How much space</h3>
               <div className="ritual-spreads" role="group" aria-label="Card spread">
                 {SPREADS.filter((item) => !lockSpread || item.value === defaultSpread).map((item) => (
                   <button key={item.value} className="ritual-spread" type="button" aria-pressed={spread === item.value} onClick={() => { setSpread(item.value); idempotency.current = null; }}>
@@ -326,11 +413,6 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
                 ))}
               </div>
             </div>
-            <details className="ritual-question">
-              <summary>{question ? 'Edit my question' : 'Add a question (optional)'}</summary>
-              <label htmlFor={id + '-question'}>Your question stays in this browser for the free draw</label>
-              <textarea id={id + '-question'} rows={2} maxLength={200} value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="What should I give more attention to?" autoComplete="off" />
-            </details>
             <p className="ritual-disclaimer">Free reading · No account · 18+ · For reflection, not prediction</p>
           </div>
         )}
