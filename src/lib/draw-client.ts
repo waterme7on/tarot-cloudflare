@@ -71,13 +71,24 @@ interface RequestDrawOptions {
  * free draw spinner running forever; callers retry with the same idempotencyKey
  * so a reading that the server already saved is returned instead of redrawn.
  */
-/** Download/parse the Three.js module while the draw request is in flight. */
+let holoWarmupScheduled = false;
+
+/**
+ * Download/parse Three.js while the draw is in flight, but never on the frame
+ * where the reveal screen mounts. The flip happens seconds later, so idle time
+ * is early enough and keeps the transition free of module parsing.
+ */
 function warmHoloRuntime(): void {
   if (typeof window === 'undefined') return;
   const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
   if (nav.connection?.saveData || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if ((nav.hardwareConcurrency || 8) <= 4 || (nav.deviceMemory || 8) <= 4) return;
-  void import('three').catch(() => {});
+  if (holoWarmupScheduled) return;
+  holoWarmupScheduled = true;
+  const warm = () => { void import('three').catch(() => { holoWarmupScheduled = false; }); };
+  const idle = (window as Window & { requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number }).requestIdleCallback;
+  if (idle) idle(warm, { timeout: 1500 });
+  else window.setTimeout(warm, 800);
 }
 
 export async function requestDraw(body: DrawRequest, options: RequestDrawOptions = {}): Promise<DrawResponse> {
