@@ -84,17 +84,28 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
     clearTimeout(transitionTimer.current);
     clearTimeout(startTimer.current);
   }, []);
-  useEffect(() => { setClientReady(true); }, []);
+  // Let the reveal screen paint its static card back before mounting the
+  // HoloCard front and starting its image decode.
+  useEffect(() => {
+    let first = requestAnimationFrame(() => {
+      first = requestAnimationFrame(() => setClientReady(true));
+    });
+    return () => cancelAnimationFrame(first);
+  }, []);
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    for (const slug of [currentCard.slug, reading.cards[activeCard + 1]?.slug]) {
-      if (!slug) continue;
+    // The current card is loaded by HoloCard's eager image. Preloading the
+    // next card can wait until the transition has settled.
+    const slug = reading.cards[activeCard + 1]?.slug;
+    if (!slug) return;
+    const timer = window.setTimeout(() => {
       const image = new Image();
       image.decoding = 'async';
       image.src = cardPoster(slug);
       void image.decode?.().catch(() => {});
-    }
-  }, [activeCard, currentCard.slug, reading.cards]);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [activeCard, reading.cards]);
   useEffect(() => {
     if (!showSummary) return;
     setCheckoutSiteKey(document.querySelector<HTMLMetaElement>('meta[name="turnstile-site-key"]')?.content ?? '');
@@ -130,13 +141,26 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
     return () => clearTimeout(timer);
   }, [flipDone]);
   useEffect(() => {
-    headingRef.current?.focus({ preventScroll: true });
-    if (immersive && preselected && window.matchMedia('(max-width: 760px)').matches) {
-      // Scroll within the reading scene, never the Safari document underneath it.
-      readingBodyRef.current?.scrollTo({ top: 0, behavior: 'instant' });
-    } else {
+    if (!preselected || showSummary) return;
+    // Prepare shaders while the reader is looking at the card back, instead of
+    // doing it on the tap that starts the flip.
+    const timer = setTimeout(() => setHoloStart(true), 600);
+    return () => clearTimeout(timer);
+  }, [preselected, showSummary, activeCard]);
+  useEffect(() => {
+    // Focus and scrolling can force layout; do them after the reveal paints.
+    const raf = requestAnimationFrame(() => {
+      headingRef.current?.focus({ preventScroll: true });
+      if (immersive) {
+        if (preselected && window.matchMedia('(max-width: 760px)').matches) {
+          // Scroll within the reading scene, never the Safari document underneath it.
+          readingBodyRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        return;
+      }
       headingRef.current?.closest('section')?.scrollIntoView({ block: 'start', behavior: 'instant' });
-    }
+    });
+    return () => cancelAnimationFrame(raf);
   }, [activeCard, showSummary, immersive, preselected]);
   const product = reading.spread === 'one-card' ? 'single' : 'three';
   const price = product === 'single' ? '$4.99' : '$9.99';
@@ -201,7 +225,7 @@ export function CardResult({ reading, question, onReset, reveal = true, immersiv
           <div className="card-mist" aria-hidden="true" />
         </div>
         {immersive && !flipDone && <>
-          <div className="table-positions" aria-label="Spread positions">{reading.cards.map((card, i) => <div key={card.position} className={i < activeCard ? 'filled' : i === activeCard ? 'current' : ''} aria-current={i === activeCard ? 'step' : undefined}>{i < activeCard ? <img src={`/cards/thumbs/${card.slug}.webp`} alt={`${card.name}, ${card.orientation}`} className={card.orientation} width="48" height="72" /> : <span aria-hidden="true">{i + 1}</span>}<small>{card.positionLabel}</small></div>)}</div>
+          <div className="table-positions" aria-label="Spread positions">{reading.cards.map((card, i) => <div key={card.position} className={i < activeCard ? 'filled' : i === activeCard ? 'current' : ''} aria-current={i === activeCard ? 'step' : undefined}>{i < activeCard ? <img src={`/cards/thumbs/${card.slug}.webp`} alt={`${card.name}, ${card.orientation}`} className={card.orientation} width="48" height="72" decoding="async" /> : <span aria-hidden="true">{i + 1}</span>}<small>{card.positionLabel}</small></div>)}</div>
           <p className="microcopy">{preselected ? 'These are the positions you chose. Reveal each card in order.' : 'Your draw is already set by a random shuffle. Taps reveal the cards in order.'}</p>
         </>}
         {flipDone && <div className="revealed-meaning" role="status"><h3>{currentCard.name}</h3><p className="orientation-label">{currentCard.orientation === 'reversed' ? 'Reversed card' : 'Upright card'}</p><p>{currentCard.summary}</p></div>}
