@@ -1,6 +1,6 @@
 ---
-title: "One Card Tarot Spread: How to Draw and Read a Single Card"
-description: "Learn when to use a one card tarot spread, how to phrase a focused question, and how to read the card upright or reversed. For reflection and entertainment only."
+title: "One Card Tarot Spread – Free Single Card Draw Online"
+description: "Draw one free tarot card online and read it upright or reversed. A single card for a focused question, with a clear meaning. No signup. Reflection only."
 name: "One Card Tarot Spread"
 cardCount: 1
 positions: ["The answer"]

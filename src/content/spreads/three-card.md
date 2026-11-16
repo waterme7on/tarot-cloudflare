@@ -1,6 +1,6 @@
 ---
-title: "Three Card Tarot Spread: Past, Present, Future Explained"
-description: "How to use the three card tarot spread for past/present/future, situation/action/outcome and you/them/relationship, and read the cards together. Reflection only."
+title: "Three Card Tarot Spread – Free 3-Card Draw Online"
+description: "Draw a free three card tarot spread online: past/present/future, situation/action/outcome and you/them/relationship, upright or reversed. Reflection only."
 name: "Three Card Tarot Spread"
 cardCount: 3
 positions: ["Past", "Present", "Future"]

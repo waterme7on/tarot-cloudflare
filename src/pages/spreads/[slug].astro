@@ -27,6 +27,7 @@ const d = entry.data;
   <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/spreads/">Spreads</a> › {d.name}</nav>
   <h1>{d.name}</h1>
   <p class="muted">{d.cardCount} {d.cardCount === 1 ? 'card' : 'cards'}: {d.positions.join(' · ')}</p>
+  <p>Draw {d.cardCount === 1 ? 'a single card' : `${d.cardCount} cards`} free below — no signup, instant result.</p>
   <DrawTool client:load defaultSpread={slug as Spread} lockSpread heading={`Try the ${d.name.toLowerCase()}`} />
   <p class="byline">Written by {d.author} · Updated {d.updatedAt}</p>
   <article class="prose"><Content /></article>
