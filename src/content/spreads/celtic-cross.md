@@ -1,6 +1,6 @@
 ---
-title: "Celtic Cross Tarot Spread: All 10 Positions Explained"
-description: "A clear walkthrough of the ten position Celtic Cross tarot spread, from Present and Challenge to Hopes and Fears and Outcome. For reflection and entertainment only."
+title: "Celtic Cross Tarot Spread – Free Online 10-Card Draw"
+description: "Draw a free Celtic Cross tarot spread online and read all ten positions, from Present and Challenge to Outcome, upright or reversed. Reflection only."
 name: "Celtic Cross Tarot Spread"
 cardCount: 10
 positions: ["Present", "Challenge", "Past", "Future", "Above", "Below", "Advice", "External influences", "Hopes and fears", "Outcome"]
