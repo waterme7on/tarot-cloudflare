@@ -2,6 +2,8 @@ import type { SSRManifest } from 'astro';
 import { App } from 'astro/app';
 import { handle } from '@astrojs/cloudflare/handler';
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from 'cloudflare:workers';
+import { acceptsMarkdown, isConvertiblePath, markdownResponse, type MarkdownAI } from '../lib/agent-markdown';
+import { agentDocument, homeLinkHeaders } from '../lib/agent-discovery';
 import { ALL_CARDS, getCard } from '../data/cards';
 import { generateReportWithFallback } from '../lib/ai';
 import { buildRulesReport } from '../lib/interpretation';
@@ -148,18 +150,52 @@ async function handleScheduled(event: ScheduledController, env: Env): Promise<vo
   }
 }
 
+/** Static assets can bypass Astro middleware even when the Worker runs first. */
+function previewNoindex(env: Env, response: Response): Response {
+  if (env.ENVIRONMENT !== 'preview' || response.headers.get('X-Robots-Tag') === 'noindex, nofollow') return response;
+  const copy = new Response(response.body, response);
+  copy.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  return copy;
+}
+
+/** Homepage Link headers and Markdown for Agents (Accept: text/markdown). */
+async function agentView(request: Request, pathname: string, response: Response, env: Env): Promise<Response> {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return response;
+  let out = response;
+  if (pathname === '/' && (out.headers.get('content-type') ?? '').includes('text/html')) {
+    const copy = new Response(out.body, out);
+    copy.headers.set('Link', homeLinkHeaders(env.SITE_URL));
+    out = copy;
+  }
+  if (!acceptsMarkdown(request.headers.get('accept'))) return out;
+  if (!isConvertiblePath(pathname)) return out;
+  const ai = (env as unknown as { AI?: MarkdownAI }).AI;
+  if (!ai) return out;
+  return markdownResponse(
+    out,
+    async (html) => {
+      const result = await ai.toMarkdown({ name: 'page.html', blob: new Blob([html], { type: 'text/html' }) });
+      const doc = Array.isArray(result) ? result[0] : result;
+      if (!doc || doc.format !== 'markdown' || typeof doc.data !== 'string' || doc.data.length === 0) return null;
+      return { markdown: doc.data, tokens: doc.tokens };
+    },
+    request.method === 'HEAD',
+  );
+}
+
 export function createExports(manifest: SSRManifest) {
   const app = new App(manifest);
   return {
     default: {
       async fetch(request, env, ctx) {
-        const response = await handle(manifest, app, request as unknown as Parameters<typeof handle>[2], env as unknown as Parameters<typeof handle>[3], ctx as unknown as Parameters<typeof handle>[4]);
-        if (env.ENVIRONMENT !== 'preview' || response.headers.get('X-Robots-Tag') === 'noindex, nofollow') return response;
+        const pathname = new URL(request.url).pathname;
+        if (request.method === 'GET' || request.method === 'HEAD') {
+          const doc = agentDocument(pathname, env.SITE_URL);
+          if (doc) return request.method === 'HEAD' ? new Response(null, doc) : doc;
+        }
 
-        // Static assets can bypass Astro middleware even when the Worker runs first.
-        const previewResponse = new Response(response.body, response);
-        previewResponse.headers.set('X-Robots-Tag', 'noindex, nofollow');
-        return previewResponse;
+        const response = await handle(manifest, app, request as unknown as Parameters<typeof handle>[2], env as unknown as Parameters<typeof handle>[3], ctx as unknown as Parameters<typeof handle>[4]);
+        return agentView(request, pathname, previewNoindex(env, response), env);
       },
       async queue(batch, env) {
         await handleQueue(batch as MessageBatch<ReportQueueMessage>, env);
