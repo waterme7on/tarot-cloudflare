@@ -30,3 +30,7 @@ html{scrollbar-color:#485468 var(--bg);scrollbar-width:thin}body{caret-color:var
 @media(min-width:1101px){.home-experience{grid-template-columns:.72fr 1.28fr}.reading-intro .hero-line{font-size:clamp(3.6rem,5.5vw,5.2rem)}}
 @media(max-width:760px){h1,h2,h3{overflow-wrap:anywhere}h1{font-size:clamp(1.8rem,14vw,4rem)}.reading-intro .hero-line{font-size:clamp(2rem,15vw,3rem)}.reading-page-intro h1{font-size:clamp(2.25rem,17.5vw,3.5rem)}.mobile-dock a{font-size:.7rem}.home-experience{gap:1.1rem}.reading-intro .hero-line{font-size:3rem;line-height:.95;max-width:350px}.reading-intro .hero-line br{display:none}.intro-copy{font-size:var(--text-secondary);margin-bottom:0}.prose{font-size:1rem}.daily-note p{font-size:var(--text-secondary)}.reading-intro .hero-line,.intro-copy{display:none}.daily-note{align-items:start}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.tarot-card{transition:none}}
+
+/* Detail pass: anchor offset and steady quota numerals. */
+[id]{scroll-margin-top:1.5rem}
+.intro-note{font-variant-numeric:tabular-nums}
