@@ -198,6 +198,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   }
 
   function chooseTopic(value: QuestionType) {
+    if (value !== topic) window.minilytics?.('goal', 'ritual_topic_selected', { topic: value, mode: 'ritual' });
     setTopic(value);
     idempotency.current = null;
     // Only a starter question is cleared when the topic changes; anything the
@@ -251,6 +252,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       setError(quotaMessage);
       return;
     }
+    window.minilytics?.('goal', 'draw_clicked', { spread, question_type: topic, mode: 'ritual' });
     const token = siteKey ? window.turnstile?.getResponse(widgetId.current ?? undefined) : undefined;
     if (siteKey && !token) {
       setError('Complete the verification below, then reveal your cards.');
@@ -405,7 +407,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
               <h3>How much space</h3>
               <div className="ritual-spreads" role="group" aria-label="Card spread">
                 {SPREADS.filter((item) => !lockSpread || item.value === defaultSpread).map((item) => (
-                  <button key={item.value} className="ritual-spread" type="button" aria-pressed={spread === item.value} onClick={() => { setSpread(item.value); idempotency.current = null; }}>
+                  <button key={item.value} className="ritual-spread" type="button" aria-pressed={spread === item.value} onClick={() => { if (item.value !== spread) window.minilytics?.('goal', 'ritual_spread_selected', { spread: item.value, mode: 'ritual' }); setSpread(item.value); idempotency.current = null; }}>
                     <span className="ritual-mini-cards" aria-hidden="true">{Array.from({ length: Math.min(item.count, 3) }, (_, i) => <i key={i} />)}</span>
                     <strong>{item.label}</strong>
                     <small>{item.caption}</small>
@@ -482,7 +484,11 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
         {quotaExhausted && <p className="ritual-quota" role="status">{quotaMessage}</p>}
         {error && <p className="ritual-error ritual-actionbar-error" role="alert">{error}</p>}
         <button className="ritual-primary" type="button" disabled={loading || extracting || stage === 'shuffling' || stage === 'fanning' || quotaExhausted} onClick={() => {
-          if (stage === 'prepare') { setStage('deck'); setError(null); }
+          if (stage === 'prepare') {
+            window.minilytics?.('goal', 'ritual_deck_opened', { spread, topic, mode: 'ritual' });
+            setStage('deck');
+            setError(null);
+          }
           else if (stage === 'deck') shuffle();
           else if (stage === 'choose') choose();
         }}>

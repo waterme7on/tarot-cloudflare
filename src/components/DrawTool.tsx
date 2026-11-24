@@ -78,6 +78,7 @@ function LegacyDrawTool({ defaultSpread = 'one-card', defaultQuestionType = 'gen
   async function draw() {
     if (pendingRef.current) return;
     if (quotaExhausted) { setError(quotaMessage); return; }
+    window.minilytics?.('goal', 'draw_clicked', { spread, question_type: questionType, mode: immersive ? 'ritual' : 'flow' });
     pendingRef.current = true;
     setLoading(true);
     setError(null);
