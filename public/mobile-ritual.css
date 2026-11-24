@@ -373,3 +373,9 @@
   .ritual-fan-card{filter:none;box-shadow:0 6px 12px rgba(0,0,0,.3)}
   .ritual-fan-card.is-focused{filter:brightness(1.08);box-shadow:0 15px 18px rgba(0,0,0,.46)}
 }
+
+.ritual-quick{margin:0 0 1.25rem}
+.ritual-quick p{margin:.55rem 0 0;text-align:center;font-size:.78rem;line-height:1.4;color:#abb6c3}
+.ritual-quick-divider{display:flex;align-items:center;gap:.7rem;margin:1.1rem 0 1.35rem;color:#8b97a6;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase}
+.ritual-quick-divider::before,.ritual-quick-divider::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.14)}
+.ritual-quick-divider span{white-space:nowrap}
