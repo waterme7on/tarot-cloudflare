@@ -74,6 +74,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   const id = useId();
   const [stage, setStage] = useState<Stage>('prepare');
   const [spread, setSpread] = useState<Spread>(defaultSpread);
+  const [drawMode, setDrawMode] = useState<'ritual' | 'quick'>('ritual');
   const [topic, setTopic] = useState<QuestionType>(defaultQuestionType);
   const [question, setQuestion] = useState('');
   const [focus, setFocus] = useState(39);
@@ -208,6 +209,17 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     }
   }
 
+  function quickDraw() {
+    const quickSpread: Spread = lockSpread ? defaultSpread : 'one-card';
+    setDrawMode('quick');
+    setTopic(defaultQuestionType);
+    setSpread(quickSpread);
+    idempotency.current = null;
+    setError(null);
+    window.minilytics?.('goal', 'quick_draw_clicked', { spread: quickSpread, mode: 'quick' });
+    setStage('choose');
+  }
+
   function reset() {
     attemptSeq.current += 1;
     clearTimeout(deckTimer.current);
@@ -221,6 +233,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
     setExtracting(false);
     idempotency.current = null;
     setReading(null);
+    setDrawMode('ritual');
     setStage('prepare');
     setSelected([]);
     setQuestion('');
@@ -252,7 +265,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       setError(quotaMessage);
       return;
     }
-    window.minilytics?.('goal', 'draw_clicked', { spread, question_type: topic, mode: 'ritual' });
+    window.minilytics?.('goal', 'draw_clicked', { spread, question_type: topic, mode: drawMode });
     const token = siteKey ? window.turnstile?.getResponse(widgetId.current ?? undefined) : undefined;
     if (siteKey && !token) {
       setError('Complete the verification below, then reveal your cards.');
@@ -287,7 +300,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       if (attemptSeq.current !== attempt || controller.signal.aborted) return;
       setReading(data);
       setQuota((current) => current ? { ...current, remaining: Math.max(0, current.remaining - 1) } : current);
-      window.minilytics?.('goal', 'draw', { spread, question_type: topic, cards: data.cards.length, mode: 'ritual' });
+      window.minilytics?.('goal', 'draw', { spread, question_type: topic, cards: data.cards.length, mode: drawMode });
     } catch (err) {
       if (attemptSeq.current !== attempt) return;
       if (err instanceof DrawRequestError && err.kind === 'cancelled') return;
@@ -364,6 +377,14 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
       <div className="ritual-scroll">
         {stage === 'prepare' && (
           <div className="ritual-prepare">
+            <div className="ritual-quick">
+              <button className="ritual-primary" type="button" onClick={quickDraw} disabled={quotaExhausted}>
+                <span>Draw a card now</span>
+                <span aria-hidden="true">→</span>
+              </button>
+              <p>One random card. No question needed.</p>
+            </div>
+            <div className="ritual-quick-divider" aria-hidden="true"><span>or read with a question</span></div>
             <div className="ritual-heading">
               <span className="ritual-kicker">A moment for yourself</span>
               <h2>What’s on your mind?</h2>
