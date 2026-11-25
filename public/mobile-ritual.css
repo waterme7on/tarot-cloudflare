@@ -6,7 +6,8 @@
 .ritual-topbar{height:57px;flex:none;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.65rem;padding:0 1.3rem;border-bottom:1px solid rgba(255,255,255,.075);font-size:.75rem;color:#abb5c1;position:relative;z-index:4}
 .ritual-back{border:0;background:transparent;color:inherit;display:inline-flex;align-items:center;justify-self:start;gap:.4rem;min-height:44px;min-width:44px;padding:0 .2rem;cursor:pointer;text-align:left}
 .ritual-back:disabled{opacity:.5}
-.ritual-name{font-weight:600;color:var(--ritual-ivory)}
+/* The name keeps the middle column even when Restart/Exit are hidden in prepare. */
+.ritual-name{grid-column:2;justify-self:center;text-align:center;font-weight:600;color:var(--ritual-ivory)}
 .ritual-counter{justify-self:end;font-variant-numeric:tabular-nums;font-size:.76rem}
 .ritual-scroll{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;min-height:0;min-width:0;flex:1;scrollbar-width:thin;scrollbar-color:#546173 transparent}
 .ritual-prepare,.ritual-pick-scene,.ritual-deck-scene{max-width:570px;padding:1.4rem 1.4rem .65rem;margin:0 auto;width:100%;box-sizing:border-box}
@@ -44,6 +45,8 @@
 .ritual-actionbar{background:#101725;padding:.85rem 1.4rem 1rem;flex:none;border-top:1px solid rgba(255,255,255,.08);position:relative;z-index:5}
 .ritual-primary{appearance:none;background:var(--ritual-gold);color:#151b23;border:0;border-radius:10px;display:flex;align-items:center;justify-content:space-between;font-weight:700!important;font-size:.9rem!important;min-height:52px;padding:.65rem 1.15rem;width:100%;cursor:pointer;transition:background .15s ease,transform .15s ease}
 .ritual-primary:active{transform:scale(.993)}
+.ritual-primary-label{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:ritual-label-in .18s cubic-bezier(.22,1,.36,1) both}
+@keyframes ritual-label-in{from{opacity:.3;transform:translateY(4px)}to{opacity:1;transform:none}}
 .ritual-primary:disabled{opacity:.64;cursor:default}
 .ritual-actionbar>p{font-size:.67rem;text-align:center;margin:.45rem 0 0;color:#93a0af}
 .ritual-actionbar .ritual-error{margin:0 0 .55rem;padding:.5rem .65rem;max-width:none;font-size:max(12px,.8rem);line-height:1.35;overflow-wrap:anywhere;color:#ffd2c8;background:rgba(255,120,90,.09);border:1px solid rgba(255,195,182,.24);border-radius:8px}
@@ -138,6 +141,7 @@
   .ritual-example-chip{padding:.3rem .62rem;font-size:.69rem}
 }
 @media(prefers-reduced-motion:reduce){
+  .ritual-primary-label{animation:none}
   .ritual-app *, .ritual-app *::before, .ritual-app *::after,.ritual-selected-back{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
 
