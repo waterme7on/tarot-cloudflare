@@ -370,7 +370,9 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
   return (
     <section className={'reading-app reading-table ritual-app ritual-' + stage} id="draw-tool" ref={appRef} tabIndex={-1} role={stage === 'prepare' ? undefined : 'dialog'} aria-modal={stage === 'prepare' ? undefined : true} aria-label="Interactive tarot reading" aria-busy={loading}>
       <div className="ritual-topbar">
-        <button type="button" className="ritual-back" disabled={stage === 'prepare'} onClick={reset} aria-label="Start over">← <span>Restart</span></button>
+        {stage !== 'prepare' && (
+          <button type="button" className="ritual-back" onClick={reset} aria-label="Start over">← <span>Restart</span></button>
+        )}
         <span className="ritual-name">RandomTarot</span>
         <a className="ritual-exit" href="/cards/" aria-label="Exit reading and browse the deck">Exit</a>
       </div>
@@ -513,7 +515,7 @@ export default function RitualDraw({ defaultSpread = 'one-card', defaultQuestion
           else if (stage === 'deck') shuffle();
           else if (stage === 'choose') choose();
         }}>
-          <span>{stage === 'prepare' ? 'Continue to the deck' : stage === 'deck' ? 'Shuffle cards' : stage === 'shuffling' ? 'Shuffling…' : stage === 'fanning' ? 'Spreading cards…' : extracting ? 'Choosing your card…' : loading ? (slow ? 'Still drawing…' : 'Drawing your cards…') : error && finishedPicking ? 'Try again' : finishedPicking ? 'Reveal my cards' : 'Choose this card'}</span>
+          <span className="ritual-primary-label" key={stage === 'prepare' ? 'prepare' : stage === 'deck' ? 'deck' : stage === 'shuffling' ? 'shuffling' : stage === 'fanning' ? 'fanning' : extracting ? 'extracting' : loading ? (slow ? 'loading-slow' : 'loading') : error && finishedPicking ? 'retry' : finishedPicking ? 'reveal' : 'choose'}>{stage === 'prepare' ? 'Continue to the deck' : stage === 'deck' ? 'Shuffle cards' : stage === 'shuffling' ? 'Shuffling…' : stage === 'fanning' ? 'Spreading cards…' : extracting ? 'Choosing your card…' : loading ? (slow ? 'Still drawing…' : 'Drawing your cards…') : error && finishedPicking ? 'Try again' : finishedPicking ? 'Reveal my cards' : 'Choose this card'}</span>
           <span aria-hidden="true">→</span>
         </button>
         <p role="status" aria-live="polite">{stage === 'prepare' ? 'Your reading is always free' : stage === 'choose' ? (loading && slow ? 'Taking longer than usual. Restart is safe; retrying recovers the same selection.' : selected.length + ' of ' + count + ' selected') : 'Every card has an equal chance'}</p>

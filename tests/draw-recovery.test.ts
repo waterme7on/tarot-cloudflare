@@ -11,9 +11,10 @@ describe('ritual draw recovery wiring', () => {
     expect(key).toBeGreaterThan(tryBlock);
   });
 
-  it('lets the user restart while a draw is loading', () => {
+  it('lets the user restart while a draw is loading, and hides it before there is anything to restart', () => {
     expect(ritual).not.toContain('disabled={loading || stage === \'prepare\'}');
-    expect(ritual).toContain("disabled={stage === 'prepare'}");
+    expect(ritual).not.toContain("disabled={stage === 'prepare'}");
+    expect(ritual).toMatch(/stage !== 'prepare' && \(\s*<button[^>]*className="ritual-back"/);
   });
 
   it('guards stale request cleanup behind the attempt sequence and its own timer', () => {
