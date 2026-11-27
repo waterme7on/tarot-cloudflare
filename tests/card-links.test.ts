@@ -8,7 +8,8 @@ import { PUBLISHED_CARD_SLUGS } from '../src/data/card-pages';
 import type { DrawResponse } from '../src/lib/schema';
 
 // A card still waiting for its meaning page keeps this test valid as pages ship.
-const unpublished = ALL_CARDS.find((card) => !PUBLISHED_CARD_SLUGS.includes(card.slug))!;
+const publishedSlugs = new Set<string>(PUBLISHED_CARD_SLUGS);
+const unpublished = ALL_CARDS.find((card) => !publishedSlugs.has(card.slug))!;
 
 function reading(questionType: DrawResponse['questionType']): DrawResponse {
   return {
