@@ -3,8 +3,12 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { CardResult } from '../src/components/CardResult';
+import { ALL_CARDS } from '../src/data/cards';
 import { PUBLISHED_CARD_SLUGS } from '../src/data/card-pages';
 import type { DrawResponse } from '../src/lib/schema';
+
+// A card still waiting for its meaning page keeps this test valid as pages ship.
+const unpublished = ALL_CARDS.find((card) => !PUBLISHED_CARD_SLUGS.includes(card.slug))!;
 
 function reading(questionType: DrawResponse['questionType']): DrawResponse {
   return {
@@ -14,7 +18,7 @@ function reading(questionType: DrawResponse['questionType']): DrawResponse {
     questionType,
     cards: [
       { name: 'The Star', slug: 'the-star', position: 1, positionLabel: 'Past', orientation: 'upright', keywords: ['hope'], summary: 'A little space to reflect.' },
-      { name: 'Ace of Swords', slug: 'ace-of-swords', position: 2, positionLabel: 'Present', orientation: 'upright', keywords: ['clarity'], summary: 'A little space to reflect.' },
+      { name: unpublished.name, slug: unpublished.slug, position: 2, positionLabel: 'Present', orientation: 'upright', keywords: ['clarity'], summary: 'A little space to reflect.' },
       { name: 'The Sun', slug: 'the-sun', position: 3, positionLabel: 'Future', orientation: 'upright', keywords: ['warmth'], summary: 'A little space to reflect.' },
     ],
     headline: 'Three cards',
@@ -30,7 +34,7 @@ describe('result card links', () => {
     const html = renderToStaticMarkup(createElement(CardResult, { reading: reading('career'), reveal: false }));
     expect(html).toContain('href="/cards/the-star/"');
     expect(html).toContain('href="/cards/the-sun/"');
-    expect(html).not.toContain('href="/cards/ace-of-swords/"');
+    expect(html).not.toContain(`href="/cards/${unpublished.slug}/"`);
     expect(html).toContain('href="/spreads/three-card/"');
     expect(html).toContain('href="/questions/career/"');
     expect(html).toContain('href="/cards/"');
